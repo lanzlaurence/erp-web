@@ -1,0 +1,25 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Preference;
+use Illuminate\Database\Seeder;
+
+class PreferenceSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $preferences = [
+            ['key' => 'app_name', 'value' => 'Example App', 'type' => 'text'],
+            ['key' => 'app_logo', 'value' => 'favicon.png', 'type' => 'image'],
+            ['key' => 'decimal_places', 'value' => '2', 'type' => 'number'],
+        ];
+
+        foreach ($preferences as $preference) {
+            Preference::updateOrCreate(
+                ['key' => $preference['key']],
+                $preference
+            );
+        }
+    }
+}
