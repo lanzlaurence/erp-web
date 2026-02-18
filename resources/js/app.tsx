@@ -45,5 +45,10 @@ createInertiaApp({
     },
 });
 
+window.addEventListener('beforeunload', (e) => {
+    e.preventDefault();
+    e.returnValue = '';
+});
+
 // This will set light / dark mode on load...
 initializeTheme();
