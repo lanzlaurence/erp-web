@@ -22,7 +22,6 @@ import {
     LayoutGrid,
     MapPin,
     PackageOpen,
-    Settings,
     Shield,
     SlidersHorizontal,
     Tag,
@@ -30,7 +29,9 @@ import {
     Building2,
     UserCircle,
     Package,
-    CreditCard
+    CreditCard,
+    Settings2,
+    Cog
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -68,7 +69,7 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Configuration',
         href: '#',
-        icon: Settings,
+        icon: Cog,
         items: [
             {
                 title: 'Brands',
@@ -105,7 +106,7 @@ const mainNavItems: NavItem[] = [
     {
         title: 'System',
         href: '#',
-        icon: Settings,
+        icon: Settings2,
         items: [
             {
                 title: 'Users',
