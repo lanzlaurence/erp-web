@@ -26,6 +26,7 @@ Route::middleware(['auth', 'active', 'verified'])->group(function () {
     Route::resource('uoms', App\Http\Controllers\UomController::class);
     Route::resource('destinations', App\Http\Controllers\DestinationController::class);
     Route::resource('charges', App\Http\Controllers\ChargeController::class);
+    Route::resource('currencies', App\Http\Controllers\CurrencyController::class);
 
     Route::resource('materials', App\Http\Controllers\MaterialController::class);
     Route::resource('vendors', App\Http\Controllers\VendorController::class);

@@ -49,6 +49,16 @@ export type Charge = {
     deleted_at?: string | null;
 };
 
+export type Currency = {
+    id: number;
+    code: string;
+    name: string;
+    symbol: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+};
+
 export type Material = {
     id: number;
     code: string;

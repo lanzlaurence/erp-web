@@ -38,6 +38,7 @@ import {
     TrendingUp,
     Warehouse,
     ShoppingBag,
+    Coins,
 } from 'lucide-react';
 import { useState } from 'react';
 import AppLogo from './app-logo';
@@ -68,7 +69,6 @@ export function AppSidebar() {
             title: 'Master',
             href: '#',
             icon: Package,
-            isActive: true,
             items: [
                 { title: 'Materials', href: '/materials', icon: PackageOpen, permission: 'material-view' },
                 { title: 'Vendors', href: '/vendors', icon: Building2, permission: 'vendor-view' },
@@ -79,20 +79,19 @@ export function AppSidebar() {
             title: 'Configuration',
             href: '#',
             icon: Cog,
-            isActive: true,
             items: [
                 { title: 'Brands', href: '/brands', icon: Tag, permission: 'brand-view' },
                 { title: 'Categories', href: '/categories', icon: Folder, permission: 'category-view' },
                 { title: 'UOM',  href: '/uoms', icon: Box, permission: 'uom-view' },
                 { title: 'Destinations', href: '/destinations', icon: MapPin, permission: 'destination-view' },
                 { title: 'Charges', href: '/charges', icon: CreditCard, permission: 'charge-view' },
+                { title: 'Currencies', href: '/currencies', icon: Coins, permission: 'currency-view' },
             ],
         },
         {
             title: 'System',
             href: '#',
             icon: Settings2,
-            isActive: true,
             items: [
                 { title: 'Users', href: '/users', icon: Users, permission: 'user-view' },
                 { title: 'Roles', href: '/roles', icon: Shield, permission: 'role-view' },

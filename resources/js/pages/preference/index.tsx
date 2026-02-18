@@ -7,7 +7,6 @@ import { router, useForm } from '@inertiajs/react';
 import { Check } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import Select from 'react-select';
-import { CURRENCY_OPTIONS } from '@/lib/currencies';
 import { Head } from '@inertiajs/react';
 import { DATE_FORMAT_OPTIONS, TIME_FORMAT_OPTIONS } from '@/lib/date-formats';
 
@@ -28,9 +27,10 @@ type Props = {
         date_format: string;
         time_format: string;
     };
+    currencies: { code: string; name: string; symbol: string }[];
 };
 
-export default function Index({ formData }: Props) {
+export default function Index({ formData, currencies }: Props) {
     const [preview, setPreview] = useState<string | null>(null);
     const { data, setData, post, processing, errors } = useForm({
         app_name: formData.app_name,
@@ -65,6 +65,11 @@ export default function Index({ formData }: Props) {
             reader.readAsDataURL(file);
         }
     };
+
+    const CURRENCY_OPTIONS = currencies.map((c) => ({
+        value: c.code,
+        label: `${c.code} — ${c.name} (${c.symbol})`,
+    }));
 
     return (
         <>

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Preference;
+use App\Models\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
@@ -51,6 +52,7 @@ class HandleInertiaRequests extends Middleware
                 'timezone' => Preference::get('timezone', 'Asia/Manila'),
                 'currency' => Preference::get('currency', 'PHP'),
             ],
+            'currencies' => Currency::where('is_active', true)->orderBy('code')->get(['code', 'name', 'symbol']),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'flash' => [
                 'success' => $request->session()->get('success'),

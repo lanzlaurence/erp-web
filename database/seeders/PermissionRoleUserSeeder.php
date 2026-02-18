@@ -59,6 +59,10 @@ class PermissionRoleUserSeeder extends Seeder
             'charge-create',
             'charge-edit',
             'charge-delete',
+            'currency-view',
+            'currency-create',
+            'currency-edit',
+            'currency-delete',
         ];
 
         foreach ($permissions as $permission) {

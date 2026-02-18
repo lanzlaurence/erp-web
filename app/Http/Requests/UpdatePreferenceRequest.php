@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdatePreferenceRequest extends FormRequest
 {
@@ -19,7 +20,7 @@ class UpdatePreferenceRequest extends FormRequest
             'decimal_places' => ['required', 'integer', 'min:0', 'max:6'],
             'color_theme' => ['required', 'string', 'in:blue,violet,green,rose,orange,zinc'],
             'timezone'       => ['required', 'string', 'timezone:all'],
-            'currency' => ['required', 'string', 'max:10'],
+            'currency' => ['required', 'string', Rule::exists('currencies', 'code')],
             'date_format' => ['required', 'string', 'in:MM/DD/YYYY,DD/MM/YYYY,YYYY-MM-DD,MMM DD\, YYYY,MMMM DD\, YYYY,DD MMM YYYY'],
             'time_format' => ['required', 'string', 'in:12h,24h'],
         ];

@@ -4,7 +4,7 @@ export type * from './navigation';
 export type * from './ui';
 
 import type { Auth, Permission, Role, User } from './auth';
-import type { Brand, Category, Charge, Customer, Destination, Material, Uom, Vendor } from './modules';
+import type { Brand, Category, Charge, Currency, Customer, Destination, Material, Uom, Vendor } from './modules';
 
 export type FlashMessage = {
     success?: string;
@@ -26,6 +26,7 @@ export type SharedData = {
     name: string;
     auth: Auth;
     preferences: Preference;
+    currencies: Currency[];
     sidebarOpen: boolean;
     flash: FlashMessage;
     [key: string]: unknown;
@@ -61,7 +62,13 @@ export type PreferenceData = {
         app_name: string;
         app_logo_url: string;
         decimal_places: string;
+        color_theme: string;
+        timezone: string;
+        currency: string;
+        date_format: string;
+        time_format: string;
     };
+    currencies: Currency[];
 };
 
 export type BrandData = {
@@ -82,6 +89,10 @@ export type DestinationData = {
 
 export type ChargeData = {
     charges: PaginatedData<Charge>;
+};
+
+export type CurrencyData = {
+    currencies: PaginatedData<Currency>;
 };
 
 export type MaterialData = {

@@ -1,0 +1,85 @@
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import AppLayout from '@/layouts/app-layout';
+import type { Currency } from '@/types';
+import { Head, useForm } from '@inertiajs/react';
+import { FormEvent } from 'react';
+
+export default function Edit({ currency }: { currency: Currency }) {
+    const { data, setData, put, processing, errors } = useForm({
+        code: currency.code,
+        name: currency.name,
+        symbol: currency.symbol,
+        is_active: currency.is_active,
+    });
+
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        put(`/currencies/${currency.id}`);
+    };
+
+    return (
+        <>
+            <Head title="Edit Currency" />
+            <div className="mx-auto max-w-xl space-y-6 p-4">
+                <div>
+                    <h1 className="text-2xl font-semibold">Edit Currency</h1>
+                    <p className="text-sm text-muted-foreground">Update currency information</p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-4 rounded-lg border p-4">
+                        <h3 className="font-semibold">Currency Information</h3>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="code">Code</Label>
+                                <Input id="code" value={data.code}
+                                    onChange={(e) => setData('code', e.target.value.toUpperCase())}
+                                    maxLength={10} required />
+                                {errors.code && <p className="text-sm text-red-600">{errors.code}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="symbol">Symbol</Label>
+                                <Input id="symbol" value={data.symbol}
+                                    onChange={(e) => setData('symbol', e.target.value)}
+                                    maxLength={10} required />
+                                {errors.symbol && <p className="text-sm text-red-600">{errors.symbol}</p>}
+                            </div>
+
+                            <div className="col-span-2 space-y-2">
+                                <Label htmlFor="name">Name</Label>
+                                <Input id="name" value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                    required />
+                                {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
+                            </div>
+
+                            <div className="col-span-2 flex items-center space-x-2">
+                                <Switch id="is_active" checked={data.is_active}
+                                    onCheckedChange={(checked) => setData('is_active', checked)} />
+                                <Label htmlFor="is_active">Active</Label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <Button type="submit" disabled={processing}>Update Currency</Button>
+                        <Button type="button" variant="outline" onClick={() => window.history.back()}>Cancel</Button>
+                    </div>
+                </form>
+            </div>
+        </>
+    );
+}
+
+Edit.layout = (page: React.ReactNode) => (
+    <AppLayout breadcrumbs={[
+        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Currencies', href: '/currencies' },
+        { title: 'Edit', href: '#' },
+    ]}>{page}</AppLayout>
+);

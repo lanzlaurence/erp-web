@@ -2,11 +2,12 @@
 import { usePage } from '@inertiajs/react';
 import type { SharedData } from '@/types';
 import { formatAmount, formatDate, formatTime, formatDateTime } from '@/lib/formatters';
-import { getCurrency } from '@/lib/currencies';
 
 export function useFormatters() {
-    const { preferences } = usePage<SharedData>().props;
-    const currency = getCurrency(preferences.currency ?? 'PHP');
+    const { preferences, currencies } = usePage<SharedData>().props;
+    const currency = (currencies as { code: string; name: string; symbol: string }[])
+        ?.find((c) => c.code === (preferences.currency ?? 'PHP'))
+        ?? { code: 'PHP', name: 'Philippine Peso', symbol: '₱' };
 
     return {
         currency,

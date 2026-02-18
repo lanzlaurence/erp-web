@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdatePreferenceRequest;
 use App\Models\Preference;
+use App\Models\Currency;
 use App\Traits\HandlesFileUpload;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -36,7 +37,14 @@ class PreferenceController extends Controller implements HasMiddleware
             'time_format' => Preference::get('time_format', '12h'),
         ];
 
-        return Inertia::render('preference/index', ['formData' => $formData]);
+        $currencies = Currency::where('is_active', true)
+            ->orderBy('code')
+            ->get(['code', 'name', 'symbol']);
+
+        return Inertia::render('preference/index', [
+            'formData' => $formData,
+            'currencies' => $currencies,
+        ]);
     }
 
     public function update(UpdatePreferenceRequest $request)
