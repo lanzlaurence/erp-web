@@ -1,5 +1,6 @@
 // js/lib/formatters.ts
 
+// Amount
 export function formatAmount(
     amount: number | null | undefined,
     options?: {
@@ -21,6 +22,7 @@ export function formatAmount(
     );
 }
 
+// Date
 export function formatDate(
     dateString: string | null | undefined,
     options?: {
@@ -50,6 +52,7 @@ export function formatDate(
     });
 }
 
+// Time
 export function formatTime(
     dateString: string | null | undefined,
     options?: {
@@ -70,6 +73,7 @@ export function formatTime(
     });
 }
 
+// Date & Time
 export function formatDateTime(
     dateString: string | null | undefined,
     options?: {

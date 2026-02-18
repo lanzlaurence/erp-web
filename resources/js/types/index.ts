@@ -16,6 +16,7 @@ export type Preference = {
     app_logo: string;
     decimal_places: number;
     color_theme: string;
+    timezone: string;
 };
 
 export type SharedData = {
