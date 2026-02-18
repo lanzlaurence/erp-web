@@ -13,6 +13,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { Charge } from '@/types';
 import { useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
+import { Head } from '@inertiajs/react';
 
 type Props = {
     charge: Charge;
@@ -34,113 +35,116 @@ export default function Edit({ charge }: Props) {
     };
 
     return (
-        <div className="mx-auto max-w-2xl space-y-6 p-4">
-            <div>
-                <h1 className="text-2xl font-semibold">Edit Charge</h1>
-                <p className="text-sm text-muted-foreground">Update charge information</p>
-            </div>
+        <>
+            <Head title="Edit Charge" />
+            <div className="mx-auto max-w-2xl space-y-6 p-4">
+                <div>
+                    <h1 className="text-2xl font-semibold">Edit Charge</h1>
+                    <p className="text-sm text-muted-foreground">Update charge information</p>
+                </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-4 rounded-lg border p-4">
-                    <h3 className="font-semibold">Charge Information</h3>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                            id="name"
-                            value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
-                            placeholder="e.g., VAT 12%, Delivery Charge"
-                            required
-                        />
-                        {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
-                            value={data.description}
-                            onChange={(e) => setData('description', e.target.value)}
-                            placeholder="Brief description of the charge"
-                            rows={3}
-                        />
-                        {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="type">Type</Label>
-                            <Select value={data.type} onValueChange={(value: 'tax' | 'discount') => setData('type', value)}>
-                                <SelectTrigger>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="tax">Tax</SelectItem>
-                                    <SelectItem value="discount">Discount</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {errors.type && <p className="text-sm text-red-600">{errors.type}</p>}
-                        </div>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-4 rounded-lg border p-4">
+                        <h3 className="font-semibold">Charge Information</h3>
 
                         <div className="space-y-2">
-                            <Label htmlFor="value_type">Value Type</Label>
-                            <Select value={data.value_type} onValueChange={(value: 'percentage' | 'fixed') => setData('value_type', value)}>
-                                <SelectTrigger>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="percentage">Percentage</SelectItem>
-                                    <SelectItem value="fixed">Fixed Amount</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {errors.value_type && <p className="text-sm text-red-600">{errors.value_type}</p>}
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="value">
-                                Value {data.value_type === 'percentage' ? '(%)' : '(₱)'}
-                            </Label>
+                            <Label htmlFor="name">Name</Label>
                             <Input
-                                id="value"
-                                type="number"
-                                step="0.01"
-                                value={data.value}
-                                onChange={(e) => setData('value', e.target.value)}
-                                placeholder={data.value_type === 'percentage' ? 'e.g., 12' : 'e.g., 100.00'}
+                                id="name"
+                                value={data.name}
+                                onChange={(e) => setData('name', e.target.value)}
+                                placeholder="e.g., VAT 12%, Delivery Charge"
                                 required
                             />
-                            {errors.value && <p className="text-sm text-red-600">{errors.value}</p>}
+                            {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="status">Status</Label>
-                            <Select value={data.status} onValueChange={(value: 'active' | 'inactive') => setData('status', value)}>
-                                <SelectTrigger>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="active">Active</SelectItem>
-                                    <SelectItem value="inactive">Inactive</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {errors.status && <p className="text-sm text-red-600">{errors.status}</p>}
+                            <Label htmlFor="description">Description</Label>
+                            <Textarea
+                                id="description"
+                                value={data.description}
+                                onChange={(e) => setData('description', e.target.value)}
+                                placeholder="Brief description of the charge"
+                                rows={3}
+                            />
+                            {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="type">Type</Label>
+                                <Select value={data.type} onValueChange={(value: 'tax' | 'discount') => setData('type', value)}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="tax">Tax</SelectItem>
+                                        <SelectItem value="discount">Discount</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {errors.type && <p className="text-sm text-red-600">{errors.type}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="value_type">Value Type</Label>
+                                <Select value={data.value_type} onValueChange={(value: 'percentage' | 'fixed') => setData('value_type', value)}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="percentage">Percentage</SelectItem>
+                                        <SelectItem value="fixed">Fixed Amount</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {errors.value_type && <p className="text-sm text-red-600">{errors.value_type}</p>}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="value">
+                                    Value {data.value_type === 'percentage' ? '(%)' : '(₱)'}
+                                </Label>
+                                <Input
+                                    id="value"
+                                    type="number"
+                                    step="0.01"
+                                    value={data.value}
+                                    onChange={(e) => setData('value', e.target.value)}
+                                    placeholder={data.value_type === 'percentage' ? 'e.g., 12' : 'e.g., 100.00'}
+                                    required
+                                />
+                                {errors.value && <p className="text-sm text-red-600">{errors.value}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="status">Status</Label>
+                                <Select value={data.status} onValueChange={(value: 'active' | 'inactive') => setData('status', value)}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="active">Active</SelectItem>
+                                        <SelectItem value="inactive">Inactive</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {errors.status && <p className="text-sm text-red-600">{errors.status}</p>}
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="flex gap-2">
-                    <Button type="submit" disabled={processing}>
-                        Update Charge
-                    </Button>
-                    <Button type="button" variant="outline" onClick={() => window.history.back()}>
-                        Cancel
-                    </Button>
-                </div>
-            </form>
-        </div>
+                    <div className="flex gap-2">
+                        <Button type="submit" disabled={processing}>
+                            Update Charge
+                        </Button>
+                        <Button type="button" variant="outline" onClick={() => window.history.back()}>
+                            Cancel
+                        </Button>
+                    </div>
+                </form>
+            </div>
+        </>
     );
 }
 

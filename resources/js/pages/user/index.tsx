@@ -24,6 +24,7 @@ import type { UserData } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import { Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { Head } from '@inertiajs/react';
 
 export default function Index({ users }: UserData) {
     const { hasPermission } = usePermissions();
@@ -44,6 +45,8 @@ export default function Index({ users }: UserData) {
 
     return (
         <>
+            <Head title="Users" />
+
             <div className="space-y-4 p-4">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Users</h1>

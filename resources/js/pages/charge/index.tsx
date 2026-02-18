@@ -25,6 +25,7 @@ import type { ChargeData } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import { Edit, Eye, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { Head } from '@inertiajs/react';
 
 export default function Index({ charges }: ChargeData) {
     const { hasPermission } = usePermissions();
@@ -61,6 +62,8 @@ export default function Index({ charges }: ChargeData) {
 
     return (
         <>
+            <Head title="Charges" />
+
             <div className="space-y-4 p-4">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Charges</h1>
@@ -79,6 +82,7 @@ export default function Index({ charges }: ChargeData) {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Name</TableHead>
+                                <TableHead>Description</TableHead>
                                 <TableHead>Type</TableHead>
                                 <TableHead>Value Type</TableHead>
                                 <TableHead>Value</TableHead>
@@ -90,6 +94,7 @@ export default function Index({ charges }: ChargeData) {
                             {charges.data.map((charge) => (
                                 <TableRow key={charge.id}>
                                     <TableCell className="font-medium">{charge.name}</TableCell>
+                                    <TableCell>{charge.description}</TableCell>
                                     <TableCell>{getTypeBadge(charge.type)}</TableCell>
                                     <TableCell className="capitalize">{charge.value_type}</TableCell>
                                     <TableCell className="font-mono">{getValueDisplay(charge.value_type, charge.value)}</TableCell>

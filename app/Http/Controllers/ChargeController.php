@@ -41,11 +41,6 @@ class ChargeController extends Controller implements HasMiddleware
             ->with('success', "Charge created successfully");
     }
 
-    public function show(Charge $charge)
-    {
-        return Inertia::render('charge/show', ['charge' => $charge]);
-    }
-
     public function edit(Charge $charge)
     {
         return Inertia::render('charge/edit', ['charge' => $charge]);

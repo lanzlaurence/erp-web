@@ -39,6 +39,11 @@ class CustomerController extends Controller implements HasMiddleware
             ->with('success', "Customer created successfully with code: {$customer->code}");
     }
 
+    public function show(Customer $customer)
+    {
+        return Inertia::render('customer/show', ['customer' => $customer]);
+    }
+
     public function edit(Customer $customer)
     {
         return Inertia::render('customer/edit', ['customer' => $customer]);

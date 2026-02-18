@@ -28,6 +28,7 @@ import type { Permission, RoleData } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import { ChevronDown, Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { Head } from '@inertiajs/react';
 
 export default function Index({ roles }: RoleData) {
     const { hasPermission } = usePermissions();
@@ -67,6 +68,8 @@ export default function Index({ roles }: RoleData) {
 
     return (
         <>
+            <Head title="Roles" />
+
             <div className="space-y-4 p-4">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Roles</h1>

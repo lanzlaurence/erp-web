@@ -39,6 +39,11 @@ class VendorController extends Controller implements HasMiddleware
             ->with('success', "Vendor created successfully with code: {$vendor->code}");
     }
 
+    public function show(Vendor $vendor)
+    {
+        return Inertia::render('vendor/show', ['vendor' => $vendor]);
+    }
+
     public function edit(Vendor $vendor)
     {
         return Inertia::render('vendor/edit', ['vendor' => $vendor]);
