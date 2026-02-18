@@ -20,7 +20,7 @@ class UpdateUserRequest extends FormRequest
             'email' => [
                 'required',
                 'string',
-                'email',
+                'email:rfc,dns',
                 'max:255',
                 Rule::unique('users')->ignore($this->user)->whereNull('deleted_at'),
             ],
