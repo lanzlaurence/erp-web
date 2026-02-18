@@ -17,6 +17,7 @@ export type Preference = {
     decimal_places: number;
     color_theme: string;
     timezone: string;
+    currency: string;
 };
 
 export type SharedData = {

@@ -1,20 +1,20 @@
 // js/lib/formatters.ts
 
-// Amount
+// Amount & Currency
 export function formatAmount(
     amount: number | null | undefined,
     options?: {
         decimals?: number;
-        prefix?: string;
+        symbol?: string;
     }
 ): string {
     if (amount === null || amount === undefined) return '0.00';
 
     const decimals = options?.decimals ?? 2;
-    const prefix = options?.prefix ?? '';
+    const symbol = options?.symbol ? `${options.symbol} ` : '';
 
     return (
-        prefix +
+        symbol +
         amount.toLocaleString('en-US', {
             minimumFractionDigits: decimals,
             maximumFractionDigits: decimals,

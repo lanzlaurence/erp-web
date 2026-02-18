@@ -49,6 +49,7 @@ class HandleInertiaRequests extends Middleware
                 'decimal_places' => (int) Preference::get('decimal_places', '2'),
                 'color_theme' => Preference::get('color_theme', 'zinc'),
                 'timezone' => Preference::get('timezone', 'Asia/Manila'),
+                'currency' => Preference::get('currency', 'PHP'),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'flash' => [

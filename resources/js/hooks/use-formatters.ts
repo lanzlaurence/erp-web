@@ -2,15 +2,17 @@
 import { usePage } from '@inertiajs/react';
 import type { SharedData } from '@/types';
 import { formatAmount, formatDate, formatTime, formatDateTime } from '@/lib/formatters';
+import { getCurrency } from '@/lib/currencies';
 
 export function useFormatters() {
     const { preferences } = usePage<SharedData>().props;
+    const currency = getCurrency(preferences.currency ?? 'PHP');
 
     return {
-        formatAmount: (amount: number | null | undefined, prefix?: string) =>
+        formatAmount: (amount: number | null | undefined) =>
             formatAmount(amount, {
                 decimals: preferences.decimal_places,
-                prefix,
+                symbol: currency.symbol,
             }),
         formatDate: (date: string | null | undefined, format?: 'short' | 'long') =>
             formatDate(date, {

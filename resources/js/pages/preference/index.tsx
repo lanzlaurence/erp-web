@@ -7,6 +7,7 @@ import { router, useForm } from '@inertiajs/react';
 import { Check } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import Select from 'react-select';
+import { CURRENCY_OPTIONS } from '@/lib/currencies';
 
 // Common timezones list
 const TIMEZONE_OPTIONS = Intl.supportedValuesOf('timeZone').map((tz) => ({
@@ -21,6 +22,7 @@ type Props = {
         decimal_places: string;
         color_theme: string;
         timezone: string;
+        currency: string;
     };
 };
 
@@ -32,6 +34,7 @@ export default function Index({ formData }: Props) {
         decimal_places: formData.decimal_places,
         color_theme: formData.color_theme as ThemeKey,
         timezone: formData.timezone,
+        currency: formData.currency,
         _method: 'POST',
     });
 
@@ -114,6 +117,37 @@ export default function Index({ formData }: Props) {
                     {errors.decimal_places && (
                         <p className="text-sm text-red-600">{errors.decimal_places}</p>
                     )}
+                </div>
+
+                {/* Currency */}
+                <div className="space-y-2">
+                    <Label>Currency</Label>
+                    <Select
+                        options={CURRENCY_OPTIONS}
+                        value={CURRENCY_OPTIONS.find((o) => o.value === data.currency) ?? null}
+                        onChange={(option) => setData('currency', option?.value ?? 'PHP')}
+                        placeholder="Select currency..."
+                        isSearchable
+                        classNames={{
+                            control: () =>
+                                'border border-input bg-background text-sm rounded-md px-1 py-0.5 min-h-9',
+                            menu: () =>
+                                'bg-popover border border-border rounded-md shadow-md text-sm mt-1',
+                            option: ({ isFocused, isSelected }) =>
+                                `px-3 py-2 cursor-pointer ${
+                                    isSelected
+                                        ? 'bg-primary text-primary-foreground'
+                                        : isFocused
+                                        ? 'bg-accent text-accent-foreground'
+                                        : ''
+                                }`,
+                            singleValue: () => 'text-foreground',
+                            input: () => 'text-foreground',
+                            placeholder: () => 'text-muted-foreground',
+                        }}
+                        unstyled
+                    />
+                    {errors.currency && <p className="text-sm text-red-600">{errors.currency}</p>}
                 </div>
 
                 {/* Timezone */}

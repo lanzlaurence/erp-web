@@ -31,6 +31,7 @@ class PreferenceController extends Controller implements HasMiddleware
             'decimal_places' => Preference::get('decimal_places', '2'),
             'color_theme' => Preference::get('color_theme', 'blue'),
             'timezone' => Preference::get('timezone', 'Asia/Manila'),
+            'currency' => Preference::get('currency', 'PHP'),
         ];
 
         return Inertia::render('preference/index', ['formData' => $formData]);
@@ -42,6 +43,7 @@ class PreferenceController extends Controller implements HasMiddleware
         Preference::set('decimal_places', $request->decimal_places, 'number');
         Preference::set('color_theme', $request->color_theme);
         Preference::set('timezone', $request->timezone);
+        Preference::set('currency', $request->currency);
 
         if ($request->hasFile('app_logo')) {
             $oldLogo = Preference::get('app_logo');

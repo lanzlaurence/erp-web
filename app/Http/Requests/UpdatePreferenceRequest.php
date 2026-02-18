@@ -19,6 +19,7 @@ class UpdatePreferenceRequest extends FormRequest
             'decimal_places' => ['required', 'integer', 'min:0', 'max:6'],
             'color_theme' => ['required', 'string', 'in:blue,violet,green,rose,orange,zinc'],
             'timezone'       => ['required', 'string', 'timezone:all'],
+            'currency' => ['required', 'string', 'max:10'],
         ];
     }
 }
