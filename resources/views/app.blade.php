@@ -1,8 +1,17 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
     <head>
+        @php
+            $appName = \App\Models\Preference::get('app_name', config('app.name', 'Example App'));
+            $appLogo = \App\Models\Preference::get('app_logo', 'favicon.png');
+            $logoUrl = $appLogo === 'favicon.png' ? asset('favicon.png') : \Storage::disk('public')->url($appLogo);
+        @endphp
+
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="{{ $appName }}">
+        <meta name="robots" content="noindex, nofollow">
+        <meta name="theme-color" content="#ffffff">
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
@@ -31,11 +40,6 @@
         </style>
 
         <title inertia>{{ \App\Models\Preference::get('app_name', config('app.name', 'Example App')) }}</title>
-
-        @php
-            $appLogo = \App\Models\Preference::get('app_logo', 'favicon.png');
-            $logoUrl = $appLogo === 'favicon.png' ? asset('favicon.png') : \Storage::disk('public')->url($appLogo);
-        @endphp
 
         <link rel="icon" href="{{ $logoUrl }}" type="image/png">
         <link rel="apple-touch-icon" href="{{ $logoUrl }}">
