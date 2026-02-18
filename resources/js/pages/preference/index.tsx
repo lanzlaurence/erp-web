@@ -95,7 +95,7 @@ export default function Index({ formData }: Props) {
                     </div>
                     {errors.app_logo && <p className="text-sm text-red-600">{errors.app_logo}</p>}
                     <p className="text-xs text-muted-foreground">
-                        Supported formats: PNG, JPG, JPEG, SVG (max 2MB)
+                        Supported formats: PNG, JPG, JPEG, SVG (max 5MB)
                     </p>
                 </div>
 
