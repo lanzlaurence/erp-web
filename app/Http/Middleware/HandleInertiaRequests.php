@@ -48,6 +48,7 @@ class HandleInertiaRequests extends Middleware
                 'app_logo' => $this->getLogoUrl(),
                 'decimal_places' => (int) Preference::get('decimal_places', '2'),
                 'color_theme' => Preference::get('color_theme', 'zinc'),
+                'timezone' => Preference::get('timezone', 'Asia/Manila'),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'flash' => [

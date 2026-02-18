@@ -6,6 +6,13 @@ import AppLayout from '@/layouts/app-layout';
 import { router, useForm } from '@inertiajs/react';
 import { Check } from 'lucide-react';
 import { FormEvent, useState } from 'react';
+import Select from 'react-select';
+
+// Common timezones list
+const TIMEZONE_OPTIONS = Intl.supportedValuesOf('timeZone').map((tz) => ({
+    value: tz,
+    label: tz.replace(/_/g, ' '),
+}));
 
 type Props = {
     formData: {
@@ -13,6 +20,7 @@ type Props = {
         app_logo_url: string;
         decimal_places: string;
         color_theme: string;
+        timezone: string;
     };
 };
 
@@ -23,6 +31,7 @@ export default function Index({ formData }: Props) {
         app_logo: null as File | null,
         decimal_places: formData.decimal_places,
         color_theme: formData.color_theme as ThemeKey,
+        timezone: formData.timezone,
         _method: 'POST',
     });
 
@@ -105,8 +114,41 @@ export default function Index({ formData }: Props) {
                     {errors.decimal_places && (
                         <p className="text-sm text-red-600">{errors.decimal_places}</p>
                     )}
+                </div>
+
+                {/* Timezone */}
+                <div className="space-y-2">
+                    <Label>Timezone</Label>
+                    <Select
+                        options={TIMEZONE_OPTIONS}
+                        value={TIMEZONE_OPTIONS.find((o) => o.value === data.timezone) ?? null}
+                        onChange={(option) => setData('timezone', option?.value ?? 'UTC')}
+                        placeholder="Select timezone..."
+                        isSearchable
+                        classNames={{
+                            control: () =>
+                                'border border-input bg-background text-sm rounded-md px-1 py-0.5 min-h-9',
+                            menu: () =>
+                                'bg-popover border border-border rounded-md shadow-md text-sm mt-1',
+                            option: ({ isFocused, isSelected }) =>
+                                `px-3 py-2 cursor-pointer ${
+                                    isSelected
+                                        ? 'bg-primary text-primary-foreground'
+                                        : isFocused
+                                          ? 'bg-accent text-accent-foreground'
+                                          : ''
+                                }`,
+                            singleValue: () => 'text-foreground',
+                            input: () => 'text-foreground',
+                            placeholder: () => 'text-muted-foreground',
+                        }}
+                        unstyled
+                    />
+                    {errors.timezone && (
+                        <p className="text-sm text-red-600">{errors.timezone}</p>
+                    )}
                     <p className="text-xs text-muted-foreground">
-                        Default number of decimal places for numerical values
+                        Used for displaying dates and times throughout the app
                     </p>
                 </div>
 

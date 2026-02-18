@@ -18,6 +18,7 @@ class UpdatePreferenceRequest extends FormRequest
             'app_logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,svg', 'max:2048'],
             'decimal_places' => ['required', 'integer', 'min:0', 'max:6'],
             'color_theme' => ['required', 'string', 'in:blue,violet,green,rose,orange,zinc'],
+            'timezone'       => ['required', 'string', 'timezone:all'],
         ];
     }
 }
