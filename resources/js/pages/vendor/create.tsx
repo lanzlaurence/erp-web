@@ -17,6 +17,7 @@ import { useAddressData, type SelectOption } from '@/hooks/use-address-data';
 import { Head } from '@inertiajs/react';
 import InputAmount from '@/components/ui/input-amount';
 import { useFormatters } from '@/hooks/use-formatters';
+import InputPhone from '@/components/ui/input-phone';
 
 type ContactPerson = {
     name: string;
@@ -296,10 +297,10 @@ export default function Create() {
                                     </div>
                                     <div className="col-span-3 space-y-2">
                                         <Label htmlFor={`contact_phone_${index}`}>Phone</Label>
-                                        <Input
+                                        <InputPhone
                                             id={`contact_phone_${index}`}
                                             value={contact.phone}
-                                            onChange={(e) => updateContactPerson(index, 'phone', e.target.value)}
+                                            onChange={(val) => updateContactPerson(index, 'phone', val)}
                                             placeholder="+63 912 345 6789"
                                         />
                                     </div>
