@@ -9,6 +9,7 @@ import { FormEvent, useState } from 'react';
 import Select from 'react-select';
 import { CURRENCY_OPTIONS } from '@/lib/currencies';
 import { Head } from '@inertiajs/react';
+import { DATE_FORMAT_OPTIONS, TIME_FORMAT_OPTIONS } from '@/lib/date-formats';
 
 // Common timezones list
 const TIMEZONE_OPTIONS = Intl.supportedValuesOf('timeZone').map((tz) => ({
@@ -24,6 +25,8 @@ type Props = {
         color_theme: string;
         timezone: string;
         currency: string;
+        date_format: string;
+        time_format: string;
     };
 };
 
@@ -36,6 +39,8 @@ export default function Index({ formData }: Props) {
         color_theme: formData.color_theme as ThemeKey,
         timezone: formData.timezone,
         currency: formData.currency,
+        date_format: formData.date_format,
+        time_format: formData.time_format,
         _method: 'POST',
     });
 
@@ -187,6 +192,48 @@ export default function Index({ formData }: Props) {
                         <p className="text-xs text-muted-foreground">
                             Used for displaying dates and times throughout the app
                         </p>
+                    </div>
+
+                    {/* Date Format */}
+                    <div className="space-y-2">
+                        <Label>Date Format</Label>
+                        <Select
+                            options={DATE_FORMAT_OPTIONS}
+                            value={DATE_FORMAT_OPTIONS.find((o) => o.value === data.date_format) ?? null}
+                            onChange={(option) => setData('date_format', option?.value ?? 'MM/DD/YYYY')}
+                            placeholder="Select date format..."
+                            isSearchable={false}
+                            classNames={{
+                                control: () => 'border border-input bg-background text-sm rounded-md px-1 py-0.5 min-h-9',
+                                menu: () => 'bg-popover border border-border rounded-md shadow-md text-sm mt-1',
+                                option: ({ isFocused, isSelected }) =>
+                                    `px-3 py-2 cursor-pointer ${isSelected ? 'bg-primary text-primary-foreground' : isFocused ? 'bg-accent text-accent-foreground' : ''}`,
+                                singleValue: () => 'text-foreground',
+                                placeholder: () => 'text-muted-foreground',
+                            }}
+                            unstyled
+                        />
+                    </div>
+
+                    {/* Time Format */}
+                    <div className="space-y-2">
+                        <Label>Time Format</Label>
+                        <Select
+                            options={TIME_FORMAT_OPTIONS}
+                            value={TIME_FORMAT_OPTIONS.find((o) => o.value === data.time_format) ?? null}
+                            onChange={(option) => setData('time_format', option?.value ?? '12h')}
+                            placeholder="Select time format..."
+                            isSearchable={false}
+                            classNames={{
+                                control: () => 'border border-input bg-background text-sm rounded-md px-1 py-0.5 min-h-9',
+                                menu: () => 'bg-popover border border-border rounded-md shadow-md text-sm mt-1',
+                                option: ({ isFocused, isSelected }) =>
+                                    `px-3 py-2 cursor-pointer ${isSelected ? 'bg-primary text-primary-foreground' : isFocused ? 'bg-accent text-accent-foreground' : ''}`,
+                                singleValue: () => 'text-foreground',
+                                placeholder: () => 'text-muted-foreground',
+                            }}
+                            unstyled
+                        />
                     </div>
 
                     {/* Color Theme */}

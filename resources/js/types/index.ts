@@ -18,6 +18,8 @@ export type Preference = {
     color_theme: string;
     timezone: string;
     currency: string;
+    date_format: string;
+    time_format: '12h' | '24h';
 };
 
 export type SharedData = {

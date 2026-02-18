@@ -20,10 +20,21 @@ export function useFormatters() {
         getDecimalPlaces: (): number =>
             preferences.decimal_places,
         formatDate: (date: string | null | undefined, format?: 'short' | 'long') =>
-            formatDate(date, { format, timezone: preferences.timezone }),
+            formatDate(date, {
+                format,
+                date_format: preferences.date_format,
+                timezone: preferences.timezone,
+            }),
         formatTime: (date: string | null | undefined, format?: '12h' | '24h') =>
-            formatTime(date, { format, timezone: preferences.timezone }),
+            formatTime(date, {
+                format: format ?? preferences.time_format,
+                timezone: preferences.timezone,
+            }),
         formatDateTime: (date: string | null | undefined) =>
-            formatDateTime(date, { timezone: preferences.timezone }),
+            formatDateTime(date, {
+                date_format: preferences.date_format,
+                timeFormat: preferences.time_format,
+                timezone: preferences.timezone,
+            }),
     };
 }

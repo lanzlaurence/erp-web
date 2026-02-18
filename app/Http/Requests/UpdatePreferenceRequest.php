@@ -20,6 +20,8 @@ class UpdatePreferenceRequest extends FormRequest
             'color_theme' => ['required', 'string', 'in:blue,violet,green,rose,orange,zinc'],
             'timezone'       => ['required', 'string', 'timezone:all'],
             'currency' => ['required', 'string', 'max:10'],
+            'date_format' => ['required', 'string', 'in:MM/DD/YYYY,DD/MM/YYYY,YYYY-MM-DD,MMM DD\, YYYY,MMMM DD\, YYYY,DD MMM YYYY'],
+            'time_format' => ['required', 'string', 'in:12h,24h'],
         ];
     }
 }

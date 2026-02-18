@@ -32,6 +32,8 @@ class PreferenceController extends Controller implements HasMiddleware
             'color_theme' => Preference::get('color_theme', 'blue'),
             'timezone' => Preference::get('timezone', 'Asia/Manila'),
             'currency' => Preference::get('currency', 'PHP'),
+            'date_format' => Preference::get('date_format', 'MM/DD/YYYY'),
+            'time_format' => Preference::get('time_format', '12h'),
         ];
 
         return Inertia::render('preference/index', ['formData' => $formData]);

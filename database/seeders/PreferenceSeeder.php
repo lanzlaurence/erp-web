@@ -16,6 +16,8 @@ class PreferenceSeeder extends Seeder
             ['key' => 'color_theme', 'value' => 'zinc', 'type' => 'text'],
             ['key' => 'timezone', 'value' => 'Asia/Manila', 'type' => 'text'],
             ['key' => 'currency', 'value' => 'PHP', 'type' => 'text'],
+            ['key' => 'date_format', 'value' => 'MM/DD/YYYY'],
+            ['key' => 'time_format', 'value' => '12h'],
         ];
 
         foreach ($preferences as $preference) {
