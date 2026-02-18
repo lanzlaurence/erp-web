@@ -2,8 +2,7 @@ import PasswordController from '@/actions/App/Http/Controllers/Settings/Password
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { PasswordInput } from '@/components/ui/password-input';
+import { InputPassword } from '@/components/ui/input-password';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
@@ -67,7 +66,7 @@ export default function Password() {
                                         Current password
                                     </Label>
 
-                                    <PasswordInput
+                                    <InputPassword
                                         id="current_password"
                                         ref={currentPasswordInput}
                                         name="current_password"
@@ -86,7 +85,7 @@ export default function Password() {
                                         New password
                                     </Label>
 
-                                    <PasswordInput
+                                    <InputPassword
                                         id="password"
                                         ref={passwordInput}
                                         name="password"
@@ -103,7 +102,7 @@ export default function Password() {
                                         Confirm password
                                     </Label>
 
-                                    <PasswordInput
+                                    <InputPassword
                                         id="password_confirmation"
                                         name="password_confirmation"
                                         autoComplete="new-password"

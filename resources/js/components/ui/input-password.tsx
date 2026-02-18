@@ -1,9 +1,9 @@
-// js/components/ui/password-input.tsx
+// js/components/ui/input-password.tsx
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Eye, EyeOff } from 'lucide-react';
 
-function PasswordInput({ className, ...props }: React.ComponentProps<'input'>) {
+function InputPassword({ className, ...props }: React.ComponentProps<'input'>) {
     const [show, setShow] = React.useState(false);
 
     return (
@@ -32,4 +32,4 @@ function PasswordInput({ className, ...props }: React.ComponentProps<'input'>) {
     );
 }
 
-export { PasswordInput };
+export { InputPassword };

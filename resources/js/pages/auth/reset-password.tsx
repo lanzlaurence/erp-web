@@ -1,7 +1,7 @@
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { PasswordInput } from '@/components/ui/password-input';
+import { InputPassword } from '@/components/ui/input-password';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
@@ -47,7 +47,7 @@ export default function ResetPassword({ token, email }: Props) {
 
                         <div className="grid gap-2">
                             <Label htmlFor="password">Password</Label>
-                            <PasswordInput
+                            <InputPassword
                                 id="password"
                                 name="password"
                                 autoComplete="new-password"
@@ -62,7 +62,7 @@ export default function ResetPassword({ token, email }: Props) {
                             <Label htmlFor="password_confirmation">
                                 Confirm password
                             </Label>
-                            <PasswordInput
+                            <InputPassword
                                 id="password_confirmation"
                                 name="password_confirmation"
                                 autoComplete="new-password"

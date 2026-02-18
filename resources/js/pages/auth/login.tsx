@@ -3,7 +3,7 @@ import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { PasswordInput } from '@/components/ui/password-input';
+import { InputPassword } from '@/components/ui/input-password';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
@@ -66,7 +66,7 @@ export default function Login({
                                         </TextLink>
                                     )}
                                 </div>
-                                <PasswordInput
+                                <InputPassword
                                     id="password"
                                     name="password"
                                     required
