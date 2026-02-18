@@ -29,6 +29,7 @@ class PreferenceController extends Controller implements HasMiddleware
             'app_name' => Preference::get('app_name', 'Example App'),
             'app_logo_url' => $this->getLogoUrl(),
             'decimal_places' => Preference::get('decimal_places', '2'),
+            'color_theme'   => Preference::get('color_theme', 'blue'),
         ];
 
         return Inertia::render('preference/index', ['formData' => $formData]);
@@ -38,6 +39,7 @@ class PreferenceController extends Controller implements HasMiddleware
     {
         Preference::set('app_name', $request->app_name);
         Preference::set('decimal_places', $request->decimal_places, 'number');
+        Preference::set('color_theme', $request->color_theme);
 
         if ($request->hasFile('app_logo')) {
             $oldLogo = Preference::get('app_logo');

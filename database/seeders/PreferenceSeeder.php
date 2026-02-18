@@ -13,6 +13,7 @@ class PreferenceSeeder extends Seeder
             ['key' => 'app_name', 'value' => 'Example App', 'type' => 'text'],
             ['key' => 'app_logo', 'value' => 'favicon.png', 'type' => 'image'],
             ['key' => 'decimal_places', 'value' => '2', 'type' => 'number'],
+            ['key' => 'color_theme', 'value' => 'zinc', 'type' => 'text'],
         ];
 
         foreach ($preferences as $preference) {

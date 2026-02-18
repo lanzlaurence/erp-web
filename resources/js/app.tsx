@@ -1,9 +1,11 @@
+// js/app.tsx
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../css/app.css';
 import { initializeTheme } from './hooks/use-appearance';
+import { buildThemeStyle, getTheme, ThemeKey } from './lib/themes';
 
 createInertiaApp({
     title: (title) => {
@@ -16,15 +18,22 @@ createInertiaApp({
             import.meta.glob('./pages/**/*.tsx'),
         ),
     setup({ el, App, props }) {
-        // Store app name globally for title
         const pageProps = props.initialPage.props as any;
+
         (window as any).Laravel = {
             ...(window as any).Laravel,
             appName: pageProps.preferences?.app_name || 'Example App',
         };
 
-        const root = createRoot(el);
+        // Inject color theme CSS on initial load
+        const themeKey = (pageProps.preferences?.color_theme ?? 'zinc') as ThemeKey;
+        const theme = getTheme(themeKey);
+        const styleEl = document.createElement('style');
+        styleEl.id = 'app-color-theme';
+        styleEl.textContent = buildThemeStyle(theme);
+        document.head.appendChild(styleEl);
 
+        const root = createRoot(el);
         root.render(
             <StrictMode>
                 <App {...props} />

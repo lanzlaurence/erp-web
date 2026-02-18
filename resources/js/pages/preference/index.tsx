@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { themes, ThemeKey } from '@/lib/themes';
 import AppLayout from '@/layouts/app-layout';
 import { router, useForm } from '@inertiajs/react';
+import { Check } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
 type Props = {
@@ -10,6 +12,7 @@ type Props = {
         app_name: string;
         app_logo_url: string;
         decimal_places: string;
+        color_theme: string;
     };
 };
 
@@ -19,6 +22,7 @@ export default function Index({ formData }: Props) {
         app_name: formData.app_name,
         app_logo: null as File | null,
         decimal_places: formData.decimal_places,
+        color_theme: formData.color_theme as ThemeKey,
         _method: 'POST',
     });
 
@@ -39,9 +43,7 @@ export default function Index({ formData }: Props) {
         if (file) {
             setData('app_logo', file);
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreview(reader.result as string);
-            };
+            reader.onloadend = () => setPreview(reader.result as string);
             reader.readAsDataURL(file);
         }
     };
@@ -54,6 +56,7 @@ export default function Index({ formData }: Props) {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+                {/* App Name */}
                 <div className="space-y-2">
                     <Label htmlFor="app_name">Application Name</Label>
                     <Input
@@ -65,6 +68,7 @@ export default function Index({ formData }: Props) {
                     {errors.app_name && <p className="text-sm text-red-600">{errors.app_name}</p>}
                 </div>
 
+                {/* Logo */}
                 <div className="space-y-2">
                     <Label htmlFor="app_logo">Application Logo</Label>
                     <div className="flex items-center gap-4">
@@ -86,8 +90,9 @@ export default function Index({ formData }: Props) {
                     </p>
                 </div>
 
+                {/* Decimal Places */}
                 <div className="space-y-2">
-                    <Label htmlFor="decimal_places">Decimal Places (0-6)</Label>
+                    <Label htmlFor="decimal_places">Decimal Places (0–6)</Label>
                     <Input
                         id="decimal_places"
                         type="number"
@@ -103,6 +108,45 @@ export default function Index({ formData }: Props) {
                     <p className="text-xs text-muted-foreground">
                         Default number of decimal places for numerical values
                     </p>
+                </div>
+
+                {/* Color Theme */}
+                <div className="space-y-2">
+                    <Label>Color Theme</Label>
+                    <div className="flex gap-3">
+                        {themes.map((theme) => (
+                            <button
+                                key={theme.key}
+                                type="button"
+                                onClick={() => setData('color_theme', theme.key)}
+                                className="group flex flex-col items-center gap-1.5"
+                                title={theme.label}
+                            >
+                                <span
+                                    className="relative flex h-9 w-9 items-center justify-center rounded-full border-2 transition-all"
+                                    style={{
+                                        backgroundColor: theme.color,
+                                        borderColor:
+                                            data.color_theme === theme.key
+                                                ? theme.color
+                                                : 'transparent',
+                                        boxShadow:
+                                            data.color_theme === theme.key
+                                                ? `0 0 0 3px ${theme.color}40`
+                                                : 'none',
+                                    }}
+                                >
+                                    {data.color_theme === theme.key && (
+                                        <Check className="h-4 w-4 text-white" strokeWidth={3} />
+                                    )}
+                                </span>
+                                <span className="text-xs text-muted-foreground">{theme.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                    {errors.color_theme && (
+                        <p className="text-sm text-red-600">{errors.color_theme}</p>
+                    )}
                 </div>
 
                 <div className="flex gap-2">
