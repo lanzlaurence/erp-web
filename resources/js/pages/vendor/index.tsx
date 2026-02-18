@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { usePermissions } from '@/hooks/use-permissions';
-import { usePreferences } from '@/hooks/use-preferences';
+import { useFormatters } from '@/hooks/use-formatters';
 import AppLayout from '@/layouts/app-layout';
 import type { VendorData } from '@/types';
 import { Link, router } from '@inertiajs/react';
@@ -29,7 +29,7 @@ import { Head } from '@inertiajs/react';
 
 export default function Index({ vendors }: VendorData) {
     const { hasPermission } = usePermissions();
-    const { formatDecimal } = usePreferences();
+    const { formatAmount } = useFormatters();
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; code: string }>({
         open: false,
         id: 0,
@@ -82,7 +82,7 @@ export default function Index({ vendors }: VendorData) {
                                     <TableCell className="text-muted-foreground">
                                         {vendor.payment_terms || '-'}
                                     </TableCell>
-                                    <TableCell>{formatDecimal(Number(vendor.credit_amount))}</TableCell>
+                                    <TableCell>{formatAmount(Number(vendor.credit_amount))}</TableCell>
                                     <TableCell>
                                         <Badge
                                             variant={vendor.status === 'active' ? 'default' : 'secondary'}

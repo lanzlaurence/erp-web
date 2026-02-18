@@ -15,6 +15,8 @@ import ReactSelect from 'react-select';
 import { Plus, X } from 'lucide-react';
 import { useAddressData, type SelectOption } from '@/hooks/use-address-data';
 import { Head } from '@inertiajs/react';
+import InputAmount from '@/components/ui/input-amount';
+import { useFormatters } from '@/hooks/use-formatters';
 
 type ContactPerson = {
     name: string;
@@ -107,6 +109,8 @@ export default function Create() {
         setContactPersons(updated);
     };
 
+    const { currency } = useFormatters();
+
     return (
         <>
             <Head title="Create Vendor" />
@@ -143,14 +147,10 @@ export default function Create() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="credit_amount">Credit Amount</Label>
-                                <Input
-                                    id="credit_amount"
-                                    type="number"
-                                    step="0.01"
+                                <Label htmlFor="credit_amount">Credit Amount ({currency.symbol})</Label>
+                                <InputAmount
                                     value={data.credit_amount}
-                                    onChange={(e) => setData('credit_amount', e.target.value)}
-                                    required
+                                    onValueChange={(val) => setData('credit_amount', String(val ?? 0))}
                                 />
                             </div>
 

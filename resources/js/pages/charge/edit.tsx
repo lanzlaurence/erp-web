@@ -14,6 +14,9 @@ import type { Charge } from '@/types';
 import { useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import { Head } from '@inertiajs/react';
+import InputAmount from '@/components/ui/input-amount';
+import InputPercentage from '@/components/ui/input-percentage';
+import { useFormatters } from '@/hooks/use-formatters';
 
 type Props = {
     charge: Charge;
@@ -33,6 +36,8 @@ export default function Edit({ charge }: Props) {
         e.preventDefault();
         put(`/charges/${charge.id}`);
     };
+
+    const { getDecimalPlaces, currency } = useFormatters();
 
     return (
         <>
@@ -104,17 +109,19 @@ export default function Edit({ charge }: Props) {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="value">
-                                    Value {data.value_type === 'percentage' ? '(%)' : '(₱)'}
+                                    Value {data.value_type === 'percentage' ? '(%)' : `(${currency.symbol})`}
                                 </Label>
-                                <Input
-                                    id="value"
-                                    type="number"
-                                    step="0.01"
-                                    value={data.value}
-                                    onChange={(e) => setData('value', e.target.value)}
-                                    placeholder={data.value_type === 'percentage' ? 'e.g., 12' : 'e.g., 100.00'}
-                                    required
-                                />
+                                {data.value_type === 'percentage' ? (
+                                    <InputPercentage
+                                        value={data.value}
+                                        onValueChange={(val) => setData('value', String(val ?? 0))}
+                                    />
+                                ) : (
+                                    <InputAmount
+                                        value={data.value}
+                                        onValueChange={(val) => setData('value', String(val ?? 0))}
+                                    />
+                                )}
                                 {errors.value && <p className="text-sm text-red-600">{errors.value}</p>}
                             </div>
 

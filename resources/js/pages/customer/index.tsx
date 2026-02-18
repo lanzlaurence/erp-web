@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { usePermissions } from '@/hooks/use-permissions';
-import { usePreferences } from '@/hooks/use-preferences';
+import { useFormatters } from '@/hooks/use-formatters';
 import AppLayout from '@/layouts/app-layout';
 import type { CustomerData } from '@/types';
 import { Link, router } from '@inertiajs/react';
@@ -29,7 +29,7 @@ import { Head } from '@inertiajs/react';
 
 export default function Index({ customers }: CustomerData) {
     const { hasPermission } = usePermissions();
-    const { formatDecimal } = usePreferences();
+    const { formatAmount } = useFormatters();
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; code: string }>({
         open: false,
         id: 0,
@@ -82,7 +82,7 @@ export default function Index({ customers }: CustomerData) {
                                     <TableCell className="text-muted-foreground">
                                         {customer.payment_terms || '-'}
                                     </TableCell>
-                                    <TableCell>{formatDecimal(Number(customer.credit_amount))}</TableCell>
+                                    <TableCell>{formatAmount(Number(customer.credit_amount))}</TableCell>
                                     <TableCell>
                                         <Badge
                                             variant={customer.status === 'active' ? 'default' : 'secondary'}

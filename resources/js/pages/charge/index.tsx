@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { usePermissions } from '@/hooks/use-permissions';
-import { usePreferences } from '@/hooks/use-preferences';
+import { useFormatters } from '@/hooks/use-formatters';
 import AppLayout from '@/layouts/app-layout';
 import type { ChargeData } from '@/types';
 import { Link, router } from '@inertiajs/react';
@@ -29,7 +29,7 @@ import { Head } from '@inertiajs/react';
 
 export default function Index({ charges }: ChargeData) {
     const { hasPermission } = usePermissions();
-    const { formatDecimal } = usePreferences();
+    const { formatAmount, formatDecimal } = useFormatters();
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; name: string }>({
         open: false,
         id: 0,
@@ -57,7 +57,7 @@ export default function Index({ charges }: ChargeData) {
         if (valueType === 'percentage') {
             return `${formatDecimal(Number(value))}%`;
         }
-        return `₱${formatDecimal(Number(value))}`;
+        return formatAmount(Number(value));
     };
 
     return (
@@ -107,13 +107,6 @@ export default function Index({ charges }: ChargeData) {
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            {hasPermission('charge-view') && (
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/charges/${charge.id}`}>
-                                                        <Eye className="h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            )}
                                             {hasPermission('charge-edit') && (
                                                 <Button variant="ghost" size="sm" asChild>
                                                     <Link href={`/charges/${charge.id}/edit`}>

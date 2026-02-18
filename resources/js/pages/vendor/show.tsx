@@ -5,7 +5,7 @@ import type { Vendor } from '@/types';
 import { Link } from '@inertiajs/react';
 import { Edit, ArrowLeft } from 'lucide-react';
 import { usePermissions } from '@/hooks/use-permissions';
-import { usePreferences } from '@/hooks/use-preferences';
+import { useFormatters } from '@/hooks/use-formatters';
 import { Head } from '@inertiajs/react';
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
 
 export default function Show({ vendor }: Props) {
     const { hasPermission } = usePermissions();
-    const { formatDecimal } = usePreferences();
+    const { formatAmount } = useFormatters();
 
     return (
         <>
@@ -61,7 +61,7 @@ export default function Show({ vendor }: Props) {
                         </div>
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">Credit Amount</p>
-                            <p className="text-sm">{formatDecimal(Number(vendor.credit_amount))}</p>
+                            <p className="text-sm">{formatAmount(Number(vendor.credit_amount))}</p>
                         </div>
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">Status</p>

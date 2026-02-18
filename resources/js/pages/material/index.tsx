@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { usePermissions } from '@/hooks/use-permissions';
-import { usePreferences } from '@/hooks/use-preferences';
+import { useFormatters } from '@/hooks/use-formatters';
 import AppLayout from '@/layouts/app-layout';
 import type { MaterialData } from '@/types';
 import { Link, router } from '@inertiajs/react';
@@ -29,7 +29,7 @@ import { Head } from '@inertiajs/react';
 
 export default function Index({ materials }: MaterialData) {
     const { hasPermission } = usePermissions();
-    const { formatDecimal } = usePreferences();
+    const { formatAmount } = useFormatters();
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; code: string }>({
         open: false,
         id: 0,
@@ -91,8 +91,8 @@ export default function Index({ materials }: MaterialData) {
                                     <TableCell className="text-muted-foreground">
                                         {material.uom?.acronym || '-'}
                                     </TableCell>
-                                    <TableCell>{formatDecimal(Number(material.unit_cost))}</TableCell>
-                                    <TableCell>{formatDecimal(Number(material.unit_price))}</TableCell>
+                                    <TableCell>{formatAmount(Number(material.unit_cost))}</TableCell>
+                                    <TableCell>{formatAmount(Number(material.unit_price))}</TableCell>
                                     <TableCell>
                                         <Badge
                                             variant={

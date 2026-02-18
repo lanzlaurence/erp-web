@@ -1,22 +1,25 @@
+// js/components/ui/input-percentage.tsx
 import { NumericFormat } from 'react-number-format';
 import { cn } from '@/lib/utils';
 import { useFormatters } from '@/hooks/use-formatters';
 
-interface InputAmountProps {
+interface InputPercentageProps {
     value?: number | string;
     onValueChange?: (value: number | undefined) => void;
     placeholder?: string;
     className?: string;
     disabled?: boolean;
+    max?: number; // default 100, but flexible if needed
 }
 
-export default function InputAmount({
+export default function InputPercentage({
     value,
     onValueChange,
     placeholder,
     className,
     disabled = false,
-}: InputAmountProps) {
+    max = 100,
+}: InputPercentageProps) {
     const { getDecimalPlaces } = useFormatters();
     const decimalScale = getDecimalPlaces();
 
@@ -24,14 +27,13 @@ export default function InputAmount({
         <NumericFormat
             value={value}
             onValueChange={(values) => onValueChange?.(values.floatValue)}
-            thousandSeparator=","
             decimalSeparator="."
             decimalScale={decimalScale}
             fixedDecimalScale
             allowNegative={false}
             isAllowed={(values) => {
                 const { floatValue } = values;
-                return floatValue === undefined || floatValue < 1e15;
+                return floatValue === undefined || floatValue <= max;
             }}
             placeholder={placeholder ?? '0.' + '0'.repeat(decimalScale)}
             disabled={disabled}

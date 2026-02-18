@@ -5,7 +5,7 @@ import type { Material } from '@/types';
 import { Link } from '@inertiajs/react';
 import { Edit, ArrowLeft } from 'lucide-react';
 import { usePermissions } from '@/hooks/use-permissions';
-import { usePreferences } from '@/hooks/use-preferences';
+import { useFormatters } from '@/hooks/use-formatters';
 import { Head } from '@inertiajs/react';
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
 
 export default function Show({ material }: Props) {
     const { hasPermission } = usePermissions();
-    const { formatDecimal } = usePreferences();
+    const { formatAmount, formatDecimal } = useFormatters();
 
     return (
         <>
@@ -120,11 +120,11 @@ export default function Show({ material }: Props) {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">Unit Cost</p>
-                            <p className="text-sm">{formatDecimal(Number(material.unit_cost))}</p>
+                            <p className="text-sm">{formatAmount(Number(material.unit_cost))}</p>
                         </div>
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">Unit Price</p>
-                            <p className="text-sm">{formatDecimal(Number(material.unit_price))}</p>
+                            <p className="text-sm">{formatAmount(Number(material.unit_price))}</p>
                         </div>
                     </div>
                 </div>

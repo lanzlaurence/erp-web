@@ -15,6 +15,8 @@ import type { Brand, Category, Material, Uom } from '@/types';
 import { useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import { Head } from '@inertiajs/react';
+import InputAmount from '@/components/ui/input-amount';
+import { useFormatters } from '@/hooks/use-formatters';
 
 type Props = {
     material: Material;
@@ -50,6 +52,8 @@ export default function Edit({ material, brands, categories, uoms }: Props) {
         e.preventDefault();
         put(`/materials/${material.id}`);
     };
+
+    const { currency } = useFormatters();
 
     return (
         <>
@@ -201,26 +205,18 @@ export default function Edit({ material, brands, categories, uoms }: Props) {
                         <h3 className="font-semibold">Pricing</h3>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="unit_cost">Unit Cost</Label>
-                                <Input
-                                    id="unit_cost"
-                                    type="number"
-                                    step="0.01"
+                                <Label htmlFor="unit_cost">Unit Cost ({currency.symbol})</Label>
+                                <InputAmount
                                     value={data.unit_cost}
-                                    onChange={(e) => setData('unit_cost', e.target.value)}
-                                    required
+                                    onValueChange={(val) => setData('unit_cost', String(val ?? 0))}
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="unit_price">Unit Price</Label>
-                                <Input
-                                    id="unit_price"
-                                    type="number"
-                                    step="0.01"
+                                <Label htmlFor="unit_price">Unit Price ({currency.symbol})</Label>
+                                <InputAmount
                                     value={data.unit_price}
-                                    onChange={(e) => setData('unit_price', e.target.value)}
-                                    required
+                                    onValueChange={(val) => setData('unit_price', String(val ?? 0))}
                                 />
                             </div>
                         </div>
