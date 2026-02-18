@@ -31,7 +31,10 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                         <Collapsible
                             key={item.title}
                             asChild
-                            defaultOpen={item.items.some((subItem) => isCurrentUrl(subItem.href))}
+                            defaultOpen={
+                                item.isActive ||
+                                item.items.some((sub) => sub.href && isCurrentUrl(sub.href))
+                            }
                             className="group/collapsible"
                         >
                             <SidebarMenuItem>
@@ -39,22 +42,48 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                                     <SidebarMenuButton tooltip={{ children: item.title }}>
                                         {item.icon && <item.icon />}
                                         <span>{item.title}</span>
-                                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                        <div className="ml-auto flex items-center gap-1">
+                                            {item.badge ? (
+                                                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[11px] font-medium text-primary-foreground">
+                                                    {item.badge}
+                                                </span>
+                                            ) : null}
+                                            <ChevronRight className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                        </div>
                                     </SidebarMenuButton>
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
                                     <SidebarMenuSub>
                                         {item.items.map((subItem) => (
                                             <SidebarMenuSubItem key={subItem.title}>
-                                                <SidebarMenuSubButton
-                                                    asChild
-                                                    isActive={isCurrentUrl(subItem.href)}
-                                                >
-                                                    <Link href={subItem.href} prefetch>
+                                                {subItem.isExternal ? (
+                                                    <SidebarMenuSubButton asChild>
+                                                        <a href={subItem.href as string} target="_blank" rel="noopener noreferrer">
+                                                            {subItem.icon && <subItem.icon />}
+                                                            <span>{subItem.title}</span>
+                                                        </a>
+                                                    </SidebarMenuSubButton>
+                                                ) : subItem.onClick ? (
+                                                    <SidebarMenuSubButton onClick={subItem.onClick}>
                                                         {subItem.icon && <subItem.icon />}
                                                         <span>{subItem.title}</span>
-                                                    </Link>
-                                                </SidebarMenuSubButton>
+                                                    </SidebarMenuSubButton>
+                                                ) : (
+                                                    <SidebarMenuSubButton
+                                                        asChild
+                                                        isActive={!!(subItem.href && isCurrentUrl(subItem.href))}
+                                                    >
+                                                        <Link href={subItem.href!} prefetch>
+                                                            {subItem.icon && <subItem.icon />}
+                                                            <span>{subItem.title}</span>
+                                                            {subItem.badge ? (
+                                                                <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[11px] font-medium text-primary-foreground">
+                                                                    {subItem.badge}
+                                                                </span>
+                                                            ) : null}
+                                                        </Link>
+                                                    </SidebarMenuSubButton>
+                                                )}
                                             </SidebarMenuSubItem>
                                         ))}
                                     </SidebarMenuSub>
@@ -63,16 +92,33 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                         </Collapsible>
                     ) : (
                         <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton
-                                asChild
-                                isActive={isCurrentUrl(item.href)}
-                                tooltip={{ children: item.title }}
-                            >
-                                <Link href={item.href} prefetch>
+                            {item.isExternal ? (
+                                <SidebarMenuButton asChild tooltip={{ children: item.title }}>
+                                    <a href={item.href as string} target="_blank" rel="noopener noreferrer">
+                                        {item.icon && <item.icon />}
+                                        <span>{item.title}</span>
+                                    </a>
+                                </SidebarMenuButton>
+                            ) : item.onClick ? (
+                                <SidebarMenuButton
+                                    onClick={item.onClick}
+                                    tooltip={{ children: item.title }}
+                                >
                                     {item.icon && <item.icon />}
                                     <span>{item.title}</span>
-                                </Link>
-                            </SidebarMenuButton>
+                                </SidebarMenuButton>
+                            ) : (
+                                <SidebarMenuButton
+                                    asChild
+                                    isActive={!!(item.href && isCurrentUrl(item.href))}
+                                    tooltip={{ children: item.title }}
+                                >
+                                    <Link href={item.href!} prefetch>
+                                        {item.icon && <item.icon />}
+                                        <span>{item.title}</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            )}
                         </SidebarMenuItem>
                     ),
                 )}
