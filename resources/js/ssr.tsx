@@ -10,7 +10,7 @@ createServer((page) =>
         render: ReactDOMServer.renderToString,
         title: (title) => {
             const pageProps = page.props as any;
-            const appName = pageProps.preferences?.app_name || 'Example App';
+            const appName = pageProps.preferences?.app_name || 'ERP Web';
             return title ? `${title} - ${appName}` : appName;
         },
         resolve: (name) =>

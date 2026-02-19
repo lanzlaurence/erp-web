@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @class(['dark' => ($appearance ?? 'light') == 'dark'])>
     <head>
         @php
-            $appName = \App\Models\Preference::get('app_name', config('app.name', 'Example App'));
+            $appName = \App\Models\Preference::get('app_name', config('app.name', 'ERP Web'));
             $appLogo = \App\Models\Preference::get('app_logo', 'default-logo.jpg');
 
             if ($appLogo === 'default-logo.jpg') {
@@ -23,7 +23,7 @@
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
             (function() {
-                const appearance = '{{ $appearance ?? "system" }}';
+                const appearance = '{{ $appearance ?? "light" }}';
 
                 if (appearance === 'system') {
                     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -46,7 +46,7 @@
             }
         </style>
 
-        <title inertia>{{ \App\Models\Preference::get('app_name', config('app.name', 'Example App')) }}</title>
+        <title inertia>{{ \App\Models\Preference::get('app_name', config('app.name', 'ERP Web')) }}</title>
 
         <link rel="icon" href="{{ $logoUrl }}" type="image/png">
         <link rel="apple-touch-icon" href="{{ $logoUrl }}">
