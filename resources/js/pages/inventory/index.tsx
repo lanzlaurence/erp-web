@@ -41,8 +41,8 @@ export default function Index({ inventories }: InventoryData) {
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>Inventory Code</TableHead>
                                 <TableHead>Material</TableHead>
-                                <TableHead>Code</TableHead>
                                 <TableHead>Destination</TableHead>
                                 <TableHead>Quantity</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
@@ -58,8 +58,13 @@ export default function Index({ inventories }: InventoryData) {
                             ) : (
                                 inventories.data.map((inventory) => (
                                     <TableRow key={inventory.id}>
-                                        <TableCell className="font-medium">{inventory.material?.name}</TableCell>
-                                        <TableCell className="text-muted-foreground">{inventory.material?.code}</TableCell>
+                                        <TableCell className="font-mono text-sm">{inventory.code}</TableCell>
+                                        <TableCell>
+                                            <div>
+                                                <p className="text-sm font-medium">{inventory.material?.name}</p>
+                                                <p className="text-xs text-muted-foreground">{inventory.material?.code}</p>
+                                            </div>
+                                        </TableCell>
                                         <TableCell>{inventory.destination?.name}</TableCell>
                                         <TableCell className="font-mono">{formatDecimal(Number(inventory.quantity))}</TableCell>
                                         <TableCell className="text-right">

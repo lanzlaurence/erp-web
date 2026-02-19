@@ -51,6 +51,7 @@ class InventoryController extends Controller implements HasMiddleware
     {
         DB::transaction(function () use ($request) {
             $inventory = Inventory::create([
+                'code'           => Inventory::generateCode(),
                 'material_id'    => $request->material_id,
                 'destination_id' => $request->destination_id,
                 'quantity'       => $request->quantity,

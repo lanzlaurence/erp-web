@@ -4,6 +4,7 @@ import type { User } from './auth';
 
 export type Inventory = {
     id: number;
+    code: string;
     material_id: number;
     destination_id: number;
     quantity: number | string;
@@ -28,6 +29,7 @@ export type InventoryLog = {
     reference_id: number | null;
     reference_type: string | null;
     remarks: string | null;
+    inventory?: Inventory;
     material?: Material;
     destination?: Destination;
     transfer_to_destination?: Destination;

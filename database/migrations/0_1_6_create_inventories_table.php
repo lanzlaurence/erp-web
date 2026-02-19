@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->unique();
             $table->foreignId('material_id')->constrained()->cascadeOnDelete();
             $table->foreignId('destination_id')->constrained()->cascadeOnDelete();
             $table->decimal('quantity', 15, 2)->default(0);

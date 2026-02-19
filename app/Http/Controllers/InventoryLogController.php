@@ -18,7 +18,7 @@ class InventoryLogController extends Controller implements HasMiddleware
 
     public function inventoryLog()
     {
-        $logs = InventoryLog::with(['material', 'destination', 'transferToDestination', 'user'])
+        $logs = InventoryLog::with(['material', 'destination', 'transferToDestination', 'user', 'inventory'])
             ->latest()
             ->paginate(20);
 

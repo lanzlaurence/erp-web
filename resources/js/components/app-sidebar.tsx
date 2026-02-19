@@ -41,6 +41,8 @@ import {
     Coins,
     Activity as ActivityIcon,
     ClipboardList,
+    BarChart2,
+    PackageSearch,
 } from 'lucide-react';
 import { useState } from 'react';
 import AppLogo from './app-logo';
@@ -54,6 +56,14 @@ export function AppSidebar() {
             title: 'Dashboard',
             href: dashboard(),
             icon: LayoutGrid,
+        },
+        {
+            title: 'Analytics',
+            href: '#',
+            icon: BarChart2,
+            items: [
+                { title: 'Inventory Report', href: '#', icon: PackageSearch },
+            ],
         },
         {
             title: 'Transaction',

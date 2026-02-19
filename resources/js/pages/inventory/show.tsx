@@ -53,21 +53,22 @@ export default function Show({ inventory, logs }: InventoryShowData) {
                     </div>
                 </div>
 
-                <div className="space-y-4 rounded-lg border p-4">
-                    <h3 className="font-semibold">Stock Details</h3>
-                    <div className="grid grid-cols-3 gap-4">
-                        <div>
-                            <p className="text-sm font-medium text-muted-foreground">Material Code</p>
-                            <p className="text-sm">{inventory.material?.code}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-muted-foreground">Destination</p>
-                            <p className="text-sm">{inventory.destination?.name}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-muted-foreground">Current Quantity</p>
-                            <p className="text-sm font-mono font-semibold">{formatDecimal(Number(inventory.quantity))}</p>
-                        </div>
+                <div className="grid grid-cols-4 gap-4">
+                    <div>
+                        <p className="text-sm font-medium text-muted-foreground">Inventory Code</p>
+                        <p className="text-sm font-mono">{inventory.code}</p>
+                    </div>
+                    <div>
+                        <p className="text-sm font-medium text-muted-foreground">Material Code</p>
+                        <p className="text-sm">{inventory.material?.code}</p>
+                    </div>
+                    <div>
+                        <p className="text-sm font-medium text-muted-foreground">Destination</p>
+                        <p className="text-sm">{inventory.destination?.name}</p>
+                    </div>
+                    <div>
+                        <p className="text-sm font-medium text-muted-foreground">Current Quantity</p>
+                        <p className="text-sm font-mono font-semibold">{formatDecimal(Number(inventory.quantity))}</p>
                     </div>
                 </div>
 

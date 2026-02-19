@@ -29,7 +29,7 @@ class InventoryLog extends Model
 
     public function inventory()
     {
-        return $this->belongsTo(Inventory::class);
+        return $this->belongsTo(Inventory::class)->withTrashed();
     }
 
     public function material()

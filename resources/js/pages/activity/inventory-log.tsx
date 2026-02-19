@@ -35,6 +35,7 @@ export default function Inventory({ logs }: InventoryLogData) {
                             <TableRow>
                                 <TableHead>Date</TableHead>
                                 <TableHead>Type</TableHead>
+                                <TableHead>Inventory Code</TableHead>
                                 <TableHead>Material</TableHead>
                                 <TableHead>Destination</TableHead>
                                 <TableHead>Before</TableHead>
@@ -62,6 +63,9 @@ export default function Inventory({ logs }: InventoryLogData) {
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant={badge.variant}>{badge.label}</Badge>
+                                            </TableCell>
+                                            <TableCell className="font-mono text-sm">
+                                                {log.inventory?.code ?? '-'}
                                             </TableCell>
                                             <TableCell>
                                                 <div>
