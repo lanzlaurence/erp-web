@@ -62,6 +62,7 @@ export type Currency = {
 export type Material = {
     id: number;
     code: string;
+    sku: string | null;
     name: string;
     description: string | null;
     weight: number | null;

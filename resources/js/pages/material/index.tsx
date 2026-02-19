@@ -67,6 +67,7 @@ export default function Index({ materials }: MaterialData) {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Code</TableHead>
+                                <TableHead>SKU</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Brand</TableHead>
                                 <TableHead>Category</TableHead>
@@ -81,6 +82,7 @@ export default function Index({ materials }: MaterialData) {
                             {materials.data.map((material) => (
                                 <TableRow key={material.id}>
                                     <TableCell className="font-medium">{material.code}</TableCell>
+                                    <TableCell className="text-muted-foreground">{material.sku || '-'}</TableCell>
                                     <TableCell>{material.name}</TableCell>
                                     <TableCell className="text-muted-foreground">
                                         {material.brand?.name || '-'}

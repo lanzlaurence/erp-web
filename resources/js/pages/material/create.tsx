@@ -26,6 +26,7 @@ type Props = {
 
 export default function Create({ brands, categories, uoms }: Props) {
     const { data, setData, post, processing, errors } = useForm({
+        sku: '',
         name: '',
         description: '',
         weight: '',
@@ -70,13 +71,13 @@ export default function Create({ brands, categories, uoms }: Props) {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                    required
-                                />
+                                <Input id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} required />
                                 {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="sku">SKU</Label>
+                                <Input id="sku" value={data.sku} onChange={(e) => setData('sku', e.target.value)} placeholder="Optional" />
+                                {errors.sku && <p className="text-sm text-red-600">{errors.sku}</p>}
                             </div>
                         </div>
 

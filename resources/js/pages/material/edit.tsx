@@ -28,6 +28,7 @@ type Props = {
 export default function Edit({ material, brands, categories, uoms }: Props) {
     const { data, setData, put, processing, errors } = useForm({
         code: material.code,
+        sku: material.sku || '',
         name: material.name,
         description: material.description || '',
         weight: material.weight?.toString() || '',
@@ -73,15 +74,14 @@ export default function Edit({ material, brands, categories, uoms }: Props) {
                                 <Label>Code</Label>
                                 <Input value={material.code} disabled className="bg-muted" />
                             </div>
-
+                            <div className="space-y-2">
+                                <Label htmlFor="sku">SKU</Label>
+                                <Input id="sku" value={data.sku} onChange={(e) => setData('sku', e.target.value)} placeholder="Optional" />
+                                {errors.sku && <p className="text-sm text-red-600">{errors.sku}</p>}
+                            </div>
                             <div className="space-y-2">
                                 <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                    required
-                                />
+                                <Input id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} required />
                                 {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
                             </div>
                         </div>

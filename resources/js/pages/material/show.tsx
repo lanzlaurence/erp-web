@@ -52,6 +52,10 @@ export default function Show({ material }: Props) {
                             <p className="text-sm">{material.code}</p>
                         </div>
                         <div>
+                            <p className="text-sm font-medium text-muted-foreground">SKU</p>
+                            <p className="text-sm">{material.sku || '-'}</p>
+                        </div>
+                        <div>
                             <p className="text-sm font-medium text-muted-foreground">Name</p>
                             <p className="text-sm">{material.name}</p>
                         </div>

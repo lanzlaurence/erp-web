@@ -21,6 +21,12 @@ class StoreMaterialRequest extends FormRequest
                 'max:255',
                 Rule::unique('materials')->whereNull('deleted_at'),
             ],
+            'sku' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('materials')->whereNull('deleted_at'),
+            ],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'weight' => ['nullable', 'numeric', 'min:0'],

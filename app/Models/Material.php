@@ -13,6 +13,7 @@ class Material extends Model
 
     protected $fillable = [
         'code',
+        'sku',
         'name',
         'description',
         'weight',
