@@ -30,7 +30,7 @@ export default function Adjust({ inventory }: { inventory: Inventory }) {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-4 rounded-lg border p-4">
+                    <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Stock Details</h3>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
@@ -44,7 +44,7 @@ export default function Adjust({ inventory }: { inventory: Inventory }) {
                         </div>
                     </div>
 
-                    <div className="space-y-4 rounded-lg border p-4">
+                    <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Adjustment</h3>
 
                         <div className="space-y-2">

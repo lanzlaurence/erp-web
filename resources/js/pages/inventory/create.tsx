@@ -58,7 +58,12 @@ export default function Create({ materials, destinations }: Props) {
                                 options={materialOptions}
                                 onChange={(opt) => setData('material_id', opt?.value ?? '')}
                                 placeholder="Select material..."
-                                classNames={selectClass}
+                                classNames={{
+                                    ...selectClass,
+                                    menu: () => 'bg-popover border border-border rounded-md shadow-md text-sm mt-1 min-w-max',
+                                }}
+                                menuPortalTarget={document.body}
+                                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                                 unstyled
                             />
                             {errors.material_id && <p className="text-sm text-red-600">{errors.material_id}</p>}
@@ -70,7 +75,12 @@ export default function Create({ materials, destinations }: Props) {
                                 options={destinationOptions}
                                 onChange={(opt) => setData('destination_id', opt?.value ?? '')}
                                 placeholder="Select destination..."
-                                classNames={selectClass}
+                                classNames={{
+                                    ...selectClass,
+                                    menu: () => 'bg-popover border border-border rounded-md shadow-md text-sm mt-1 min-w-max',
+                                }}
+                                menuPortalTarget={document.body}
+                                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                                 unstyled
                             />
                             {errors.destination_id && <p className="text-sm text-red-600">{errors.destination_id}</p>}
