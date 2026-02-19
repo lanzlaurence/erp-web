@@ -16,6 +16,7 @@ export default function AppLogoIcon({ src, className, ...props }: Props) {
                 src={src}
                 alt="Logo"
                 className={className}
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                 onError={() => setImageError(true)}
             />
         );

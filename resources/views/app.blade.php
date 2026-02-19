@@ -4,7 +4,14 @@
         @php
             $appName = \App\Models\Preference::get('app_name', config('app.name', 'Example App'));
             $appLogo = \App\Models\Preference::get('app_logo', 'favicon.png');
-            $logoUrl = $appLogo === 'favicon.png' ? asset('favicon.png') : \Storage::disk('public')->url($appLogo);
+
+            if ($appLogo === 'favicon.png') {
+                $logoUrl = asset('favicon.png');
+            } elseif (\Storage::disk('public')->exists($appLogo)) {
+                $logoUrl = \Storage::disk('public')->url($appLogo);
+            } else {
+                $logoUrl = asset('favicon.png'); // fallback if file not found
+            }
         @endphp
 
         <meta charset="utf-8">
