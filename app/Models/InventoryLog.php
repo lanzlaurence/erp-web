@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class InventoryLog extends Model
 {
     protected $fillable = [
+        'movement_code',
         'inventory_id',
         'material_id',
         'destination_id',
@@ -26,6 +27,24 @@ class InventoryLog extends Model
         'quantity_change' => 'decimal:2',
         'quantity_after'  => 'decimal:2',
     ];
+
+    public static function generateMovementCode(): string
+    {
+        $yy = now()->format('y');   // 26
+        $mm = now()->format('m');   // 01
+
+        $prefix = '3' . $yy . $mm; // 32601
+
+        $last = self::where('movement_code', 'like', $prefix . '%')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $nextNumber = $last
+            ? ((int) substr($last->movement_code, -4)) + 1
+            : 1;
+
+        return $prefix . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+    }
 
     public function inventory()
     {

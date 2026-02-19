@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('inventory_logs', function (Blueprint $table) {
             $table->id();
+            $table->string('movement_code')->unique();
             $table->foreignId('inventory_id')->constrained()->cascadeOnDelete();
             $table->foreignId('material_id')->constrained()->cascadeOnDelete();
             $table->foreignId('destination_id')->constrained()->cascadeOnDelete();

@@ -17,6 +17,7 @@ export type Inventory = {
 
 export type InventoryLog = {
     id: number;
+    movement_code: string;
     inventory_id: number;
     material_id: number;
     destination_id: number;

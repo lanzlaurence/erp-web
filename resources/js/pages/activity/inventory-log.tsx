@@ -33,15 +33,16 @@ export default function Inventory({ logs }: InventoryLogData) {
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>Mov. Code</TableHead>
                                 <TableHead>Date</TableHead>
                                 <TableHead>Type</TableHead>
-                                <TableHead>Inventory Code</TableHead>
+                                <TableHead>Inv. Code</TableHead>
                                 <TableHead>Material</TableHead>
                                 <TableHead>Destination</TableHead>
                                 <TableHead>Before</TableHead>
                                 <TableHead>Change</TableHead>
                                 <TableHead>After</TableHead>
-                                <TableHead>Transfer To/From</TableHead>
+                                <TableHead>Transfer <br /> To/From</TableHead>
                                 <TableHead>By</TableHead>
                                 <TableHead>Remarks</TableHead>
                             </TableRow>
@@ -58,6 +59,7 @@ export default function Inventory({ logs }: InventoryLogData) {
                                     const badge = LOG_TYPE_BADGE[log.type] ?? { label: log.type, variant: 'outline' as const };
                                     return (
                                         <TableRow key={log.id}>
+                                            <TableCell className="font-mono text-sm">{log.movement_code}</TableCell>
                                             <TableCell className="text-sm whitespace-nowrap">
                                                 {formatDateTime(log.created_at)}
                                             </TableCell>

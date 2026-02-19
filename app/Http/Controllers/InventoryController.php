@@ -58,6 +58,7 @@ class InventoryController extends Controller implements HasMiddleware
             ]);
 
             InventoryLog::create([
+                'movement_code'  => InventoryLog::generateMovementCode(),
                 'inventory_id'   => $inventory->id,
                 'material_id'    => $inventory->material_id,
                 'destination_id' => $inventory->destination_id,
@@ -105,6 +106,7 @@ class InventoryController extends Controller implements HasMiddleware
             $inventory->update(['quantity' => $request->quantity]);
 
             InventoryLog::create([
+                'movement_code'   => InventoryLog::generateMovementCode(),
                 'inventory_id'    => $inventory->id,
                 'material_id'     => $inventory->material_id,
                 'destination_id'  => $inventory->destination_id,
@@ -142,6 +144,7 @@ class InventoryController extends Controller implements HasMiddleware
 
             // Log transfer out
             InventoryLog::create([
+                'movement_code'             => InventoryLog::generateMovementCode(),
                 'inventory_id'              => $inventory->id,
                 'material_id'               => $inventory->material_id,
                 'destination_id'            => $inventory->destination_id,
@@ -177,6 +180,7 @@ class InventoryController extends Controller implements HasMiddleware
 
             // Log transfer in
             InventoryLog::create([
+            'movement_code'                 => InventoryLog::generateMovementCode(),
                 'inventory_id'              => $targetInventory->id,
                 'material_id'               => $inventory->material_id,
                 'destination_id'            => $request->destination_id,
