@@ -20,9 +20,13 @@ export type User = {
     id: number;
     name: string;
     email: string;
-    avatar?: string;
     email_verified_at: string | null;
+    password_changed_at: string | null;
+    avatar?: string;
+    force_password_change: boolean;
     is_active: boolean;
+    is_locked: boolean;
+    login_attempts: number;
     two_factor_enabled?: boolean;
     created_at: string;
     updated_at: string;

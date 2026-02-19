@@ -9,22 +9,35 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserIsActive
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && !Auth::user()->is_active) {
-            Auth::logout();
+        if (Auth::check()) {
+            $user = Auth::user();
 
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            if ($user->is_locked) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
 
-            return redirect()->route('login')->withErrors([
-                'email' => 'Your account has been deactivated. Please contact the administrator.',
-            ]);
+                // Locked by system (too many attempts)
+                $message = $user->login_attempts >= 3
+                    ? 'Your account has been locked due to too many failed login attempts. Please contact the administrator.'
+                    : 'Your account has been locked. Please contact the administrator.';
+
+                return redirect()->route('login')->withErrors([
+                    'email' => $message,
+                ]);
+            }
+
+            if (!$user->is_active) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return redirect()->route('login')->withErrors([
+                    'email' => 'Your account has been deactivated. Please contact the administrator.',
+                ]);
+            }
         }
 
         return $next($request);

@@ -10,7 +10,7 @@ export default function AppLogoIcon({ src, className, ...props }: Props) {
     const [imageError, setImageError] = useState(false);
 
     // If custom logo provided and no error, use it as image
-    if (src && !src.endsWith('favicon.png') && !imageError) {
+    if (src && !imageError) {
         return (
             <img
                 src={src}

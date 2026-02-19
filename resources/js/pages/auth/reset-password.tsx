@@ -7,6 +7,8 @@ import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { update } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
+import PasswordRequirements from '@/components/password-requirements';
+import { useState } from 'react';
 
 type Props = {
     token: string;
@@ -14,6 +16,8 @@ type Props = {
 };
 
 export default function ResetPassword({ token, email }: Props) {
+    const [passwordValue, setPasswordValue] = useState('');
+
     return (
         <AuthLayout
             title="Reset password"
@@ -54,7 +58,9 @@ export default function ResetPassword({ token, email }: Props) {
                                 className="mt-1 block w-full"
                                 autoFocus
                                 placeholder="Password"
+                                onChange={(e) => setPasswordValue(e.target.value)}
                             />
+                            <PasswordRequirements password={passwordValue} />
                             <InputError message={errors.password} />
                         </div>
 

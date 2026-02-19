@@ -23,8 +23,13 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'email_verified_at',
         'password',
+        'password_changed_at',
+        'force_password_change',
         'is_active',
+        'is_locked',
+        'login_attempts',
     ];
 
     /**
@@ -49,8 +54,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'password_changed_at' => 'datetime',
             'two_factor_confirmed_at' => 'datetime',
             'is_active' => 'boolean',
+            'is_locked' => 'boolean',
+            'force_password_change' => 'boolean',
+            'login_attempts' => 'integer',
         ];
     }
 }

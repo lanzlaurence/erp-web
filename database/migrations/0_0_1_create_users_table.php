@@ -17,7 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('force_password_change')->default(true);
+            $table->timestamp('password_changed_at')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_locked')->default(false);
+            $table->integer('login_attempts')->default(0);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

@@ -6,11 +6,18 @@ use Laravel\Fortify\Features;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
+        // 'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('home');
 
-Route::middleware(['auth', 'active', 'verified'])->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
+    Route::get('password/change', [App\Http\Controllers\PasswordChangeController::class, 'index'])
+        ->name('password.change');
+    Route::post('password/change', [App\Http\Controllers\PasswordChangeController::class, 'update'])
+        ->name('password.change.update');
+});
+
+Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');

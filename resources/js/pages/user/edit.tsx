@@ -8,6 +8,10 @@ import type { Role, User } from '@/types';
 import { useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import { Head } from '@inertiajs/react';
+import { InputPassword } from '@/components/ui/input-password';
+import PasswordRequirements from '@/components/password-requirements';
+import { router } from '@inertiajs/react';
+import { useEffect } from 'react';
 
 type Props = {
     user: User & { roles: Role[] };
@@ -18,9 +22,12 @@ export default function Edit({ user, roles }: Props) {
     const { data, setData, put, processing, errors } = useForm({
         name: user.name,
         email: user.email,
+        email_verified: !!user.email_verified_at,
         password: '',
         password_confirmation: '',
+        force_password_change: user.force_password_change,
         is_active: user.is_active,
+        is_locked: user.is_locked,
         roles: user.roles?.map((r) => r.name) || [],
     });
 
@@ -41,6 +48,16 @@ export default function Edit({ user, roles }: Props) {
     const toggleAllRoles = () => {
         setData('roles', data.roles.length === roles.length ? [] : roles.map((r) => r.name));
     };
+
+    const isProtected = user.id === 1;
+
+    useEffect(() => {
+        if (isProtected) {
+            router.visit('/users', { replace: true });
+        }
+    }, [isProtected]);
+
+    if (isProtected) return null;
 
     return (
         <>
@@ -77,20 +94,19 @@ export default function Edit({ user, roles }: Props) {
 
                     <div className="space-y-2">
                         <Label htmlFor="password">Password (leave blank to keep current)</Label>
-                        <Input
+                        <InputPassword
                             id="password"
-                            type="password"
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
                         />
+                        <PasswordRequirements password={data.password} />
                         {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="password_confirmation">Confirm Password</Label>
-                        <Input
+                        <InputPassword
                             id="password_confirmation"
-                            type="password"
                             value={data.password_confirmation}
                             onChange={(e) => setData('password_confirmation', e.target.value)}
                         />
@@ -103,6 +119,24 @@ export default function Edit({ user, roles }: Props) {
                             onCheckedChange={(checked) => setData('is_active', checked)}
                         />
                         <Label htmlFor="is_active">Active</Label>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            id="is_locked"
+                            checked={data.is_locked}
+                            onCheckedChange={(checked) => setData('is_locked', checked)}
+                        />
+                        <Label htmlFor="is_locked">Locked</Label>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            id="email_verified"
+                            checked={data.email_verified}
+                            onCheckedChange={(checked) => setData('email_verified', checked)}
+                        />
+                        <Label htmlFor="email_verified">Mark email as verified</Label>
                     </div>
 
                     <div className="space-y-3">

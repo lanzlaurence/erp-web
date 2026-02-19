@@ -79,6 +79,7 @@ class PermissionRoleUserSeeder extends Seeder
             'email' => 'admin@example.com',
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
+            'force_password_change' => false,
             'is_active' => true,
         ])->assignRole('Admin');
     }

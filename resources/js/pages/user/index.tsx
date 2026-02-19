@@ -20,7 +20,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { usePermissions } from '@/hooks/use-permissions';
 import AppLayout from '@/layouts/app-layout';
-import type { UserData } from '@/types';
+import type { UserData, User } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import { Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -42,6 +42,8 @@ export default function Index({ users }: UserData) {
         router.delete(`/users/${deleteDialog.id}`);
         setDeleteDialog({ open: false, id: 0, name: '' });
     };
+
+    const isProtected = (user: User) => user.id === 1;
 
     return (
         <>
@@ -80,25 +82,39 @@ export default function Index({ users }: UserData) {
                                         {user.roles?.map((role) => role.name).join(', ') || '-'}
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant={user.is_active ? 'success' : 'destructive'}>
-                                            {user.is_active ? 'Active' : 'Inactive'}
-                                        </Badge>
+                                        <div className="flex flex-col gap-1">
+                                            <Badge variant={user.is_active ? 'success' : 'destructive'}>
+                                                {user.is_active ? 'Active' : 'Inactive'}
+                                            </Badge>
+                                            {user.is_locked && (
+                                                <Badge variant="destructive" className="text-xs">
+                                                    Locked
+                                                </Badge>
+                                            )}
+                                            {user.force_password_change && (
+                                                <Badge variant="outline" className="text-xs">
+                                                    Must change password
+                                                </Badge>
+                                            )}
+                                            {isProtected(user) && (
+                                                <Badge variant="outline" className="text-xs text-muted-foreground">
+                                                    Protected
+                                                </Badge>
+                                            )}
+                                        </div>
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            {hasPermission('user-edit') && (
+                                            {hasPermission('user-edit') && !isProtected(user) && (
                                                 <Button variant="ghost" size="sm" asChild>
                                                     <Link href={`/users/${user.id}/edit`}>
                                                         <Edit className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
                                             )}
-                                            {hasPermission('user-delete') && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleDeleteClick(user.id, user.name)}
-                                                >
+                                            {hasPermission('user-delete') && !isProtected(user) && (
+                                                <Button variant="ghost" size="sm"
+                                                    onClick={() => handleDeleteClick(user.id, user.name)}>
                                                     <Trash2 className="h-4 w-4 text-red-600" />
                                                 </Button>
                                             )}

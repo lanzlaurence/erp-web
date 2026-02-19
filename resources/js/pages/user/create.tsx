@@ -8,6 +8,8 @@ import type { Role } from '@/types';
 import { useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import { Head } from '@inertiajs/react';
+import { InputPassword } from '@/components/ui/input-password';
+import PasswordRequirements from '@/components/password-requirements';
 
 type Props = {
     roles: Role[];
@@ -17,8 +19,10 @@ export default function Create({ roles }: Props) {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
+        email_verified: false,
         password: '',
         password_confirmation: '',
+        force_password_change: true,
         is_active: true,
         roles: [] as string[],
     });
@@ -76,21 +80,20 @@ export default function Create({ roles }: Props) {
 
                     <div className="space-y-2">
                         <Label htmlFor="password">Password</Label>
-                        <Input
+                        <InputPassword
                             id="password"
-                            type="password"
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
                             required
                         />
+                        <PasswordRequirements password={data.password} />
                         {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="password_confirmation">Confirm Password</Label>
-                        <Input
+                        <InputPassword
                             id="password_confirmation"
-                            type="password"
                             value={data.password_confirmation}
                             onChange={(e) => setData('password_confirmation', e.target.value)}
                             required
@@ -104,6 +107,24 @@ export default function Create({ roles }: Props) {
                             onCheckedChange={(checked) => setData('is_active', checked)}
                         />
                         <Label htmlFor="is_active">Active</Label>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            id="email_verified"
+                            checked={data.email_verified}
+                            onCheckedChange={(checked) => setData('email_verified', checked)}
+                        />
+                        <Label htmlFor="email_verified">Mark email as verified</Label>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            id="force_password_change"
+                            checked={data.force_password_change}
+                            onCheckedChange={(checked) => setData('force_password_change', checked)}
+                        />
+                        <Label htmlFor="force_password_change">Require password change on first login</Label>
                     </div>
 
                     <div className="space-y-3">
