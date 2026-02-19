@@ -96,27 +96,30 @@ export default function Index({ users }: UserData) {
                                                     Must change password
                                                 </Badge>
                                             )}
-                                            {isProtected(user) && (
-                                                <Badge variant="outline" className="text-xs text-muted-foreground">
-                                                    Protected
-                                                </Badge>
-                                            )}
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            {hasPermission('user-edit') && !isProtected(user) && (
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/users/${user.id}/edit`}>
-                                                        <Edit className="h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            )}
-                                            {hasPermission('user-delete') && !isProtected(user) && (
-                                                <Button variant="ghost" size="sm"
-                                                    onClick={() => handleDeleteClick(user.id, user.name)}>
-                                                    <Trash2 className="h-4 w-4 text-red-600" />
-                                                </Button>
+                                            {isProtected(user) ? (
+                                                <Badge variant="outline" className="text-xs">
+                                                    Protected
+                                                </Badge>
+                                            ) : (
+                                                <>
+                                                    {hasPermission('user-edit') && (
+                                                        <Button variant="ghost" size="sm" asChild>
+                                                            <Link href={`/users/${user.id}/edit`}>
+                                                                <Edit className="h-4 w-4" />
+                                                            </Link>
+                                                        </Button>
+                                                    )}
+                                                    {hasPermission('user-delete') && (
+                                                        <Button variant="ghost" size="sm"
+                                                            onClick={() => handleDeleteClick(user.id, user.name)}>
+                                                            <Trash2 className="h-4 w-4 text-red-600" />
+                                                        </Button>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
                                     </TableCell>

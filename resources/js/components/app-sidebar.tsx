@@ -39,6 +39,8 @@ import {
     Warehouse,
     ShoppingBag,
     Coins,
+    Activity as ActivityIcon,
+    ClipboardList,
 } from 'lucide-react';
 import { useState } from 'react';
 import AppLogo from './app-logo';
@@ -62,7 +64,15 @@ export function AppSidebar() {
             items: [
                 { title: 'Purchasing', href: '#', icon: ShoppingCart, badge: 9 },
                 { title: 'Sales', href: '#', icon: ShoppingBag },
-                { title: 'Inventory', href: '#', icon: Warehouse },
+                { title: 'Inventory', href: '/inventories', icon: Warehouse, permission: 'inventory-view' },
+            ],
+        },
+        {
+            title: 'Activity',
+            href: '#',
+            icon: ActivityIcon,
+            items: [
+                { title: 'Inventory Log', href: '/activity/inventory-log', icon: ClipboardList, permission: 'inventory-log-view' },
             ],
         },
         {
@@ -82,7 +92,7 @@ export function AppSidebar() {
             items: [
                 { title: 'Brands', href: '/brands', icon: Tag, permission: 'brand-view' },
                 { title: 'Categories', href: '/categories', icon: Folder, permission: 'category-view' },
-                { title: 'UOM',  href: '/uoms', icon: Box, permission: 'uom-view' },
+                { title: 'UOM', href: '/uoms', icon: Box, permission: 'uom-view' },
                 { title: 'Destinations', href: '/destinations', icon: MapPin, permission: 'destination-view' },
                 { title: 'Charges', href: '/charges', icon: CreditCard, permission: 'charge-view' },
                 { title: 'Currencies', href: '/currencies', icon: Coins, permission: 'currency-view' },

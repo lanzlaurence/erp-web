@@ -39,6 +39,14 @@ Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(fun
     Route::resource('vendors', App\Http\Controllers\VendorController::class);
     Route::resource('customers', App\Http\Controllers\CustomerController::class);
 
+    Route::resource('inventories', App\Http\Controllers\InventoryController::class);
+    Route::get('inventories/{inventory}/transfer',  [App\Http\Controllers\InventoryController::class, 'transfer'])->name('inventories.transfer');
+    Route::post('inventories/{inventory}/transfer', [App\Http\Controllers\InventoryController::class, 'processTransfer'])->name('inventories.transfer.process');
+
+    Route::prefix('activity')->name('activity.')->group(function () {
+        Route::get('inventory-log', [App\Http\Controllers\InventoryLogController::class, 'inventoryLog'])->name('inventory-log');
+    });
+
     // Private file access
     Route::get('file', [App\Http\Controllers\FileController::class, 'show'])->name('file.show');
 });

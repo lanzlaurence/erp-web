@@ -63,6 +63,12 @@ class PermissionRoleUserSeeder extends Seeder
             'currency-create',
             'currency-edit',
             'currency-delete',
+            'inventory-view',
+            'inventory-create',
+            'inventory-edit',
+            'inventory-transfer',
+            'inventory-delete',
+            'inventory-log-view',
         ];
 
         foreach ($permissions as $permission) {
@@ -78,7 +84,7 @@ class PermissionRoleUserSeeder extends Seeder
             'name' => 'Admin User',
             'email' => 'admin@example.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('password'),
+            'password' => Hash::make('P@ssw0rd'),
             'force_password_change' => false,
             'is_active' => true,
         ])->assignRole('Admin');

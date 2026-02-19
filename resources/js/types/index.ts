@@ -2,9 +2,11 @@ export type * from './auth';
 export type * from './modules';
 export type * from './navigation';
 export type * from './ui';
+export type * from './transactions';
 
 import type { Auth, Permission, Role, User } from './auth';
 import type { Brand, Category, Charge, Currency, Customer, Destination, Material, Uom, Vendor } from './modules';
+import type { Inventory, InventoryLog } from './transactions';
 
 export type FlashMessage = {
     success?: string;
@@ -108,4 +110,17 @@ export type VendorData = {
 
 export type CustomerData = {
     customers: PaginatedData<Customer>;
+};
+
+export type InventoryData = {
+    inventories: PaginatedData<Inventory>;
+};
+
+export type InventoryShowData = {
+    inventory: Inventory;
+    logs: PaginatedData<InventoryLog>;
+};
+
+export type InventoryLogData = {
+    logs: PaginatedData<InventoryLog>;
 };
