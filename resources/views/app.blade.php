@@ -3,14 +3,14 @@
     <head>
         @php
             $appName = \App\Models\Preference::get('app_name', config('app.name', 'Example App'));
-            $appLogo = \App\Models\Preference::get('app_logo', 'favicon.png');
+            $appLogo = \App\Models\Preference::get('app_logo', 'default-logo.jpg');
 
-            if ($appLogo === 'favicon.png') {
-                $logoUrl = asset('favicon.png');
+            if ($appLogo === 'default-logo.jpg') {
+                $logoUrl = asset('default-logo.jpg');
             } elseif (\Storage::disk('public')->exists($appLogo)) {
                 $logoUrl = \Storage::disk('public')->url($appLogo);
             } else {
-                $logoUrl = asset('favicon.png'); // fallback if file not found
+                $logoUrl = asset('default-logo.jpg'); // fallback if file not found
             }
         @endphp
 

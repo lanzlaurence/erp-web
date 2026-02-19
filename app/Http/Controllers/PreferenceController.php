@@ -60,7 +60,7 @@ class PreferenceController extends Controller implements HasMiddleware
         if ($request->hasFile('app_logo')) {
             $oldLogo = Preference::get('app_logo');
 
-            if ($oldLogo && $oldLogo !== 'favicon.png') {
+            if ($oldLogo && $oldLogo !== 'default-logo.jpg') {
                 $this->deleteFile($oldLogo, 'public');
             }
 
@@ -79,10 +79,10 @@ class PreferenceController extends Controller implements HasMiddleware
 
     private function getLogoUrl(): string
     {
-        $logo = Preference::get('app_logo', 'favicon.png');
+        $logo = Preference::get('app_logo', 'default-logo.jpg');
 
-        if ($logo === 'favicon.png') {
-            return asset('favicon.png');
+        if ($logo === 'default-logo.jpg') {
+            return asset('default-logo.jpg');
         }
 
         return Storage::disk('public')->url($logo);
