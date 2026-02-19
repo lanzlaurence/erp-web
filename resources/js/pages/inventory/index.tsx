@@ -49,45 +49,53 @@ export default function Index({ inventories }: InventoryData) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {inventories.data.map((inventory) => (
-                                <TableRow key={inventory.id}>
-                                    <TableCell className="font-medium">{inventory.material?.name}</TableCell>
-                                    <TableCell className="text-muted-foreground">{inventory.material?.code}</TableCell>
-                                    <TableCell>{inventory.destination?.name}</TableCell>
-                                    <TableCell className="font-mono">{formatDecimal(Number(inventory.quantity))}</TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            {hasPermission('inventory-view') && (
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/inventories/${inventory.id}`}>
-                                                        <Eye className="h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            )}
-                                            {hasPermission('inventory-adjust') && (
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/inventories/${inventory.id}/adjust`}>
-                                                        <Edit className="h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            )}
-                                            {hasPermission('inventory-transfer') && (
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/inventories/${inventory.id}/transfer`}>
-                                                        <ArrowLeftRight className="h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            )}
-                                            {hasPermission('inventory-delete') && (
-                                                <Button variant="ghost" size="sm"
-                                                    onClick={() => setDeleteDialog({ open: true, id: inventory.id, name: inventory.material?.name ?? '' })}>
-                                                    <Trash2 className="h-4 w-4 text-red-600" />
-                                                </Button>
-                                            )}
-                                        </div>
+                            {inventories.data.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
+                                        No inventory records available.
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                            ) : (
+                                inventories.data.map((inventory) => (
+                                    <TableRow key={inventory.id}>
+                                        <TableCell className="font-medium">{inventory.material?.name}</TableCell>
+                                        <TableCell className="text-muted-foreground">{inventory.material?.code}</TableCell>
+                                        <TableCell>{inventory.destination?.name}</TableCell>
+                                        <TableCell className="font-mono">{formatDecimal(Number(inventory.quantity))}</TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-2">
+                                                {hasPermission('inventory-view') && (
+                                                    <Button variant="ghost" size="sm" asChild>
+                                                        <Link href={`/inventories/${inventory.id}`}>
+                                                            <Eye className="h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                )}
+                                                {hasPermission('inventory-adjust') && (
+                                                    <Button variant="ghost" size="sm" asChild>
+                                                        <Link href={`/inventories/${inventory.id}/adjust`}>
+                                                            <Edit className="h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                )}
+                                                {hasPermission('inventory-transfer') && (
+                                                    <Button variant="ghost" size="sm" asChild>
+                                                        <Link href={`/inventories/${inventory.id}/transfer`}>
+                                                            <ArrowLeftRight className="h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                )}
+                                                {hasPermission('inventory-delete') && (
+                                                    <Button variant="ghost" size="sm"
+                                                        onClick={() => setDeleteDialog({ open: true, id: inventory.id, name: inventory.material?.name ?? '' })}>
+                                                        <Trash2 className="h-4 w-4 text-red-600" />
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
                         </TableBody>
                     </Table>
                 </div>
