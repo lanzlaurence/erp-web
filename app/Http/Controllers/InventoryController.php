@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreInventoryRequest;
 use App\Http\Requests\TransferInventoryRequest;
-use App\Http\Requests\UpdateInventoryRequest;
+use App\Http\Requests\AdjustInventoryRequest;
 use App\Models\Destination;
 use App\Models\Inventory;
 use App\Models\InventoryLog;
@@ -22,7 +22,7 @@ class InventoryController extends Controller implements HasMiddleware
         return [
             new Middleware('permission:inventory-view',     only: ['index', 'show']),
             new Middleware('permission:inventory-create',   only: ['create', 'store']),
-            new Middleware('permission:inventory-edit',     only: ['edit', 'update']),
+            new Middleware('permission:inventory-adjust',   only: ['adjust', 'processAdjust']),
             new Middleware('permission:inventory-transfer', only: ['transfer', 'processTransfer']),
             new Middleware('permission:inventory-delete',   only: ['destroy']),
         ];
@@ -88,14 +88,14 @@ class InventoryController extends Controller implements HasMiddleware
         ]);
     }
 
-    public function edit(Inventory $inventory)
+    public function adjust(Inventory $inventory)
     {
-        return Inertia::render('inventory/edit', [
+        return Inertia::render('inventory/adjust', [
             'inventory' => $inventory->load(['material', 'destination']),
         ]);
     }
 
-    public function update(UpdateInventoryRequest $request, Inventory $inventory)
+    public function processAdjust(AdjustInventoryRequest $request, Inventory $inventory)
     {
         DB::transaction(function () use ($request, $inventory) {
             $quantityBefore = $inventory->quantity;

@@ -65,7 +65,7 @@ class PermissionRoleUserSeeder extends Seeder
             'currency-delete',
             'inventory-view',
             'inventory-create',
-            'inventory-edit',
+            'inventory-adjust',
             'inventory-transfer',
             'inventory-delete',
             'inventory-log-view',

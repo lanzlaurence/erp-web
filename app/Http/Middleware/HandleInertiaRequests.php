@@ -51,6 +51,8 @@ class HandleInertiaRequests extends Middleware
                 'color_theme' => Preference::get('color_theme', 'zinc'),
                 'timezone' => Preference::get('timezone', 'Asia/Manila'),
                 'currency' => Preference::get('currency', 'PHP'),
+                'date_format'   => Preference::get('date_format', 'MM/DD/YYYY'),
+                'time_format'   => Preference::get('time_format', '12h'),
             ],
             'currencies' => Currency::where('is_active', true)->orderBy('code')->get(['code', 'name', 'symbol']),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',

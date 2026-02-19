@@ -117,16 +117,29 @@ export default function Index({ formData, currencies }: Props) {
 
                     {/* Decimal Places */}
                     <div className="space-y-2">
-                        <Label htmlFor="decimal_places">Decimal Places (0–6)</Label>
-                        <Input
-                            id="decimal_places"
-                            type="number"
-                            min="0"
-                            max="6"
-                            value={data.decimal_places}
-                            onChange={(e) => setData('decimal_places', e.target.value)}
-                            required
-                        />
+                        <Label>Decimal Places</Label>
+                        <div className="flex gap-3">
+                            {[0, 1, 2, 3, 4, 5, 6].map((n) => (
+                                <button
+                                    key={n}
+                                    type="button"
+                                    onClick={() => setData('decimal_places', String(n))}
+                                    className="flex flex-col items-center gap-1.5"
+                                >
+                                    <span
+                                        className="flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-medium transition-all"
+                                        style={{
+                                            borderColor: data.decimal_places === String(n) ? 'var(--primary)' : 'transparent',
+                                            backgroundColor: data.decimal_places === String(n) ? 'var(--primary)' : 'var(--muted)',
+                                            color: data.decimal_places === String(n) ? 'var(--primary-foreground)' : 'var(--muted-foreground)',
+                                            boxShadow: data.decimal_places === String(n) ? `0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent)` : 'none',
+                                        }}
+                                    >
+                                        {n}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
                         {errors.decimal_places && (
                             <p className="text-sm text-red-600">{errors.decimal_places}</p>
                         )}

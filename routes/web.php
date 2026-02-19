@@ -39,7 +39,11 @@ Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(fun
     Route::resource('vendors', App\Http\Controllers\VendorController::class);
     Route::resource('customers', App\Http\Controllers\CustomerController::class);
 
-    Route::resource('inventories', App\Http\Controllers\InventoryController::class);
+    Route::resource('inventories', App\Http\Controllers\InventoryController::class)
+    ->except(['edit', 'update']);
+
+    Route::get('inventories/{inventory}/adjust',   [App\Http\Controllers\InventoryController::class, 'adjust'])->name('inventories.adjust');
+    Route::post('inventories/{inventory}/adjust',  [App\Http\Controllers\InventoryController::class, 'processAdjust'])->name('inventories.adjust.process');
     Route::get('inventories/{inventory}/transfer',  [App\Http\Controllers\InventoryController::class, 'transfer'])->name('inventories.transfer');
     Route::post('inventories/{inventory}/transfer', [App\Http\Controllers\InventoryController::class, 'processTransfer'])->name('inventories.transfer.process');
 

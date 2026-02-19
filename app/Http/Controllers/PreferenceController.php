@@ -54,6 +54,8 @@ class PreferenceController extends Controller implements HasMiddleware
         Preference::set('color_theme', $request->color_theme);
         Preference::set('timezone', $request->timezone);
         Preference::set('currency', $request->currency);
+        Preference::set('date_format', $request->date_format);
+        Preference::set('time_format', $request->time_format);
 
         if ($request->hasFile('app_logo')) {
             $oldLogo = Preference::get('app_logo');

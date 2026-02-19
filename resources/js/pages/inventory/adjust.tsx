@@ -7,16 +7,18 @@ import { Head, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import InputAmount from '@/components/ui/input-amount';
 
-export default function Edit({ inventory }: { inventory: Inventory }) {
-    const { data, setData, put, processing, errors } = useForm({
+export default function Adjust({ inventory }: { inventory: Inventory }) {
+    const { data, setData, post, processing, errors } = useForm({
         quantity: String(inventory.quantity),
         remarks: '',
     });
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        put(`/inventories/${inventory.id}`);
+        post(`/inventories/${inventory.id}/adjust`);
     };
+
+    const isUnchanged = Number(data.quantity) === Number(inventory.quantity);
 
     return (
         <>
@@ -67,7 +69,9 @@ export default function Edit({ inventory }: { inventory: Inventory }) {
                     </div>
 
                     <div className="flex gap-2">
-                        <Button type="submit" disabled={processing}>Save Adjustment</Button>
+                        <Button type="submit" disabled={processing || isUnchanged}>
+                            Save Adjustment
+                        </Button>
                         <Button type="button" variant="outline" onClick={() => window.history.back()}>Cancel</Button>
                     </div>
                 </form>
@@ -76,7 +80,7 @@ export default function Edit({ inventory }: { inventory: Inventory }) {
     );
 }
 
-Edit.layout = (page: React.ReactNode) => (
+Adjust.layout = (page: React.ReactNode) => (
     <AppLayout breadcrumbs={[
         { title: 'Dashboard', href: '/dashboard' },
         { title: 'Inventory', href: '/inventories' },

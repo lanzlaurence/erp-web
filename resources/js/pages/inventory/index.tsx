@@ -6,7 +6,7 @@ import { useFormatters } from '@/hooks/use-formatters';
 import AppLayout from '@/layouts/app-layout';
 import type { InventoryData } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeftRight, Edit, Eye, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeftRight, Eye, Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Index({ inventories }: InventoryData) {
@@ -64,9 +64,9 @@ export default function Index({ inventories }: InventoryData) {
                                                     </Link>
                                                 </Button>
                                             )}
-                                            {hasPermission('inventory-edit') && (
+                                            {hasPermission('inventory-adjust') && (
                                                 <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/inventories/${inventory.id}/edit`}>
+                                                    <Link href={`/inventories/${inventory.id}/adjust`}>
                                                         <Edit className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
