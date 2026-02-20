@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             CustomerSeeder::class,
             ChargeSeeder::class,
             CurrencySeeder::class,
+            InventorySeeder::class,
         ]);
     }
 }
