@@ -45,6 +45,7 @@ import {
     PackageSearch,
     PackageCheck,
     Truck,
+    FileText,
 } from 'lucide-react';
 import { useState } from 'react';
 import AppLogo from './app-logo';
@@ -86,7 +87,8 @@ export function AppSidebar() {
             href: '#',
             icon: ActivityIcon,
             items: [
-                { title: 'Inventory Log', href: '/activity/inventory-log', icon: ClipboardList, permission: 'inventory-log-view' },
+                { title: 'Transaction Log',  href: '/activity/transaction-log',  icon: FileText,      permission: 'transaction-log-view' },
+                { title: 'Inventory Log',    href: '/activity/inventory-log',    icon: ClipboardList, permission: 'inventory-log-view' },
             ],
         },
         {

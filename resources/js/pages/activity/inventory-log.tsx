@@ -26,7 +26,7 @@ export default function Inventory({ logs }: InventoryLogData) {
             <div className="space-y-4 p-4">
                 <div>
                     <h1 className="text-2xl font-semibold">Inventory Log</h1>
-                    <p className="text-sm text-muted-foreground">All inventory transactions</p>
+                    <p className="text-sm text-muted-foreground">Audit trail for all inventory movements and adjustments</p>
                 </div>
 
                 <div className="rounded-md border">

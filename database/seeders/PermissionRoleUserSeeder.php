@@ -83,6 +83,7 @@ class PermissionRoleUserSeeder extends Seeder
             'gr-cancel',
             'gr-complete',
             'gr-revert',
+            'transaction-log-view',
         ];
 
         foreach ($permissions as $permission) {
