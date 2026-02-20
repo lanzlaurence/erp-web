@@ -69,6 +69,21 @@ class PermissionRoleUserSeeder extends Seeder
             'inventory-transfer',
             'inventory-delete',
             'inventory-log-view',
+            'po-view',
+            'po-create',
+            'po-edit',
+            'po-delete',
+            'po-post',
+            'po-cancel',
+            'po-complete',
+            'po-revert',
+            'gr-view',
+            'gr-create',
+            'gr-edit',
+            'gr-delete',
+            'gr-cancel',
+            'gr-complete',
+            'gr-revert',
         ];
 
         foreach ($permissions as $permission) {

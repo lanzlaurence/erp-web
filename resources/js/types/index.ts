@@ -6,7 +6,7 @@ export type * from './transactions';
 
 import type { Auth, Permission, Role, User } from './auth';
 import type { Brand, Category, Charge, Currency, Customer, Destination, Material, Uom, Vendor } from './modules';
-import type { Inventory, InventoryLog } from './transactions';
+import type { PurchaseOrder, GoodsReceipt, Inventory, InventoryLog } from './transactions';
 
 export type FlashMessage = {
     success?: string;
@@ -110,6 +110,26 @@ export type VendorData = {
 
 export type CustomerData = {
     customers: PaginatedData<Customer>;
+};
+
+export type PurchaseOrderData = {
+    purchaseOrders: PaginatedData<PurchaseOrder>;
+};
+
+export type PurchaseOrderShowData = {
+    purchaseOrder: PurchaseOrder;
+    vendors?: Vendor[];
+    materials?: Material[];
+    charges?: Charge[];
+};
+
+export type GoodsReceiptData = {
+    goodsReceipts: PaginatedData<GoodsReceipt>;
+};
+
+export type GoodsReceiptShowData = {
+    goodsReceipt: GoodsReceipt;
+    destinations?: Destination[];
 };
 
 export type InventoryData = {

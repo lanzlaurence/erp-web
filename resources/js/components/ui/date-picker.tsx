@@ -1,85 +1,38 @@
-// js/components/ui/date-time-picker.tsx
+// js/components/ui/date-picker.tsx
 "use client"
 
 import * as React from "react"
 import { format } from "date-fns"
-import { Calendar as CalendarIcon, Clock } from "lucide-react"
+import { Calendar as CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-interface DateTimePickerProps {
+interface DatePickerProps {
   value?: string;
-  onValueChange?: (datetime: string) => void;
+  onValueChange?: (date: string) => void;
   placeholder?: string;
   className?: string;
   disabled?: boolean;
   minDate?: Date;
-  showTime?: boolean;
 }
 
-export default function DateTimePicker({
+export default function DatePicker({
   value,
   onValueChange,
-  placeholder = "Select date and time",
+  placeholder = "Select date",
   className,
   disabled = false,
   minDate,
-  showTime = true,
-}: DateTimePickerProps) {
+}: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
 
-  // Parse existing datetime value
   const selectedDate = value ? new Date(value) : undefined
-  const [time, setTime] = React.useState(
-    selectedDate ? format(selectedDate, "HH:mm") : "00:00"
-  )
-
-  const handleDateSelect = (date: Date | undefined) => {
-    if (date && showTime) {
-      // Combine date with current time
-      const [hours, minutes] = time.split(':')
-      date.setHours(parseInt(hours), parseInt(minutes), 0, 0)
-      onValueChange?.(date.toISOString())
-    } else if (date) {
-      // Date only
-      onValueChange?.(format(date, "yyyy-MM-dd"))
-      setOpen(false)
-    }
-  }
-
-  const handleTimeChange = (newTime: string) => {
-    setTime(newTime)
-    if (selectedDate) {
-      const [hours, minutes] = newTime.split(':')
-      const updated = new Date(selectedDate)
-      updated.setHours(parseInt(hours), parseInt(minutes), 0, 0)
-      onValueChange?.(updated.toISOString())
-    }
-  }
-
-  const handleApply = () => {
-    if (selectedDate && showTime) {
-      const [hours, minutes] = time.split(':')
-      const updated = new Date(selectedDate)
-      updated.setHours(parseInt(hours), parseInt(minutes), 0, 0)
-      onValueChange?.(updated.toISOString())
-    }
-    setOpen(false)
-  }
-
-  const displayValue = selectedDate
-    ? showTime
-      ? `${format(selectedDate, "MM/dd/yyyy")} ${format(selectedDate, "HH:mm")}`
-      : format(selectedDate, "MM/dd/yyyy")
-    : null
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -97,46 +50,28 @@ export default function DateTimePicker({
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {displayValue ? <span>{displayValue}</span> : <span>{placeholder}</span>}
+          {value ? format(new Date(value), "MM/dd/yyyy") : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
-        <div className="flex flex-col">
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={handleDateSelect}
-            disabled={(date) => {
-              if (minDate) {
-                return date < minDate
-              }
-              return false
-            }}
-            initialFocus
-          />
-          {showTime && (
-            <div className="border-t p-3 space-y-2">
-              <Label htmlFor="time-picker" className="text-sm">Time</Label>
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="time-picker"
-                  type="time"
-                  value={time}
-                  onChange={(e) => handleTimeChange(e.target.value)}
-                  className="h-9 flex-1"
-                />
-              </div>
-              <Button
-                onClick={handleApply}
-                className="w-full h-8"
-                size="sm"
-              >
-                Apply
-              </Button>
-            </div>
-          )}
-        </div>
+        <Calendar
+          mode="single"
+          selected={selectedDate}
+          onSelect={(date) => {
+            if (date) {
+              onValueChange?.(format(date, "yyyy-MM-dd"))
+              setOpen(false)
+            }
+          }}
+          disabled={(date) => {
+            // Disable if minDate is set and date is before minDate
+            if (minDate) {
+              return date < minDate
+            }
+            return false
+          }}
+          initialFocus
+        />
       </PopoverContent>
     </Popover>
   )

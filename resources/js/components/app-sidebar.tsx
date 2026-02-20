@@ -43,6 +43,7 @@ import {
     ClipboardList,
     BarChart2,
     PackageSearch,
+    PackageCheck,
 } from 'lucide-react';
 import { useState } from 'react';
 import AppLogo from './app-logo';
@@ -72,9 +73,10 @@ export function AppSidebar() {
             isActive: true,
             badge: 1,
             items: [
-                { title: 'Purchasing', href: '#', icon: ShoppingCart, badge: 9 },
-                { title: 'Sales', href: '#', icon: ShoppingBag },
-                { title: 'Inventory', href: '/inventories', icon: Warehouse, permission: 'inventory-view' },
+                { title: 'Purchase Orders', href: '/purchase-orders', icon: ShoppingCart, permission: 'po-view', badge: 9 },
+                { title: 'Goods Receipts',  href: '/goods-receipts',  icon: PackageCheck, permission: 'gr-view' },
+                { title: 'Sales',           href: '#',                icon: ShoppingBag },
+                { title: 'Inventory',       href: '/inventories',     icon: Warehouse,    permission: 'inventory-view' },
             ],
         },
         {

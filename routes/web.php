@@ -51,6 +51,22 @@ Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(fun
         Route::get('inventory-log', [App\Http\Controllers\InventoryLogController::class, 'inventoryLog'])->name('inventory-log');
     });
 
+    // Purchase Orders
+    Route::resource('purchase-orders', App\Http\Controllers\PurchaseOrderController::class);
+    Route::post('purchase-orders/{purchaseOrder}/post',     [App\Http\Controllers\PurchaseOrderController::class, 'post'])->name('purchase-orders.post');
+    Route::post('purchase-orders/{purchaseOrder}/cancel',   [App\Http\Controllers\PurchaseOrderController::class, 'cancel'])->name('purchase-orders.cancel');
+    Route::post('purchase-orders/{purchaseOrder}/complete', [App\Http\Controllers\PurchaseOrderController::class, 'complete'])->name('purchase-orders.complete');
+    Route::post('purchase-orders/{purchaseOrder}/revert',   [App\Http\Controllers\PurchaseOrderController::class, 'revert'])->name('purchase-orders.revert');
+
+    // Goods Receipts
+    Route::resource('goods-receipts', App\Http\Controllers\GoodsReceiptController::class);
+    Route::post('goods-receipts/{goodsReceipt}/complete', [App\Http\Controllers\GoodsReceiptController::class, 'complete'])->name('goods-receipts.complete');
+    Route::post('goods-receipts/{goodsReceipt}/cancel',   [App\Http\Controllers\GoodsReceiptController::class, 'cancel'])->name('goods-receipts.cancel');
+    Route::post('goods-receipts/{goodsReceipt}/revert',   [App\Http\Controllers\GoodsReceiptController::class, 'revert'])->name('goods-receipts.revert');
+
+    // GR from PO
+    Route::get('purchase-orders/{purchaseOrder}/goods-receipts/create', [App\Http\Controllers\GoodsReceiptController::class, 'create'])->name('purchase-orders.goods-receipts.create');
+
     // Private file access
     Route::get('file', [App\Http\Controllers\FileController::class, 'show'])->name('file.show');
 });

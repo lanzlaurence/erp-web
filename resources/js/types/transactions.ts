@@ -1,6 +1,152 @@
 // types/transactions.ts
-import type { Material, Destination } from './modules';
+import type { Material, Destination, Charge, Vendor } from './modules';
 import type { User } from './auth';
+
+// ── Purchase Order ────────────────────────────────────────────────────────────
+
+export type PurchaseOrderStatus =
+    | 'draft'
+    | 'posted'
+    | 'partially_received'
+    | 'fully_received'
+    | 'completed'
+    | 'cancelled';
+
+export type DiscountType = 'fixed' | 'percentage';
+export type VatType      = 'exclusive' | 'inclusive';
+
+export type PurchaseOrderItem = {
+    id: number;
+    purchase_order_id: number;
+    material_id: number;
+    line_number: number;
+    qty_ordered: number | string;
+    qty_received: number | string;
+    unit_price: number | string;
+    discount_type: DiscountType | null;
+    discount_amount: number | string;
+    unit_price_after_discount: number | string;
+    net_price: number | string;
+    is_vatable: boolean;
+    vat_type: VatType | null;
+    vat_rate: number | string;
+    vat_price: number | string;
+    gross_price: number | string;
+    remarks: string | null;
+    material?: Material;
+    qty_remaining?: number;
+    created_at: string;
+    updated_at: string;
+};
+
+export type PurchaseOrderCharge = {
+    id: number;
+    purchase_order_id: number;
+    charge_id: number;
+    name: string;
+    type: 'tax' | 'discount';
+    value_type: 'percentage' | 'fixed';
+    value: number | string;
+    computed_amount: number | string;
+    charge?: Charge;
+};
+
+export type PurchaseOrder = {
+    id: number;
+    po_number: string;
+    vendor_id: number;
+    user_id: number;
+    status: PurchaseOrderStatus;
+    order_date: string;
+    delivery_date: string | null;
+    reference_no: string | null;
+    discount_type: DiscountType | null;
+    discount_amount: number | string;
+    total_before_discount: number | string;
+    total_item_discount: number | string;
+    total_net_price: number | string;
+    total_vat: number | string;
+    total_gross: number | string;
+    total_charges: number | string;
+    header_discount_total: number | string;
+    grand_total: number | string;
+    remarks: string | null;
+    vendor?: Vendor;
+    user?: User;
+    items?: PurchaseOrderItem[];
+    charges?: PurchaseOrderCharge[];
+    goodsReceipts?: GoodsReceipt[];
+    logs?: TransactionLog[];
+    created_at: string;
+    updated_at: string;
+    deleted_at?: string | null;
+};
+
+// ── Goods Receipt ─────────────────────────────────────────────────────────────
+
+export type GoodsReceiptStatus =
+    | 'pending'
+    | 'partially_received'
+    | 'fully_received'
+    | 'completed'
+    | 'cancelled';
+
+export type GoodsReceiptItem = {
+    id: number;
+    goods_receipt_id: number;
+    purchase_order_item_id: number;
+    material_id: number;
+    qty_ordered: number | string;
+    qty_received: number | string;
+    qty_to_receive: number | string;
+    qty_remaining: number | string;
+    unit_cost: number | string;
+    serial_number: string | null;
+    batch_number: string | null;
+    remarks: string | null;
+    material?: Material;
+    purchaseOrderItem?: PurchaseOrderItem;
+    created_at: string;
+    updated_at: string;
+};
+
+export type GoodsReceipt = {
+    id: number;
+    gr_number: string;
+    purchase_order_id: number;
+    user_id: number;
+    destination_id: number;
+    status: GoodsReceiptStatus;
+    gr_date: string;
+    transaction_date: string;
+    remarks: string | null;
+    purchaseOrder?: PurchaseOrder;
+    destination?: Destination;
+    user?: User;
+    items?: GoodsReceiptItem[];
+    logs?: TransactionLog[];
+    created_at: string;
+    updated_at: string;
+    deleted_at?: string | null;
+};
+
+// ── Transaction Log ───────────────────────────────────────────────────────────
+
+export type TransactionLog = {
+    id: number;
+    user_id: number;
+    action: string;
+    from_status: string | null;
+    to_status: string | null;
+    remarks: string | null;
+    loggable_id: number;
+    loggable_type: string;
+    user?: User;
+    created_at: string;
+    updated_at: string;
+};
+
+// ── Inventory ──────────────────────────────────────────────────────────────────
 
 export type Inventory = {
     id: number;
@@ -14,6 +160,8 @@ export type Inventory = {
     updated_at: string;
     deleted_at?: string | null;
 };
+
+// ── Inventory Log ───────────────────────────────────────────────────────────
 
 export type InventoryLog = {
     id: number;

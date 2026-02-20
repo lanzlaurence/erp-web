@@ -86,7 +86,7 @@ class InventorySeeder extends Seeder
                 'quantity_before' => 0,
                 'quantity_change' => $item['quantity'],
                 'quantity_after'  => $item['quantity'],
-                'remarks'         => 'Initial stock seeder',
+                'remarks'         => 'Initial stock',
             ]);
         }
 
