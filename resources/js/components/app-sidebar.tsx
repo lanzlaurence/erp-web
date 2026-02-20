@@ -44,6 +44,7 @@ import {
     BarChart2,
     PackageSearch,
     PackageCheck,
+    Truck,
 } from 'lucide-react';
 import { useState } from 'react';
 import AppLogo from './app-logo';
@@ -75,7 +76,8 @@ export function AppSidebar() {
             items: [
                 { title: 'Purchase Orders', href: '/purchase-orders', icon: ShoppingCart, permission: 'po-view', badge: 9 },
                 { title: 'Goods Receipts',  href: '/goods-receipts',  icon: PackageCheck, permission: 'gr-view' },
-                { title: 'Sales',           href: '#',                icon: ShoppingBag },
+                { title: 'Sales Orders',           href: '#',                icon: ShoppingBag },
+                { title: 'Goods Issues',           href: '#',                icon: Truck},
                 { title: 'Inventory',       href: '/inventories',     icon: Warehouse,    permission: 'inventory-view' },
             ],
         },

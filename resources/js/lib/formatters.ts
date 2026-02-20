@@ -53,10 +53,10 @@ export function formatDate(
 
         return options.date_format
             .replace('YYYY', parts.year)
-            .replace('MM', parts.month)
-            .replace('DD', parts.day)
             .replace('MMMM', monthLong)
-            .replace('MMM', monthShort);
+            .replace('MMM', monthShort)
+            .replace('MM', parts.month)
+            .replace('DD', parts.day);
     }
 
     if (options?.format === 'long') {

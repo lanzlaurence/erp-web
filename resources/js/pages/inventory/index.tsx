@@ -78,15 +78,17 @@ export default function Index({ inventories }: InventoryData) {
                                                 )}
                                                 {hasPermission('inventory-adjust') && (
                                                     <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/inventories/${inventory.id}/adjust`}>
+                                                        <Link href={`/inventories/${inventory.id}/adjust`} className="flex flex-col items-center gap-0.5 h-auto py-1">
                                                             <Edit className="h-4 w-4" />
+                                                            <span className="text-[10px] leading-none">Adjust</span>
                                                         </Link>
                                                     </Button>
                                                 )}
                                                 {hasPermission('inventory-transfer') && (
                                                     <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/inventories/${inventory.id}/transfer`}>
+                                                        <Link href={`/inventories/${inventory.id}/transfer`} className="flex flex-col items-center gap-0.5 h-auto py-1">
                                                             <ArrowLeftRight className="h-4 w-4" />
+                                                            <span className="text-[10px] leading-none">Transfer</span>
                                                         </Link>
                                                     </Button>
                                                 )}
