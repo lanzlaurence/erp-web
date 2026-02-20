@@ -65,7 +65,7 @@ export function AppSidebar() {
             href: '#',
             icon: BarChart2,
             items: [
-                { title: 'Inventory Report', href: '#', icon: PackageSearch },
+                { title: 'Purchase Order Report', href: '/reports/purchase-orders',  icon: ShoppingCart,  permission: 'po-view' },
             ],
         },
         {

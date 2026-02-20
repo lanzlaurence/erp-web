@@ -67,6 +67,10 @@ Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(fun
     // GR from PO
     Route::get('purchase-orders/{purchaseOrder}/goods-receipts/create', [App\Http\Controllers\GoodsReceiptController::class, 'create'])->name('purchase-orders.goods-receipts.create');
 
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('purchase-orders', [App\Http\Controllers\ReportController::class, 'purchaseOrders'])->name('purchase-orders');
+    });
+
     // Private file access
     Route::get('file', [App\Http\Controllers\FileController::class, 'show'])->name('file.show');
 });
