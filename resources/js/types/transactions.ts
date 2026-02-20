@@ -77,6 +77,7 @@ export type PurchaseOrder = {
     items?: PurchaseOrderItem[];
     charges?: PurchaseOrderCharge[];
     goodsReceipts?: GoodsReceipt[];
+    goods_receipts?: GoodsReceipt[];
     logs?: TransactionLog[];
     created_at: string;
     updated_at: string;
@@ -122,6 +123,7 @@ export type GoodsReceipt = {
     gr_date: string;
     transaction_date: string;
     remarks: string | null;
+    purchase_order?: PurchaseOrder;
     purchaseOrder?: PurchaseOrder;
     destination?: Destination;
     user?: User;

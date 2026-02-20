@@ -92,12 +92,12 @@ export default function Edit({ goodsReceipt, destinations }: Props) {
 
     return (
         <>
-            <Head title={`Edit ${goodsReceipt.gr_number}`} />
+            <Head title={`Edit ${goodsReceipt.code}`} />
             <div className="space-y-6 p-4">
                 <div>
-                    <h1 className="text-2xl font-semibold">Edit {goodsReceipt.gr_number}</h1>
+                    <h1 className="text-2xl font-semibold">Edit {goodsReceipt.code}</h1>
                     <p className="text-sm text-muted-foreground">
-                        For PO <span className="font-medium">{goodsReceipt.purchaseOrder?.po_number}</span>
+                        For PO <span className="font-medium">{goodsReceipt.purchaseOrder?.code}</span>
                     </p>
                 </div>
 

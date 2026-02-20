@@ -47,13 +47,13 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
 
     return (
         <>
-            <Head title={`GR ${goodsReceipt.gr_number}`} />
+            <Head title={`GR ${goodsReceipt.code}`} />
             <div className="mx-auto max-w-7xl space-y-6 p-4">
                 {/* Header */}
                 <div className="flex items-start justify-between">
                     <div className="space-y-1">
                         <div className="flex items-center gap-3">
-                            <h1 className="text-2xl font-semibold">{goodsReceipt.gr_number}</h1>
+                            <h1 className="text-2xl font-semibold">{goodsReceipt.code}</h1>
                             <Badge variant={badge.variant}>{badge.label}</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
@@ -98,14 +98,14 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                     <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
                             <p className="text-muted-foreground">Purchase Order</p>
-                            <Link href={`/purchase-orders/${goodsReceipt.purchaseOrder?.id}`}
+                            <Link href={`/purchase-orders/${goodsReceipt.purchase_order?.id}`}
                                 className="font-mono text-primary hover:underline">
-                                {goodsReceipt.purchaseOrder?.po_number}
+                                {goodsReceipt.purchase_order?.code}
                             </Link>
                         </div>
                         <div>
                             <p className="text-muted-foreground">Vendor</p>
-                            <p>{goodsReceipt.purchaseOrder?.vendor?.name}</p>
+                            <p>{goodsReceipt.purchase_order?.vendor?.name}</p>
                         </div>
                         <div>
                             <p className="text-muted-foreground">Destination</p>

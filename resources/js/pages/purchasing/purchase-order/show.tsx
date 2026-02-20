@@ -48,13 +48,13 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
 
     return (
         <>
-            <Head title={`PO ${purchaseOrder.po_number}`} />
+            <Head title={`PO ${purchaseOrder.code}`} />
             <div className="mx-auto max-w-7xl space-y-6 p-4">
                 {/* Header */}
                 <div className="flex items-start justify-between">
                     <div className="space-y-1">
                         <div className="flex items-center gap-3">
-                            <h1 className="text-2xl font-semibold">{purchaseOrder.po_number}</h1>
+                            <h1 className="text-2xl font-semibold">{purchaseOrder.code}</h1>
                             <Badge variant={badge.variant}>{badge.label}</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">

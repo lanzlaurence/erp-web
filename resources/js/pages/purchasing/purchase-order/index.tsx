@@ -55,7 +55,7 @@ export default function Index({ purchaseOrders }: PurchaseOrderData) {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>PO Number</TableHead>
+                                <TableHead>PO Code</TableHead>
                                 <TableHead>Vendor</TableHead>
                                 <TableHead>Order Date</TableHead>
                                 <TableHead>Delivery Date</TableHead>
@@ -76,7 +76,7 @@ export default function Index({ purchaseOrders }: PurchaseOrderData) {
                                 const badge = STATUS_BADGE[po.status];
                                 return (
                                     <TableRow key={po.id}>
-                                        <TableCell className="font-mono font-medium">{po.po_number}</TableCell>
+                                        <TableCell className="font-mono font-medium">{po.code}</TableCell>
                                         <TableCell>{po.vendor?.name}</TableCell>
                                         <TableCell>{formatDate(po.order_date)}</TableCell>
                                         <TableCell>{po.delivery_date ? formatDate(po.delivery_date) : '-'}</TableCell>

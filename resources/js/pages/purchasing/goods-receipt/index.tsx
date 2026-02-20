@@ -45,8 +45,8 @@ export default function Index({ goodsReceipts }: GoodsReceiptData) {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>GR Number</TableHead>
-                                <TableHead>PO Number</TableHead>
+                                <TableHead>GR Code</TableHead>
+                                <TableHead>PO Code</TableHead>
                                 <TableHead>Vendor</TableHead>
                                 <TableHead>Destination</TableHead>
                                 <TableHead>GR Date</TableHead>
@@ -66,9 +66,9 @@ export default function Index({ goodsReceipts }: GoodsReceiptData) {
                                 const badge = STATUS_BADGE[gr.status];
                                 return (
                                     <TableRow key={gr.id}>
-                                        <TableCell className="font-mono font-medium">{gr.gr_number}</TableCell>
-                                        <TableCell className="font-mono">{gr.purchaseOrder?.po_number}</TableCell>
-                                        <TableCell>{gr.purchaseOrder?.vendor?.name}</TableCell>
+                                        <TableCell className="font-mono font-medium">{gr.code}</TableCell>
+                                        <TableCell className="font-mono">{gr.purchase_order?.code}</TableCell>
+                                        <TableCell>{gr.purchase_order?.vendor?.name}</TableCell>
                                         <TableCell>{gr.destination?.name}</TableCell>
                                         <TableCell>{formatDate(gr.gr_date)}</TableCell>
                                         <TableCell>

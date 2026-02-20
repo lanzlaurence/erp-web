@@ -158,10 +158,10 @@ export default function Edit({ purchaseOrder, vendors, materials, charges }: Pro
 
     return (
         <>
-            <Head title={`Edit ${purchaseOrder.po_number}`} />
+            <Head title={`Edit ${purchaseOrder.code}`} />
             <div className="space-y-6 p-4">
                 <div>
-                    <h1 className="text-2xl font-semibold">Edit {purchaseOrder.po_number}</h1>
+                    <h1 className="text-2xl font-semibold">Edit {purchaseOrder.code}</h1>
                     <p className="text-sm text-muted-foreground">Edit draft purchase order</p>
                 </div>
 
