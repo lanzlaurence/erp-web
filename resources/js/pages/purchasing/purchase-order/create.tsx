@@ -10,10 +10,12 @@ import type { Charge, Material, Vendor } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEvent, useCallback } from 'react';
 import ReactSelect from 'react-select';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Info } from 'lucide-react';
 import { useFormatters } from '@/hooks/use-formatters';
 import InputAmount from '@/components/ui/input-amount';
 import DatePicker from '@/components/ui/date-picker';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useState } from 'react';
 
 type Props = {
     vendors: Vendor[];
@@ -96,6 +98,15 @@ function computeItem(item: ItemRow): ItemRow {
 
 export default function Create({ vendors, materials, charges }: Props) {
     const { formatAmount, formatDecimal } = useFormatters();
+    const [materialModal, setMaterialModal] = useState<{ open: boolean; material: Material | null }>({
+        open: false, material: null,
+    });
+
+    const openMaterialModal = (materialId: string) => {
+        const mat = materials.find((m) => String(m.id) === materialId);
+        if (mat) setMaterialModal({ open: true, material: mat });
+    };
+
     const { data, setData, post, processing, errors } = useForm({
         vendor_id:       '',
         order_date:      new Date().toISOString().split('T')[0],
@@ -254,6 +265,7 @@ export default function Create({ vendors, materials, charges }: Props) {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead className="min-w-[200px]">Material</TableHead>
+                                        <TableHead>Info</TableHead>
                                         <TableHead className="min-w-[100px]">Qty</TableHead>
                                         <TableHead className="min-w-[120px]">Unit Price</TableHead>
                                         <TableHead className="min-w-[100px]">Disc. Type</TableHead>
@@ -291,6 +303,23 @@ export default function Create({ vendors, materials, charges }: Props) {
                                                     styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                                                     unstyled
                                                 />
+                                            </TableCell>
+                                            <TableCell>
+                                                {item.material_id ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openMaterialModal(item.material_id)}
+                                                        className="relative flex items-center justify-center cursor-pointer overflow-hidden"
+                                                        title="View material details"
+                                                    >
+                                                        <span className="absolute inline-flex h-8 w-8 rounded-full bg-primary/20 animate-ping" />
+                                                        <span className="relative inline-flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors">
+                                                            <Info className="h-4 w-4 text-primary" />
+                                                        </span>
+                                                    </button>
+                                                ) : (
+                                                    <span className="text-xs text-muted-foreground">—</span>
+                                                )}
                                             </TableCell>
                                             <TableCell>
                                                 <InputAmount value={item.qty_ordered}
@@ -505,6 +534,43 @@ export default function Create({ vendors, materials, charges }: Props) {
                     </div>
                 </form>
             </div>
+
+            <Dialog open={materialModal.open} onOpenChange={(open) => setMaterialModal({ open, material: null })}>
+                <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>Material Information</DialogTitle>
+                    </DialogHeader>
+                    {materialModal.material && (() => {
+                        const m = materialModal.material;
+                        return (
+                            <div className="space-y-4 text-sm">
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div><p className="text-muted-foreground">Code</p><p className="font-medium">{m.code}</p></div>
+                                    <div><p className="text-muted-foreground">SKU</p><p>{m.sku || '-'}</p></div>
+                                    <div><p className="text-muted-foreground">Name</p><p className="font-medium">{m.name}</p></div>
+                                    <div className="col-span-2"><p className="text-muted-foreground">Description</p><p>{m.description || '-'}</p></div>
+                                </div>
+                                <div className="border-t pt-3 grid grid-cols-3 gap-3">
+                                    <div><p className="text-muted-foreground">Brand</p><p>{m.brand?.name || '-'}</p></div>
+                                    <div><p className="text-muted-foreground">Category</p><p>{m.category?.name || '-'}</p></div>
+                                    <div><p className="text-muted-foreground">UOM</p><p>{m.uom?.acronym || '-'}</p></div>
+                                </div>
+                                <div className="border-t pt-3 grid grid-cols-3 gap-3">
+                                    <div><p className="text-muted-foreground">Weight (kg)</p><p className="font-mono">{m.weight ? formatDecimal(Number(m.weight)) : '-'}</p></div>
+                                    <div><p className="text-muted-foreground">Length (m)</p><p className="font-mono">{m.length ? formatDecimal(Number(m.length)) : '-'}</p></div>
+                                    <div><p className="text-muted-foreground">Width (m)</p><p className="font-mono">{m.width ? formatDecimal(Number(m.width)) : '-'}</p></div>
+                                    <div><p className="text-muted-foreground">Height (m)</p><p className="font-mono">{m.height ? formatDecimal(Number(m.height)) : '-'}</p></div>
+                                    <div><p className="text-muted-foreground">Volume (m³)</p><p className="font-mono">{m.volume ? formatDecimal(Number(m.volume)) : '-'}</p></div>
+                                </div>
+                                <div className="border-t pt-3 grid grid-cols-2 gap-3">
+                                    <div><p className="text-muted-foreground">Unit Cost</p><p className="font-mono">{formatAmount(Number(m.unit_cost))}</p></div>
+                                    <div><p className="text-muted-foreground">Unit Price</p><p className="font-mono">{formatAmount(Number(m.unit_price))}</p></div>
+                                </div>
+                            </div>
+                        );
+                    })()}
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

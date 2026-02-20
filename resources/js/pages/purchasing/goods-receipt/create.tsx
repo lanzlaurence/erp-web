@@ -180,7 +180,7 @@ export default function Create({ purchaseOrder, destinations }: Props) {
                                         <TableHead>Info</TableHead>
                                         <TableHead>Qty Ordered</TableHead>
                                         <TableHead>Qty Received</TableHead>
-                                        <TableHead>Qty to Receive</TableHead>
+                                        <TableHead className="w-32 min-w-0">Qty to Receive</TableHead>
                                         <TableHead>Qty Remaining</TableHead>
                                         <TableHead>Unit Cost</TableHead>
                                         <TableHead>Serial No.</TableHead>
@@ -205,14 +205,21 @@ export default function Create({ purchaseOrder, destinations }: Props) {
                                                     <p className="text-xs text-muted-foreground">{material?.code}</p>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Button type="button" variant="ghost" size="sm"
-                                                        onClick={() => openMaterialModal(item.purchase_order_item_id)}>
-                                                        <Info className="h-4 w-4" />
-                                                    </Button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openMaterialModal(item.purchase_order_item_id)}
+                                                        className="relative flex items-center justify-center cursor-pointer overflow-hidden"
+                                                        title="View material details"
+                                                    >
+                                                        <span className="absolute inline-flex h-8 w-8 rounded-full bg-primary/20 animate-ping" />
+                                                        <span className="relative inline-flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors">
+                                                            <Info className="h-4 w-4 text-primary" />
+                                                        </span>
+                                                    </button>
                                                 </TableCell>
                                                 <TableCell className="font-mono">{formatDecimal(item.qty_ordered)}</TableCell>
                                                 <TableCell className="font-mono">{formatDecimal(item.qty_received)}</TableCell>
-                                                <TableCell>
+                                                <TableCell className="w-32">
                                                     <InputAmount
                                                         value={item.qty_to_receive}
                                                         onValueChange={(val) => {

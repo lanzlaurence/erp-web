@@ -149,7 +149,7 @@ export default function Edit({ goodsReceipt, destinations }: Props) {
                                         <TableHead>Material</TableHead>
                                         <TableHead>Qty Ordered</TableHead>
                                         <TableHead>Qty Received</TableHead>
-                                        <TableHead>Qty to Receive</TableHead>
+                                        <TableHead className="w-32 min-w-0">Qty to Receive</TableHead>
                                         <TableHead>Qty Remaining</TableHead>
                                         <TableHead>Unit Cost</TableHead>
                                         <TableHead>Serial No.</TableHead>
@@ -169,7 +169,7 @@ export default function Edit({ goodsReceipt, destinations }: Props) {
                                                 </TableCell>
                                                 <TableCell className="font-mono">{formatDecimal(item.qty_ordered)}</TableCell>
                                                 <TableCell className="font-mono">{formatDecimal(item.qty_received)}</TableCell>
-                                                <TableCell>
+                                                <TableCell className="w-32">
                                                     <InputAmount
                                                         value={item.qty_to_receive}
                                                         onValueChange={(val) => {

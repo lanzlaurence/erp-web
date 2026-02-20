@@ -14,7 +14,7 @@ class PurchaseOrder extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'po_number', 'vendor_id', 'user_id', 'status',
+        'code', 'po_number', 'vendor_id', 'user_id', 'status',
         'order_date', 'delivery_date', 'reference_no',
         'discount_type', 'discount_amount',
         'total_before_discount', 'total_item_discount',
@@ -44,7 +44,25 @@ class PurchaseOrder extends Model
             if (empty($po->po_number)) {
                 $po->po_number = self::generatePoNumber();
             }
+            if (empty($po->code)) {
+                $po->code = self::generateCode();
+            }
         });
+    }
+
+    public static function generateCode(): string
+    {
+        $yymm   = now()->format('ym'); // e.g. 2601
+        $prefix = '2' . $yymm;        // e.g. 22601
+
+        $last = self::withTrashed()
+            ->where('code', 'like', $prefix . '%')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $next = $last ? ((int) substr($last->code, -4)) + 1 : 1;
+
+        return $prefix . str_pad($next, 4, '0', STR_PAD_LEFT);
     }
 
     public static function generatePoNumber(): string

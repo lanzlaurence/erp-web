@@ -14,7 +14,7 @@ class GoodsReceipt extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'gr_number', 'purchase_order_id', 'user_id',
+        'code', 'gr_number', 'purchase_order_id', 'user_id',
         'destination_id', 'status', 'gr_date',
         'transaction_date', 'remarks',
     ];
@@ -31,7 +31,25 @@ class GoodsReceipt extends Model
             if (empty($gr->gr_number)) {
                 $gr->gr_number = self::generateGrNumber();
             }
+            if (empty($gr->code)) {
+                $gr->code = self::generateCode();
+            }
         });
+    }
+
+    public static function generateCode(): string
+    {
+        $yymm   = now()->format('ym'); // e.g. 2601
+        $prefix = '2' . $yymm;        // e.g. 22601
+
+        $last = self::withTrashed()
+            ->where('code', 'like', $prefix . '%')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $next = $last ? ((int) substr($last->code, -4)) + 1 : 1;
+
+        return $prefix . str_pad($next, 4, '0', STR_PAD_LEFT);
     }
 
     public static function generateGrNumber(): string

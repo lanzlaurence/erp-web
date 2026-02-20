@@ -45,10 +45,16 @@ class PurchaseOrderController extends Controller implements HasMiddleware
 
     public function create()
     {
+        $vendors   = Vendor::where('status', 'active')->get();
+        $materials = Material::where('status', 'active')
+            ->with(['brand', 'category', 'uom'])
+            ->get();
+        $charges   = Charge::where('status', 'active')->get();
+
         return Inertia::render('purchasing/purchase-order/create', [
-            'vendors'   => Vendor::where('status', 'active')->get(['id', 'code', 'name', 'payment_terms', 'credit_amount', 'address_line_1', 'city', 'country']),
-            'materials' => Material::where('status', 'active')->get(['id', 'code', 'name', 'unit_cost']),
-            'charges'   => Charge::where('status', 'active')->get(),
+            'vendors'   => $vendors,
+            'materials' => $materials,
+            'charges'   => $charges,
         ]);
     }
 
@@ -105,13 +111,19 @@ class PurchaseOrderController extends Controller implements HasMiddleware
                 ->withErrors(['error' => 'Only draft purchase orders can be edited.']);
         }
 
-        $purchaseOrder->load(['items.material', 'charges.charge', 'vendor']);
+        $vendors   = Vendor::where('status', 'active')->get();
+        $materials = Material::where('status', 'active')
+            ->with(['brand', 'category', 'uom'])
+            ->get();
+        $charges   = Charge::where('status', 'active')->get();
+
+        $purchaseOrder->load(['vendor', 'items.material', 'charges']);
 
         return Inertia::render('purchasing/purchase-order/edit', [
             'purchaseOrder' => $purchaseOrder,
-            'vendors'       => Vendor::where('status', 'active')->get(['id', 'code', 'name', 'payment_terms', 'credit_amount', 'address_line_1', 'city', 'country']),
-            'materials'     => Material::where('status', 'active')->get(['id', 'code', 'name', 'unit_cost']),
-            'charges'       => Charge::where('status', 'active')->get(),
+            'vendors'       => $vendors,
+            'materials'     => $materials,
+            'charges'       => $charges,
         ]);
     }
 

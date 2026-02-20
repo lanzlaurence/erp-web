@@ -73,8 +73,8 @@ export type Material = {
     min_stock_level: number;
     max_stock_level: number;
     reorder_level: number;
-    unit_cost: number | number;
-    unit_price: number | number;
+    unit_cost: string | number;
+    unit_price: string | number;
     status: 'active' | 'inactive';
     track_serial_number: boolean;
     track_batch_number: boolean;
