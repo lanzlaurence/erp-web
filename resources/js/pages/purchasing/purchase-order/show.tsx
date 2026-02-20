@@ -7,7 +7,7 @@ import type { PurchaseOrderStatus } from '@/types/transactions';
 import { useFormatters } from '@/hooks/use-formatters';
 import { usePermissions } from '@/hooks/use-permissions';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Edit, CheckCircle, XCircle, RotateCcw, PackageCheck } from 'lucide-react';
+import { ArrowLeft, Edit, CheckCircle, XCircle, RotateCcw, PackageCheck, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
@@ -16,13 +16,12 @@ const STATUS_BADGE: Record<PurchaseOrderStatus, { label: string; variant: 'defau
     posted:             { label: 'Posted',           variant: 'default' },
     partially_received: { label: 'Partial Received', variant: 'outline' },
     fully_received:     { label: 'Fully Received',   variant: 'success' },
-    completed:          { label: 'Completed',        variant: 'success' },
     cancelled:          { label: 'Cancelled',        variant: 'destructive' },
 };
 
 type ConfirmAction = {
     open: boolean;
-    action: 'post' | 'cancel' | 'complete' | 'revert' | null;
+    action: 'post' | 'cancel' | 'revert' | null;
     label: string;
     description: string;
 };
@@ -65,6 +64,7 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/purchase-orders"><ArrowLeft className="mr-2 h-4 w-4" />Back</Link>
                         </Button>
+
                         {hasPermission('po-edit') && purchaseOrder.status === 'draft' && (
                             <Button variant="outline" size="sm" asChild>
                                 <Link href={`/purchase-orders/${purchaseOrder.id}/edit`}>
@@ -72,37 +72,48 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                                 </Link>
                             </Button>
                         )}
+
                         {hasPermission('po-post') && purchaseOrder.status === 'draft' && (
                             <Button size="sm"
                                 onClick={() => triggerAction('post', 'Post Purchase Order', 'This will post the purchase order and lock it from editing.')}>
                                 <CheckCircle className="mr-2 h-4 w-4" />Post
                             </Button>
                         )}
+
                         {hasPermission('po-revert') && purchaseOrder.status === 'posted' && (
                             <Button size="sm" variant="outline"
                                 onClick={() => triggerAction('revert', 'Revert to Draft', 'This will revert the purchase order back to draft status.')}>
-                                <RotateCcw className="mr-2 h-4 w-4" />Revert
+                                <RotateCcw className="mr-2 h-4 w-4" />Revert to Draft
                             </Button>
                         )}
-                        {hasPermission('gr-create') && purchaseOrder.status !== undefined && (() => {
-                            const canGR = ['posted', 'partially_received'].includes(purchaseOrder.status);
-                            return canGR ? (
-                                <Button size="sm" asChild>
-                                    <Link href={`/purchase-orders/${purchaseOrder.id}/goods-receipts/create`}>
-                                        <PackageCheck className="mr-2 h-4 w-4" />Create GR
-                                    </Link>
+
+                        {hasPermission('gr-create') && ['posted', 'partially_received'].includes(purchaseOrder.status) && (
+                            <Button size="sm" asChild>
+                                <Link href={`/purchase-orders/${purchaseOrder.id}/goods-receipts/create`}>
+                                    <PackageCheck className="mr-2 h-4 w-4" />Create GR
+                                </Link>
+                            </Button>
+                        )}
+
+                        {/* Cancel */}
+                        {hasPermission('po-cancel') && !['draft', 'cancelled'].includes(purchaseOrder.status) && (() => {
+                            const hasCompletedGr = purchaseOrder.goodsReceipts?.some((gr) => gr.status === 'completed');
+                            return hasCompletedGr ? (
+                                <Button size="sm" variant="outline" disabled title="Cancel all goods receipts before cancelling this PO">
+                                    <XCircle className="mr-2 h-4 w-4" />Cancel
                                 </Button>
-                            ) : null;
+                            ) : (
+                                <Button size="sm" variant="destructive"
+                                    onClick={() => triggerAction('cancel', 'Cancel Purchase Order', 'This will cancel the purchase order.')}>
+                                    <XCircle className="mr-2 h-4 w-4" />Cancel
+                                </Button>
+                            );
                         })()}
-                        {hasPermission('po-complete') && purchaseOrder.status === 'fully_received' && (
-                            <Button size="sm"
-                                onClick={() => triggerAction('complete', 'Complete Purchase Order', 'This will mark the purchase order as completed.')}>
-                                <CheckCircle className="mr-2 h-4 w-4" />Complete
-                            </Button>
-                        )}
-                        {hasPermission('po-cancel') && ['draft', 'posted', 'partially_received'].includes(purchaseOrder.status) && (
+
+                        {/* Allow cancel from draft too */}
+                        {hasPermission('po-cancel') && purchaseOrder.status === 'draft' && (
                             <Button size="sm" variant="destructive"
-                                onClick={() => triggerAction('cancel', 'Cancel Purchase Order', 'This will cancel the purchase order. This action may not be reversible.')}>
+                                onClick={() => triggerAction('cancel', 'Cancel Purchase Order', 'This will cancel the purchase order.')}>
                                 <XCircle className="mr-2 h-4 w-4" />Cancel
                             </Button>
                         )}
@@ -260,33 +271,49 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                 )}
 
                 {/* Goods Receipts */}
-                {purchaseOrder.goodsReceipts && purchaseOrder.goodsReceipts.length > 0 && (
+                {purchaseOrder.goods_receipts && purchaseOrder.goods_receipts.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
-                        <h3 className="font-semibold">Goods Receipts</h3>
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-semibold">
+                                Goods Receipts
+                                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                                    ({purchaseOrder.goods_receipts.length})
+                                </span>
+                            </h3>
+                        </div>
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>GR Number</TableHead>
+                                    <TableHead>GR Code</TableHead>
                                     <TableHead>Destination</TableHead>
                                     <TableHead>GR Date</TableHead>
+                                    <TableHead>Transaction Date</TableHead>
                                     <TableHead>Status</TableHead>
+                                    <TableHead>Created By</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {purchaseOrder.goodsReceipts.map((gr) => (
+                                {purchaseOrder.goods_receipts.map((gr) => (
                                     <TableRow key={gr.id}>
-                                        <TableCell className="font-mono">{gr.gr_number}</TableCell>
+                                        <TableCell className="font-mono font-medium">{gr.code}</TableCell>
                                         <TableCell>{gr.destination?.name}</TableCell>
                                         <TableCell>{formatDate(gr.gr_date)}</TableCell>
+                                        <TableCell>{formatDate(gr.transaction_date)}</TableCell>
                                         <TableCell>
-                                            <Badge variant={gr.status === 'completed' ? 'success' : gr.status === 'cancelled' ? 'destructive' : 'outline'}>
-                                                {gr.status.replace(/_/g, ' ')}
+                                            <Badge variant={
+                                                gr.status === 'completed' ? 'success' :
+                                                gr.status === 'cancelled' ? 'destructive' : 'secondary'
+                                            }>
+                                                {gr.status.charAt(0).toUpperCase() + gr.status.slice(1)}
                                             </Badge>
                                         </TableCell>
+                                        <TableCell className="text-sm text-muted-foreground">{gr.user?.name}</TableCell>
                                         <TableCell className="text-right">
                                             <Button variant="ghost" size="sm" asChild>
-                                                <Link href={`/goods-receipts/${gr.id}`}>View</Link>
+                                                <Link href={`/goods-receipts/${gr.id}`}>
+                                                    <Eye className="h-4 w-4" />
+                                                </Link>
                                             </Button>
                                         </TableCell>
                                     </TableRow>
@@ -299,7 +326,7 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                 {/* Logs */}
                 {purchaseOrder.logs && purchaseOrder.logs.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
-                        <h3 className="font-semibold">Activity Log</h3>
+                        <h3 className="font-semibold">Transaction Log</h3>
                         <div className="space-y-3">
                             {purchaseOrder.logs.map((log) => (
                                 <div key={log.id} className="flex items-start gap-3 text-sm">

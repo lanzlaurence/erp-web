@@ -22,7 +22,6 @@ return new class extends Migration
                 'posted',
                 'partially_received',
                 'fully_received',
-                'completed',
                 'cancelled',
             ])->default('draft');
             $table->date('order_date');

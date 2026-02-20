@@ -75,7 +75,6 @@ class PermissionRoleUserSeeder extends Seeder
             'po-delete',
             'po-post',
             'po-cancel',
-            'po-complete',
             'po-revert',
             'gr-view',
             'gr-create',

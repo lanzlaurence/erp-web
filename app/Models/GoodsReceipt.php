@@ -28,36 +28,23 @@ class GoodsReceipt extends Model
     {
         parent::boot();
         static::creating(function ($gr) {
-            if (empty($gr->gr_number)) {
-                $gr->gr_number = self::generateGrNumber();
-            }
-            if (empty($gr->code)) {
-                $gr->code = self::generateCode();
-            }
+            if (empty($gr->gr_number)) $gr->gr_number = self::generateGrNumber();
+            if (empty($gr->code))      $gr->code      = self::generateCode();
         });
     }
 
     public static function generateCode(): string
     {
-        $yymm   = now()->format('ym'); // e.g. 2601
-        $prefix = '2' . $yymm;        // e.g. 22601
-
-        $last = self::withTrashed()
-            ->where('code', 'like', $prefix . '%')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $next = $last ? ((int) substr($last->code, -4)) + 1 : 1;
-
+        $prefix = '2' . now()->format('ym');
+        $last   = self::withTrashed()->where('code', 'like', $prefix . '%')->orderBy('id', 'desc')->first();
+        $next   = $last ? ((int) substr($last->code, -4)) + 1 : 1;
         return $prefix . str_pad($next, 4, '0', STR_PAD_LEFT);
     }
 
     public static function generateGrNumber(): string
     {
         $prefix = 'GR-' . now()->format('Ym');
-        $last   = self::withTrashed()
-            ->where('gr_number', 'like', $prefix . '%')
-            ->orderBy('id', 'desc')->first();
+        $last   = self::withTrashed()->where('gr_number', 'like', $prefix . '%')->orderBy('id', 'desc')->first();
         $next   = $last ? ((int) substr($last->gr_number, -4)) + 1 : 1;
         return $prefix . str_pad($next, 4, '0', STR_PAD_LEFT);
     }
@@ -67,4 +54,12 @@ class GoodsReceipt extends Model
     public function destination(): BelongsTo   { return $this->belongsTo(Destination::class); }
     public function items(): HasMany           { return $this->hasMany(GoodsReceiptItem::class); }
     public function logs(): MorphMany          { return $this->morphMany(TransactionLog::class, 'loggable'); }
+
+    // ── Permission checks ─────────────────────────────────────────────────────
+    public function canBeEdited(): bool    { return $this->status === 'pending'; }
+    public function canBeDeleted(): bool   { return $this->status === 'pending'; }
+    public function canBeCompleted(): bool { return $this->status === 'pending'; }
+    public function canBeCancelled(): bool { return in_array($this->status, ['pending', 'completed']); }
+    public function canBeReverted(): bool  { return $this->status === 'cancelled'; }
+    public function wasCompleted(): bool   { return $this->status === 'completed'; }
 }

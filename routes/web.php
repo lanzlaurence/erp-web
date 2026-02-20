@@ -53,10 +53,9 @@ Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(fun
 
     // Purchase Orders
     Route::resource('purchase-orders', App\Http\Controllers\PurchaseOrderController::class);
-    Route::post('purchase-orders/{purchaseOrder}/post',     [App\Http\Controllers\PurchaseOrderController::class, 'post'])->name('purchase-orders.post');
-    Route::post('purchase-orders/{purchaseOrder}/cancel',   [App\Http\Controllers\PurchaseOrderController::class, 'cancel'])->name('purchase-orders.cancel');
-    Route::post('purchase-orders/{purchaseOrder}/complete', [App\Http\Controllers\PurchaseOrderController::class, 'complete'])->name('purchase-orders.complete');
-    Route::post('purchase-orders/{purchaseOrder}/revert',   [App\Http\Controllers\PurchaseOrderController::class, 'revert'])->name('purchase-orders.revert');
+    Route::post('purchase-orders/{purchaseOrder}/post',   [App\Http\Controllers\PurchaseOrderController::class, 'post'])->name('purchase-orders.post');
+    Route::post('purchase-orders/{purchaseOrder}/cancel', [App\Http\Controllers\PurchaseOrderController::class, 'cancel'])->name('purchase-orders.cancel');
+    Route::post('purchase-orders/{purchaseOrder}/revert', [App\Http\Controllers\PurchaseOrderController::class, 'revert'])->name('purchase-orders.revert');
 
     // Goods Receipts
     Route::resource('goods-receipts', App\Http\Controllers\GoodsReceiptController::class);

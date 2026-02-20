@@ -9,7 +9,6 @@ export type PurchaseOrderStatus =
     | 'posted'
     | 'partially_received'
     | 'fully_received'
-    | 'completed'
     | 'cancelled';
 
 export type DiscountType = 'fixed' | 'percentage';
@@ -88,8 +87,6 @@ export type PurchaseOrder = {
 
 export type GoodsReceiptStatus =
     | 'pending'
-    | 'partially_received'
-    | 'fully_received'
     | 'completed'
     | 'cancelled';
 

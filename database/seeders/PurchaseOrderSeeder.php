@@ -25,22 +25,21 @@ class PurchaseOrderSeeder extends Seeder
         $vendors      = Vendor::where('status', 'active')->get();
         $materials    = Material::where('status', 'active')->get();
         $destinations = Destination::all();
-        $charges      = Charge::where('status', 'active')->get();
 
         $orders = [
+            // 1. Fully received + completed GR
             [
                 'vendor_code'   => '200001',
                 'order_date'    => '2026-01-05',
                 'delivery_date' => '2026-01-15',
                 'reference_no'  => 'REF-2026-001',
-                'status'        => 'completed',
+                'status'        => 'fully_received',
                 'remarks'       => 'First order of the year',
                 'items' => [
-                    ['code' => '300001', 'qty' => 50,  'unit_price' => 240.00, 'discount_type' => 'percentage', 'discount_amount' => 5,   'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
-                    ['code' => '300002', 'qty' => 100, 'unit_price' => 170.00, 'discount_type' => null,         'discount_amount' => 0,   'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
-                    ['code' => '300003', 'qty' => 30,  'unit_price' => 620.00, 'discount_type' => 'fixed',      'discount_amount' => 20,  'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300001', 'qty' => 50,  'unit_price' => 240.00, 'discount_type' => 'percentage', 'discount_amount' => 5,  'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300002', 'qty' => 100, 'unit_price' => 170.00, 'discount_type' => null,         'discount_amount' => 0,  'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300003', 'qty' => 30,  'unit_price' => 620.00, 'discount_type' => 'fixed',      'discount_amount' => 20, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
                 ],
-                'charge_codes' => [],
                 'gr' => [
                     [
                         'destination_code' => 'WH-MNL',
@@ -56,6 +55,7 @@ class PurchaseOrderSeeder extends Seeder
                     ],
                 ],
             ],
+            // 2. Fully received + completed GR
             [
                 'vendor_code'   => '200002',
                 'order_date'    => '2026-01-12',
@@ -64,10 +64,9 @@ class PurchaseOrderSeeder extends Seeder
                 'status'        => 'fully_received',
                 'remarks'       => 'Electrical supplies order',
                 'items' => [
-                    ['code' => '300005', 'qty' => 80,  'unit_price' => 820.00, 'discount_type' => 'percentage', 'discount_amount' => 5,  'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
-                    ['code' => '300007', 'qty' => 150, 'unit_price' => 110.00, 'discount_type' => null,         'discount_amount' => 0,  'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
+                    ['code' => '300005', 'qty' => 80,  'unit_price' => 820.00, 'discount_type' => 'percentage', 'discount_amount' => 5, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300007', 'qty' => 150, 'unit_price' => 110.00, 'discount_type' => null,         'discount_amount' => 0, 'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
                 ],
-                'charge_codes' => [],
                 'gr' => [
                     [
                         'destination_code' => 'WH-CEB',
@@ -82,6 +81,7 @@ class PurchaseOrderSeeder extends Seeder
                     ],
                 ],
             ],
+            // 3. Partially received — 2 GRs (1 completed, 1 pending)
             [
                 'vendor_code'   => '200001',
                 'order_date'    => '2026-01-20',
@@ -90,11 +90,10 @@ class PurchaseOrderSeeder extends Seeder
                 'status'        => 'partially_received',
                 'remarks'       => 'Partial delivery expected',
                 'items' => [
-                    ['code' => '300004', 'qty' => 40,  'unit_price' => 1150.00, 'discount_type' => 'fixed',      'discount_amount' => 50, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
-                    ['code' => '300006', 'qty' => 500, 'unit_price' => 42.00,   'discount_type' => 'percentage', 'discount_amount' => 3,  'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
-                    ['code' => '300009', 'qty' => 20,  'unit_price' => 1800.00, 'discount_type' => null,         'discount_amount' => 0,  'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300004', 'qty' => 40,  'unit_price' => 1150.00, 'discount_type' => 'fixed',      'discount_amount' => 50, 'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300006', 'qty' => 500, 'unit_price' => 42.00,   'discount_type' => 'percentage', 'discount_amount' => 3,  'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300009', 'qty' => 20,  'unit_price' => 1800.00, 'discount_type' => null,         'discount_amount' => 0,  'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
                 ],
-                'charge_codes' => [],
                 'gr' => [
                     [
                         'destination_code' => 'WH-MNL',
@@ -108,8 +107,21 @@ class PurchaseOrderSeeder extends Seeder
                             ['code' => '300009', 'qty_to_receive' => 10],
                         ],
                     ],
+                    [
+                        'destination_code' => 'WH-MNL',
+                        'gr_date'          => '2026-02-03',
+                        'transaction_date' => '2026-02-03',
+                        'status'           => 'pending',
+                        'remarks'          => 'Second delivery pending',
+                        'items' => [
+                            ['code' => '300004', 'qty_to_receive' => 20],
+                            ['code' => '300006', 'qty_to_receive' => 200],
+                            ['code' => '300009', 'qty_to_receive' => 10],
+                        ],
+                    ],
                 ],
             ],
+            // 4. Posted — no GR yet
             [
                 'vendor_code'   => '200003',
                 'order_date'    => '2026-02-01',
@@ -118,13 +130,13 @@ class PurchaseOrderSeeder extends Seeder
                 'status'        => 'posted',
                 'remarks'       => 'Pending delivery',
                 'items' => [
-                    ['code' => '300008', 'qty' => 20,  'unit_price' => 750.00,  'discount_type' => null,         'discount_amount' => 0,  'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
-                    ['code' => '300011', 'qty' => 300, 'unit_price' => 26.00,   'discount_type' => 'percentage', 'discount_amount' => 5,  'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
-                    ['code' => '300012', 'qty' => 30,  'unit_price' => 580.00,  'discount_type' => null,         'discount_amount' => 0,  'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
+                    ['code' => '300008', 'qty' => 20,  'unit_price' => 750.00, 'discount_type' => null,         'discount_amount' => 0, 'is_vatable' => false, 'vat_type' => null, 'vat_rate' => 0],
+                    ['code' => '300011', 'qty' => 300, 'unit_price' => 26.00,  'discount_type' => 'percentage', 'discount_amount' => 5, 'is_vatable' => false, 'vat_type' => null, 'vat_rate' => 0],
+                    ['code' => '300012', 'qty' => 30,  'unit_price' => 580.00, 'discount_type' => null,         'discount_amount' => 0, 'is_vatable' => false, 'vat_type' => null, 'vat_rate' => 0],
                 ],
-                'charge_codes' => [],
                 'gr' => [],
             ],
+            // 5. Draft — no GR
             [
                 'vendor_code'   => '200002',
                 'order_date'    => '2026-02-05',
@@ -133,10 +145,22 @@ class PurchaseOrderSeeder extends Seeder
                 'status'        => 'draft',
                 'remarks'       => 'Draft order for review',
                 'items' => [
-                    ['code' => '300013', 'qty' => 50,  'unit_price' => 170.00,  'discount_type' => null,         'discount_amount' => 0,  'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
-                    ['code' => '300014', 'qty' => 100, 'unit_price' => 230.00,  'discount_type' => 'fixed',      'discount_amount' => 10, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300013', 'qty' => 50,  'unit_price' => 170.00, 'discount_type' => null,    'discount_amount' => 0,  'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
+                    ['code' => '300014', 'qty' => 100, 'unit_price' => 230.00, 'discount_type' => 'fixed', 'discount_amount' => 10, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
                 ],
-                'charge_codes' => [],
+                'gr' => [],
+            ],
+            // 6. Cancelled PO
+            [
+                'vendor_code'   => '200001',
+                'order_date'    => '2026-02-08',
+                'delivery_date' => '2026-02-22',
+                'reference_no'  => 'REF-2026-006',
+                'status'        => 'cancelled',
+                'remarks'       => 'Cancelled order',
+                'items' => [
+                    ['code' => '300001', 'qty' => 10, 'unit_price' => 240.00, 'discount_type' => null, 'discount_amount' => 0, 'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
+                ],
                 'gr' => [],
             ],
         ];
@@ -145,17 +169,17 @@ class PurchaseOrderSeeder extends Seeder
             $vendor = $vendors->where('code', $orderData['vendor_code'])->first();
             if (!$vendor) continue;
 
-            DB::transaction(function () use ($orderData, $vendor, $materials, $destinations, $charges, $user) {
-                // Create PO
+            DB::transaction(function () use ($orderData, $vendor, $materials, $destinations, $user) {
+                // ── Create PO ────────────────────────────────────────────────
                 $po = PurchaseOrder::create([
-                    'vendor_id'      => $vendor->id,
-                    'user_id'        => $user->id,
-                    'status'         => 'draft',
-                    'order_date'     => $orderData['order_date'],
-                    'delivery_date'  => $orderData['delivery_date'],
-                    'reference_no'   => $orderData['reference_no'],
-                    'remarks'        => $orderData['remarks'],
-                    'discount_type'  => null,
+                    'vendor_id'       => $vendor->id,
+                    'user_id'         => $user->id,
+                    'status'          => 'draft',
+                    'order_date'      => $orderData['order_date'],
+                    'delivery_date'   => $orderData['delivery_date'],
+                    'reference_no'    => $orderData['reference_no'],
+                    'remarks'         => $orderData['remarks'],
+                    'discount_type'   => null,
                     'discount_amount' => 0,
                 ]);
 
@@ -166,35 +190,29 @@ class PurchaseOrderSeeder extends Seeder
                     'remarks'   => 'Purchase order created',
                 ]);
 
-                // Create items
+                // ── Create items ─────────────────────────────────────────────
                 foreach ($orderData['items'] as $index => $itemData) {
                     $material = $materials->where('code', $itemData['code'])->first();
                     if (!$material) continue;
 
-                    $unitPrice    = $itemData['unit_price'];
-                    $qty          = $itemData['qty'];
-                    $discountType = $itemData['discount_type'];
-                    $discountAmt  = $itemData['discount_amount'];
-                    $isVatable    = $itemData['is_vatable'];
-                    $vatType      = $itemData['vat_type'];
-                    $vatRate      = $itemData['vat_rate'];
+                    $unitPrice   = $itemData['unit_price'];
+                    $qty         = $itemData['qty'];
+                    $discType    = $itemData['discount_type'];
+                    $discAmt     = $itemData['discount_amount'];
+                    $isVatable   = $itemData['is_vatable'];
+                    $vatType     = $itemData['vat_type'];
+                    $vatRate     = $itemData['vat_rate'];
 
                     $unitAfterDiscount = $unitPrice;
-                    if ($discountType === 'fixed') {
-                        $unitAfterDiscount = max(0, $unitPrice - $discountAmt);
-                    } elseif ($discountType === 'percentage') {
-                        $unitAfterDiscount = $unitPrice * (1 - $discountAmt / 100);
-                    }
+                    if ($discType === 'fixed')      $unitAfterDiscount = max(0, $unitPrice - $discAmt);
+                    elseif ($discType === 'percentage') $unitAfterDiscount = $unitPrice * (1 - $discAmt / 100);
 
                     $netPrice = $unitAfterDiscount * $qty;
                     $vatPrice = 0;
-                    if ($isVatable && $vatType === 'exclusive') {
-                        $vatPrice = $netPrice * ($vatRate / 100);
-                    } elseif ($isVatable && $vatType === 'inclusive') {
-                        $vatPrice = $netPrice - ($netPrice / (1 + $vatRate / 100));
-                    }
+                    if ($isVatable && $vatType === 'exclusive') $vatPrice = $netPrice * ($vatRate / 100);
+                    elseif ($isVatable && $vatType === 'inclusive') $vatPrice = $netPrice - ($netPrice / (1 + $vatRate / 100));
 
-                    $grossPrice = $vatType === 'exclusive' ? $netPrice + $vatPrice : $netPrice;
+                    $grossPrice = ($vatType === 'exclusive') ? $netPrice + $vatPrice : $netPrice;
 
                     PurchaseOrderItem::create([
                         'purchase_order_id'         => $po->id,
@@ -203,8 +221,8 @@ class PurchaseOrderSeeder extends Seeder
                         'qty_ordered'               => $qty,
                         'qty_received'              => 0,
                         'unit_price'                => $unitPrice,
-                        'discount_type'             => $discountType,
-                        'discount_amount'           => $discountAmt,
+                        'discount_type'             => $discType,
+                        'discount_amount'           => $discAmt,
                         'unit_price_after_discount' => $unitAfterDiscount,
                         'net_price'                 => $netPrice,
                         'is_vatable'                => $isVatable,
@@ -215,27 +233,21 @@ class PurchaseOrderSeeder extends Seeder
                     ]);
                 }
 
-                // Recalculate totals
+                // ── Recalculate totals ────────────────────────────────────────
                 $po->refresh();
-                $items               = $po->items;
-                $totalBeforeDiscount = $items->sum(fn($i) => (float)$i->unit_price * (float)$i->qty_ordered);
-                $totalItemDiscount   = $items->sum(fn($i) => ((float)$i->unit_price - (float)$i->unit_price_after_discount) * (float)$i->qty_ordered);
-                $totalNetPrice       = $items->sum(fn($i) => (float)$i->net_price);
-                $totalVat            = $items->sum(fn($i) => (float)$i->vat_price);
-                $totalGross          = $items->sum(fn($i) => (float)$i->gross_price);
-
+                $items = $po->items;
                 $po->update([
-                    'total_before_discount' => $totalBeforeDiscount,
-                    'total_item_discount'   => $totalItemDiscount,
-                    'total_net_price'       => $totalNetPrice,
-                    'total_vat'             => $totalVat,
-                    'total_gross'           => $totalGross,
+                    'total_before_discount' => $items->sum(fn($i) => (float)$i->unit_price * (float)$i->qty_ordered),
+                    'total_item_discount'   => $items->sum(fn($i) => ((float)$i->unit_price - (float)$i->unit_price_after_discount) * (float)$i->qty_ordered),
+                    'total_net_price'       => $items->sum(fn($i) => (float)$i->net_price),
+                    'total_vat'             => $items->sum(fn($i) => (float)$i->vat_price),
+                    'total_gross'           => $items->sum(fn($i) => (float)$i->gross_price),
                     'header_discount_total' => 0,
                     'total_charges'         => 0,
-                    'grand_total'           => $totalGross,
+                    'grand_total'           => $items->sum(fn($i) => (float)$i->gross_price),
                 ]);
 
-                // Post if not draft
+                // ── Post if not draft ─────────────────────────────────────────
                 if ($orderData['status'] !== 'draft') {
                     $po->update(['status' => 'posted']);
                     $po->logs()->create([
@@ -247,7 +259,20 @@ class PurchaseOrderSeeder extends Seeder
                     ]);
                 }
 
-                // Create GRs
+                // ── Handle cancelled PO (no GRs) ──────────────────────────────
+                if ($orderData['status'] === 'cancelled') {
+                    $po->update(['status' => 'cancelled']);
+                    $po->logs()->create([
+                        'user_id'     => $user->id,
+                        'action'      => 'cancelled',
+                        'from_status' => 'posted',
+                        'to_status'   => 'cancelled',
+                        'remarks'     => 'Purchase order cancelled',
+                    ]);
+                    return;
+                }
+
+                // ── Create GRs ───────────────────────────────────────────────
                 foreach ($orderData['gr'] as $grData) {
                     $destination = $destinations->where('code', $grData['destination_code'])->first();
                     if (!$destination) continue;
@@ -269,8 +294,7 @@ class PurchaseOrderSeeder extends Seeder
                         'remarks'   => 'GR created',
                     ]);
 
-                    $allFull = true;
-
+                    // ── Create GR items ───────────────────────────────────────
                     foreach ($grData['items'] as $grItemData) {
                         $material = $materials->where('code', $grItemData['code'])->first();
                         if (!$material) continue;
@@ -281,7 +305,6 @@ class PurchaseOrderSeeder extends Seeder
                         $qtyToReceive = $grItemData['qty_to_receive'];
                         $qtyReceived  = (float) $poItem->qty_received;
                         $qtyOrdered   = (float) $poItem->qty_ordered;
-                        $qtyRemaining = $qtyOrdered - $qtyReceived - $qtyToReceive;
 
                         GoodsReceiptItem::create([
                             'goods_receipt_id'       => $gr->id,
@@ -290,21 +313,25 @@ class PurchaseOrderSeeder extends Seeder
                             'qty_ordered'            => $qtyOrdered,
                             'qty_received'           => $qtyReceived,
                             'qty_to_receive'         => $qtyToReceive,
-                            'qty_remaining'          => $qtyRemaining,
+                            'qty_remaining'          => $qtyOrdered - $qtyReceived - $qtyToReceive,
                             'unit_cost'              => $poItem->unit_price_after_discount,
                         ]);
 
-                        // Update PO item qty_received
-                        $poItem->update(['qty_received' => $qtyReceived + $qtyToReceive]);
-
-                        if ($qtyReceived + $qtyToReceive < $qtyOrdered) {
-                            $allFull = false;
-                        }
-
-                        // Update inventory
+                        // Update PO item qty_received only for completed GRs
                         if ($grData['status'] === 'completed') {
+                            $poItem->update(['qty_received' => $qtyReceived + $qtyToReceive]);
+                            $poItem->refresh();
+                        }
+                    }
+
+                    // ── Complete GR + update inventory ────────────────────────
+                    if ($grData['status'] === 'completed') {
+                        foreach ($gr->items as $grItem) {
+                            $qtyToReceive = (float) $grItem->qty_to_receive;
+                            if ($qtyToReceive <= 0) continue;
+
                             $inventory = Inventory::withTrashed()
-                                ->where('material_id', $material->id)
+                                ->where('material_id', $grItem->material_id)
                                 ->where('destination_id', $destination->id)
                                 ->first();
 
@@ -316,7 +343,7 @@ class PurchaseOrderSeeder extends Seeder
                                 $qtyBefore = 0;
                                 $inventory = Inventory::create([
                                     'code'           => Inventory::generateCode(),
-                                    'material_id'    => $material->id,
+                                    'material_id'    => $grItem->material_id,
                                     'destination_id' => $destination->id,
                                     'quantity'       => $qtyToReceive,
                                 ]);
@@ -325,7 +352,7 @@ class PurchaseOrderSeeder extends Seeder
                             InventoryLog::create([
                                 'movement_code'   => InventoryLog::generateMovementCode(),
                                 'inventory_id'    => $inventory->id,
-                                'material_id'     => $material->id,
+                                'material_id'     => $grItem->material_id,
                                 'destination_id'  => $destination->id,
                                 'user_id'         => $user->id,
                                 'type'            => 'purchase_receipt',
@@ -337,26 +364,22 @@ class PurchaseOrderSeeder extends Seeder
                                 'remarks'         => "GR {$gr->gr_number} received",
                             ]);
                         }
-                    }
 
-                    // Update GR status
-                    if ($grData['status'] === 'completed') {
-                        $grStatus = $allFull ? 'fully_received' : 'partially_received';
-                        $gr->update(['status' => $grStatus]);
+                        $gr->update(['status' => 'completed']);
                         $gr->logs()->create([
                             'user_id'     => $user->id,
                             'action'      => 'completed',
                             'from_status' => 'pending',
-                            'to_status'   => $grStatus,
+                            'to_status'   => 'completed',
                             'remarks'     => 'GR completed',
                         ]);
                     }
                 }
 
-                // Final PO status
-                $po->refresh();
+                // ── Final PO status ───────────────────────────────────────────
                 $finalStatus = $orderData['status'];
-                if (!in_array($finalStatus, ['draft', 'posted'])) {
+                if (!in_array($finalStatus, ['draft', 'posted', 'cancelled'])) {
+                    $po->refresh();
                     $po->update(['status' => $finalStatus]);
                     $po->logs()->create([
                         'user_id'     => $user->id,

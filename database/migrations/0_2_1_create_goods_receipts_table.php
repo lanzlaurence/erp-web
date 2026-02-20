@@ -20,8 +20,6 @@ return new class extends Migration
             $table->foreignId('destination_id')->constrained()->cascadeOnDelete();
             $table->enum('status', [
                 'pending',
-                'partially_received',
-                'fully_received',
                 'completed',
                 'cancelled',
             ])->default('pending');

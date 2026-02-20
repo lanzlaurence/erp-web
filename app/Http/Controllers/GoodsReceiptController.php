@@ -19,13 +19,13 @@ use Inertia\Inertia;
 
 class GoodsReceiptController extends Controller implements HasMiddleware
 {
-    public static function middleware(): array
+        public static function middleware(): array
     {
         return [
             new Middleware('permission:gr-view',     only: ['index', 'show']),
             new Middleware('permission:gr-create',   only: ['create', 'store']),
             new Middleware('permission:gr-edit',     only: ['edit', 'update']),
-            new Middleware('permission:gr-delete', only: ['destroy']),
+            new Middleware('permission:gr-delete',   only: ['destroy']),
             new Middleware('permission:gr-complete', only: ['complete']),
             new Middleware('permission:gr-cancel',   only: ['cancel']),
             new Middleware('permission:gr-revert',   only: ['revert']),
@@ -214,28 +214,21 @@ class GoodsReceiptController extends Controller implements HasMiddleware
 
     public function complete(GoodsReceipt $goodsReceipt)
     {
-        if (!in_array($goodsReceipt->status, ['pending', 'partially_received'])) {
-            return back()->withErrors(['error' => 'Goods receipt cannot be completed.']);
+        if (!$goodsReceipt->canBeCompleted()) {
+            return back()->withErrors(['error' => 'Only pending goods receipts can be completed.']);
         }
 
         DB::transaction(function () use ($goodsReceipt) {
-            $fromStatus = $goodsReceipt->status;
-            $po         = $goodsReceipt->purchaseOrder;
-            $allFull    = true;
+            $po = $goodsReceipt->purchaseOrder;
 
             foreach ($goodsReceipt->items as $grItem) {
                 $qtyToReceive = (float) $grItem->qty_to_receive;
-
                 if ($qtyToReceive <= 0) continue;
 
                 // Update PO item qty_received
-                $poItem = $grItem->purchaseOrderItem;
+                $poItem         = $grItem->purchaseOrderItem;
                 $newQtyReceived = (float) $poItem->qty_received + $qtyToReceive;
                 $poItem->update(['qty_received' => $newQtyReceived]);
-
-                if ($newQtyReceived < (float) $poItem->qty_ordered) {
-                    $allFull = false;
-                }
 
                 // Update inventory
                 $inventory = Inventory::withTrashed()
@@ -257,7 +250,6 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                     ]);
                 }
 
-                // Inventory log
                 InventoryLog::create([
                     'movement_code'   => InventoryLog::generateMovementCode(),
                     'inventory_id'    => $inventory->id,
@@ -270,34 +262,21 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                     'quantity_after'  => $qtyBefore + $qtyToReceive,
                     'reference_id'    => $goodsReceipt->id,
                     'reference_type'  => GoodsReceipt::class,
-                    'remarks'         => "GR {$goodsReceipt->gr_number} received",
+                    'remarks'         => "GR {$goodsReceipt->gr_number} completed",
                 ]);
             }
 
-            // Update GR status
-            $grStatus = $allFull ? 'fully_received' : 'partially_received';
-            $goodsReceipt->update(['status' => $grStatus]);
-
+            $goodsReceipt->update(['status' => 'completed']);
             $goodsReceipt->logs()->create([
                 'user_id'     => Auth::id(),
                 'action'      => 'completed',
-                'from_status' => $fromStatus,
-                'to_status'   => $grStatus,
+                'from_status' => 'pending',
+                'to_status'   => 'completed',
                 'remarks'     => 'Goods receipt completed and inventory updated',
             ]);
 
             // Update PO status
-            $poAllFull = $po->items->every(fn($i) => (float)$i->qty_received >= (float)$i->qty_ordered);
-            $newPoStatus = $poAllFull ? 'fully_received' : 'partially_received';
-            $po->update(['status' => $newPoStatus]);
-
-            $po->logs()->create([
-                'user_id'     => Auth::id(),
-                'action'      => 'gr_completed',
-                'from_status' => $po->status,
-                'to_status'   => $newPoStatus,
-                'remarks'     => "GR {$goodsReceipt->gr_number} completed",
-            ]);
+            $this->recalculatePoStatus($po);
         });
 
         return redirect()->route('goods-receipts.show', $goodsReceipt->id)
@@ -306,24 +285,59 @@ class GoodsReceiptController extends Controller implements HasMiddleware
 
     public function cancel(GoodsReceipt $goodsReceipt)
     {
-        if (!in_array($goodsReceipt->status, ['pending'])) {
-            return back()->withErrors(['error' => 'Only pending goods receipts can be cancelled.']);
+        if (!$goodsReceipt->canBeCancelled()) {
+            return back()->withErrors(['error' => 'This goods receipt cannot be cancelled.']);
         }
 
         DB::transaction(function () use ($goodsReceipt) {
             $fromStatus = $goodsReceipt->status;
-            $goodsReceipt->update(['status' => 'cancelled']);
+            $po         = $goodsReceipt->purchaseOrder;
 
+            // If completed, reverse inventory
+            if ($fromStatus === 'completed') {
+                foreach ($goodsReceipt->items as $grItem) {
+                    $qtyToReverse = (float) $grItem->qty_to_receive;
+                    if ($qtyToReverse <= 0) continue;
+
+                    $inventory = Inventory::where('material_id', $grItem->material_id)
+                        ->where('destination_id', $goodsReceipt->destination_id)
+                        ->first();
+
+                    if ($inventory) {
+                        $qtyBefore = (float) $inventory->quantity;
+                        $newQty    = max(0, $qtyBefore - $qtyToReverse);
+                        $inventory->update(['quantity' => $newQty]);
+
+                        InventoryLog::create([
+                            'movement_code'   => InventoryLog::generateMovementCode(),
+                            'inventory_id'    => $inventory->id,
+                            'material_id'     => $grItem->material_id,
+                            'destination_id'  => $goodsReceipt->destination_id,
+                            'user_id'         => Auth::id(),
+                            'type'            => 'purchase_return',
+                            'quantity_before' => $qtyBefore,
+                            'quantity_change' => -$qtyToReverse,
+                            'quantity_after'  => $newQty,
+                            'reference_id'    => $goodsReceipt->id,
+                            'reference_type'  => GoodsReceipt::class,
+                            'remarks'         => "GR {$goodsReceipt->gr_number} cancelled - inventory reversed",
+                        ]);
+                    }
+                }
+            }
+
+            $goodsReceipt->update(['status' => 'cancelled']);
             $goodsReceipt->logs()->create([
                 'user_id'     => Auth::id(),
                 'action'      => 'cancelled',
                 'from_status' => $fromStatus,
                 'to_status'   => 'cancelled',
-                'remarks'     => 'Goods receipt cancelled',
+                'remarks'     => $fromStatus === 'completed'
+                    ? 'Goods receipt cancelled and inventory reversed'
+                    : 'Goods receipt cancelled',
             ]);
 
-            // Recalculate PO status
-            $this->recalculatePoStatus($goodsReceipt->purchaseOrder);
+            $this->recalculatePoStatus($po);
         });
 
         return redirect()->route('goods-receipts.show', $goodsReceipt->id)
@@ -332,15 +346,12 @@ class GoodsReceiptController extends Controller implements HasMiddleware
 
     public function revert(GoodsReceipt $goodsReceipt)
     {
-        // Only pending → revert means nothing received yet, just go back to pending
-        // For partially/fully received, revert is not allowed as inventory already updated
-        if ($goodsReceipt->status !== 'cancelled') {
+        if (!$goodsReceipt->canBeReverted()) {
             return back()->withErrors(['error' => 'Only cancelled goods receipts can be reverted to pending.']);
         }
 
         DB::transaction(function () use ($goodsReceipt) {
             $goodsReceipt->update(['status' => 'pending']);
-
             $goodsReceipt->logs()->create([
                 'user_id'     => Auth::id(),
                 'action'      => 'reverted',
@@ -358,22 +369,11 @@ class GoodsReceiptController extends Controller implements HasMiddleware
     {
         $po->refresh();
 
-        // Check if any GR is still active (not cancelled)
-        $hasActiveGr = $po->goodsReceipts()
-            ->whereNotIn('status', ['cancelled'])
-            ->exists();
-
-        if (!$hasActiveGr) {
-            // No active GRs at all — revert PO to posted
-            $po->update(['status' => 'posted']);
-            return;
-        }
-
         // Recalculate qty_received per PO item from completed GRs only
         foreach ($po->items as $poItem) {
             $totalReceived = GoodsReceiptItem::whereHas('goodsReceipt', function ($q) use ($po) {
                     $q->where('purchase_order_id', $po->id)
-                    ->whereIn('status', ['partially_received', 'fully_received', 'completed']);
+                        ->where('status', 'completed');
                 })
                 ->where('purchase_order_item_id', $poItem->id)
                 ->sum('qty_to_receive');
@@ -383,13 +383,10 @@ class GoodsReceiptController extends Controller implements HasMiddleware
 
         $po->refresh();
 
-        $allFull = $po->items->every(
-            fn($i) => (float) $i->qty_received >= (float) $i->qty_ordered
-        );
+        $allFull     = $po->items->every(fn($i) => (float)$i->qty_received >= (float)$i->qty_ordered);
+        $anyReceived = $po->items->some(fn($i)  => (float)$i->qty_received > 0);
 
-        $anyReceived = $po->items->some(
-            fn($i) => (float) $i->qty_received > 0
-        );
+        if ($po->status === 'cancelled') return; // never touch cancelled PO
 
         if ($allFull) {
             $po->update(['status' => 'fully_received']);
@@ -398,5 +395,11 @@ class GoodsReceiptController extends Controller implements HasMiddleware
         } else {
             $po->update(['status' => 'posted']);
         }
+
+        $po->logs()->create([
+            'user_id' => Auth::id(),
+            'action'  => 'status_recalculated',
+            'remarks' => "PO status recalculated to {$po->fresh()->status}",
+        ]);
     }
 }

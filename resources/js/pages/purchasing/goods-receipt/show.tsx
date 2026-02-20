@@ -12,11 +12,9 @@ import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Edit } from 'lucide-react';
 import { useState } from 'react';
 
 const STATUS_BADGE: Record<GoodsReceiptStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
-    pending:            { label: 'Pending',          variant: 'secondary' },
-    partially_received: { label: 'Partial Received', variant: 'outline' },
-    fully_received:     { label: 'Fully Received',   variant: 'success' },
-    completed:          { label: 'Completed',        variant: 'success' },
-    cancelled:          { label: 'Cancelled',        variant: 'destructive' },
+    pending:   { label: 'Pending',   variant: 'secondary' },
+    completed: { label: 'Completed', variant: 'success' },
+    cancelled: { label: 'Cancelled', variant: 'destructive' },
 };
 
 type ConfirmAction = {
@@ -64,6 +62,7 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/goods-receipts"><ArrowLeft className="mr-2 h-4 w-4" />Back</Link>
                         </Button>
+
                         {hasPermission('gr-edit') && goodsReceipt.status === 'pending' && (
                             <Button variant="outline" size="sm" asChild>
                                 <Link href={`/goods-receipts/${goodsReceipt.id}/edit`}>
@@ -71,21 +70,33 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                                 </Link>
                             </Button>
                         )}
-                        {hasPermission('gr-complete') && ['pending', 'partially_received'].includes(goodsReceipt.status) && (
+
+                        {/* Complete — only from pending */}
+                        {hasPermission('gr-complete') && goodsReceipt.status === 'pending' && (
                             <Button size="sm"
-                                onClick={() => triggerAction('complete', 'Complete Goods Receipt', 'This will receive the items and update inventory.')}>
+                                onClick={() => triggerAction('complete', 'Complete Goods Receipt', 'This will receive the items and update inventory. This cannot be undone without cancelling.')}>
                                 <CheckCircle className="mr-2 h-4 w-4" />Complete
                             </Button>
                         )}
-                        {hasPermission('gr-cancel') && goodsReceipt.status === 'pending' && (
+
+                        {/* Cancel — from pending OR completed (completed will reverse inventory) */}
+                        {hasPermission('gr-cancel') && ['pending', 'completed'].includes(goodsReceipt.status) && (
                             <Button size="sm" variant="destructive"
-                                onClick={() => triggerAction('cancel', 'Cancel Goods Receipt', 'This will cancel the goods receipt.')}>
+                                onClick={() => triggerAction(
+                                    'cancel',
+                                    'Cancel Goods Receipt',
+                                    goodsReceipt.status === 'completed'
+                                        ? 'This will cancel the goods receipt and REVERSE the inventory that was received. This action cannot be undone.'
+                                        : 'This will cancel the goods receipt.'
+                                )}>
                                 <XCircle className="mr-2 h-4 w-4" />Cancel
                             </Button>
                         )}
+
+                        {/* Revert — only from cancelled */}
                         {hasPermission('gr-revert') && goodsReceipt.status === 'cancelled' && (
                             <Button size="sm" variant="outline"
-                                onClick={() => triggerAction('revert', 'Revert to Pending', 'This will revert the goods receipt back to pending.')}>
+                                onClick={() => triggerAction('revert', 'Revert to Pending', 'This will revert the goods receipt back to pending. Inventory will NOT be restored — you must complete again.')}>
                                 <RotateCcw className="mr-2 h-4 w-4" />Revert
                             </Button>
                         )}
@@ -171,7 +182,7 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                 {/* Logs */}
                 {goodsReceipt.logs && goodsReceipt.logs.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
-                        <h3 className="font-semibold">Activity Log</h3>
+                        <h3 className="font-semibold">Transaction Log</h3>
                         <div className="space-y-3">
                             {goodsReceipt.logs.map((log) => (
                                 <div key={log.id} className="flex items-start gap-3 text-sm">

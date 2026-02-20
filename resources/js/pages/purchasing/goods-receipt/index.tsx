@@ -13,11 +13,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { router } from '@inertiajs/react';
 
 const STATUS_BADGE: Record<GoodsReceiptStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
-    pending:            { label: 'Pending',          variant: 'secondary' },
-    partially_received: { label: 'Partial Received', variant: 'outline' },
-    fully_received:     { label: 'Fully Received',   variant: 'success' },
-    completed:          { label: 'Completed',        variant: 'success' },
-    cancelled:          { label: 'Cancelled',        variant: 'destructive' },
+    pending:   { label: 'Pending',   variant: 'secondary' },
+    completed: { label: 'Completed', variant: 'success' },
+    cancelled: { label: 'Cancelled', variant: 'destructive' },
 };
 
 export default function Index({ goodsReceipts }: GoodsReceiptData) {

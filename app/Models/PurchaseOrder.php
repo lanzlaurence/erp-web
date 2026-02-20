@@ -41,49 +41,50 @@ class PurchaseOrder extends Model
     {
         parent::boot();
         static::creating(function ($po) {
-            if (empty($po->po_number)) {
-                $po->po_number = self::generatePoNumber();
-            }
-            if (empty($po->code)) {
-                $po->code = self::generateCode();
-            }
+            if (empty($po->po_number)) $po->po_number = self::generatePoNumber();
+            if (empty($po->code))      $po->code      = self::generateCode();
         });
     }
 
     public static function generateCode(): string
     {
-        $yymm   = now()->format('ym'); // e.g. 2601
-        $prefix = '2' . $yymm;        // e.g. 22601
-
-        $last = self::withTrashed()
-            ->where('code', 'like', $prefix . '%')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $next = $last ? ((int) substr($last->code, -4)) + 1 : 1;
-
+        $prefix = '2' . now()->format('ym');
+        $last   = self::withTrashed()->where('code', 'like', $prefix . '%')->orderBy('id', 'desc')->first();
+        $next   = $last ? ((int) substr($last->code, -4)) + 1 : 1;
         return $prefix . str_pad($next, 4, '0', STR_PAD_LEFT);
     }
 
     public static function generatePoNumber(): string
     {
         $prefix = 'PO-' . now()->format('Ym');
-        $last   = self::withTrashed()
-            ->where('po_number', 'like', $prefix . '%')
-            ->orderBy('id', 'desc')->first();
+        $last   = self::withTrashed()->where('po_number', 'like', $prefix . '%')->orderBy('id', 'desc')->first();
         $next   = $last ? ((int) substr($last->po_number, -4)) + 1 : 1;
         return $prefix . str_pad($next, 4, '0', STR_PAD_LEFT);
     }
 
-    public function vendor(): BelongsTo     { return $this->belongsTo(Vendor::class); }
-    public function user(): BelongsTo       { return $this->belongsTo(User::class); }
-    public function items(): HasMany        { return $this->hasMany(PurchaseOrderItem::class); }
-    public function charges(): HasMany      { return $this->hasMany(PurchaseOrderCharge::class); }
+    public function vendor(): BelongsTo      { return $this->belongsTo(Vendor::class); }
+    public function user(): BelongsTo        { return $this->belongsTo(User::class); }
+    public function items(): HasMany         { return $this->hasMany(PurchaseOrderItem::class); }
+    public function charges(): HasMany       { return $this->hasMany(PurchaseOrderCharge::class); }
     public function goodsReceipts(): HasMany { return $this->hasMany(GoodsReceipt::class); }
-    public function logs(): MorphMany       { return $this->morphMany(TransactionLog::class, 'loggable'); }
+    public function logs(): MorphMany        { return $this->morphMany(TransactionLog::class, 'loggable'); }
 
-    public function canBeEdited(): bool     { return $this->status === 'draft'; }
-    public function canBePosted(): bool     { return $this->status === 'draft'; }
-    public function canBeCancelled(): bool  { return in_array($this->status, ['draft', 'posted', 'partially_received']); }
-    public function canCreateGr(): bool     { return in_array($this->status, ['posted', 'partially_received']); }
+    // ── Permission checks ─────────────────────────────────────────────────────
+    public function canBeEdited(): bool   { return $this->status === 'draft'; }
+    public function canBePosted(): bool   { return $this->status === 'draft'; }
+    public function canBeReverted(): bool { return $this->status === 'posted'; }
+    public function canCreateGr(): bool   { return in_array($this->status, ['posted', 'partially_received']); }
+
+    // Cancel allowed anytime except already cancelled
+    // But if any completed GR exists, user must cancel those first
+    public function canBeCancelled(): bool
+    {
+        if ($this->status === 'cancelled') return false;
+
+        $hasCompletedGr = $this->goodsReceipts()
+            ->where('status', 'completed')
+            ->exists();
+
+        return !$hasCompletedGr;
+    }
 }

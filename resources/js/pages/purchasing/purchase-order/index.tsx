@@ -12,12 +12,11 @@ import { Eye, Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 const STATUS_BADGE: Record<PurchaseOrderStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
-    draft:              { label: 'Draft',             variant: 'secondary' },
-    posted:             { label: 'Posted',            variant: 'default' },
-    partially_received: { label: 'Partial Received',  variant: 'outline' },
-    fully_received:     { label: 'Fully Received',    variant: 'success' },
-    completed:          { label: 'Completed',         variant: 'success' },
-    cancelled:          { label: 'Cancelled',         variant: 'destructive' },
+    draft:              { label: 'Draft',            variant: 'secondary' },
+    posted:             { label: 'Posted',           variant: 'default' },
+    partially_received: { label: 'Partial Received', variant: 'outline' },
+    fully_received:     { label: 'Fully Received',   variant: 'success' },
+    cancelled:          { label: 'Cancelled',        variant: 'destructive' },
 };
 
 export default function Index({ purchaseOrders }: PurchaseOrderData) {

@@ -27,7 +27,6 @@ class PurchaseOrderController extends Controller implements HasMiddleware
             new Middleware('permission:po-delete',   only: ['destroy']),
             new Middleware('permission:po-post',     only: ['post']),
             new Middleware('permission:po-cancel',   only: ['cancel']),
-            new Middleware('permission:po-complete', only: ['complete']),
             new Middleware('permission:po-revert',   only: ['revert']),
         ];
     }
@@ -96,6 +95,7 @@ class PurchaseOrderController extends Controller implements HasMiddleware
             'items.material',
             'charges.charge',
             'goodsReceipts.destination',
+            'goodsReceipts.user',
             'logs.user',
         ]);
 
@@ -218,27 +218,6 @@ class PurchaseOrderController extends Controller implements HasMiddleware
 
         return redirect()->route('purchase-orders.show', $purchaseOrder->id)
             ->with('success', 'Purchase order cancelled.');
-    }
-
-    public function complete(PurchaseOrder $purchaseOrder)
-    {
-        if ($purchaseOrder->status !== 'fully_received') {
-            return back()->withErrors(['error' => 'Purchase order must be fully received before completing.']);
-        }
-
-        DB::transaction(function () use ($purchaseOrder) {
-            $purchaseOrder->update(['status' => 'completed']);
-            $purchaseOrder->logs()->create([
-                'user_id'     => Auth::id(),
-                'action'      => 'completed',
-                'from_status' => 'fully_received',
-                'to_status'   => 'completed',
-                'remarks'     => 'Purchase order completed',
-            ]);
-        });
-
-        return redirect()->route('purchase-orders.show', $purchaseOrder->id)
-            ->with('success', 'Purchase order completed.');
     }
 
     public function revert(PurchaseOrder $purchaseOrder)
