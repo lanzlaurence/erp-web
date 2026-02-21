@@ -16,10 +16,10 @@ class StoreInventoryRequest extends FormRequest
                 'required',
                 'exists:materials,id',
                 Rule::unique('inventories')
-                    ->where('destination_id', $this->destination_id)
+                    ->where('location_id', $this->location_id)
                     ->whereNull('deleted_at'),
             ],
-            'destination_id' => ['required', 'exists:destinations,id'],
+            'location_id' => ['required', 'exists:locations,id'],
             'quantity'       => ['required', 'numeric', 'min:0'],
             'remarks'        => ['nullable', 'string'],
         ];
@@ -28,7 +28,7 @@ class StoreInventoryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'material_id.unique' => 'This material already exists in the selected destination.',
+            'material_id.unique' => 'This material already exists in the selected location.',
         ];
     }
 }

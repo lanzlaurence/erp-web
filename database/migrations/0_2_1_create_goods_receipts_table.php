@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('gr_number')->unique();
             $table->foreignId('purchase_order_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('destination_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('location_id')->constrained()->cascadeOnDelete();
             $table->enum('status', [
                 'pending',
                 'completed',

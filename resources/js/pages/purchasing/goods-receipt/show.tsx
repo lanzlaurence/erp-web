@@ -119,8 +119,8 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                             <p>{goodsReceipt.purchase_order?.vendor?.name}</p>
                         </div>
                         <div>
-                            <p className="text-muted-foreground">Destination</p>
-                            <p>{goodsReceipt.destination?.name}</p>
+                            <p className="text-muted-foreground">Location</p>
+                            <p>{goodsReceipt.location?.name}</p>
                         </div>
                         <div>
                             <p className="text-muted-foreground">GR Date</p>

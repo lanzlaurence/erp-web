@@ -285,7 +285,7 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>GR Code</TableHead>
-                                    <TableHead>Destination</TableHead>
+                                    <TableHead>Location</TableHead>
                                     <TableHead>GR Date</TableHead>
                                     <TableHead>Transaction Date</TableHead>
                                     <TableHead>Status</TableHead>
@@ -297,7 +297,7 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                                 {purchaseOrder.goods_receipts.map((gr) => (
                                     <TableRow key={gr.id}>
                                         <TableCell className="font-mono font-medium">{gr.code}</TableCell>
-                                        <TableCell>{gr.destination?.name}</TableCell>
+                                        <TableCell>{gr.location?.name}</TableCell>
                                         <TableCell>{formatDate(gr.gr_date)}</TableCell>
                                         <TableCell>{formatDate(gr.transaction_date)}</TableCell>
                                         <TableCell>

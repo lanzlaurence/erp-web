@@ -38,7 +38,7 @@ export default function Inventory({ logs }: InventoryLogData) {
                                 <TableHead>Type</TableHead>
                                 <TableHead>Inv. Code</TableHead>
                                 <TableHead>Material</TableHead>
-                                <TableHead>Destination</TableHead>
+                                <TableHead>Location</TableHead>
                                 <TableHead>Before</TableHead>
                                 <TableHead>Change</TableHead>
                                 <TableHead>After</TableHead>
@@ -75,7 +75,7 @@ export default function Inventory({ logs }: InventoryLogData) {
                                                     <p className="text-xs text-muted-foreground">{log.material?.code}</p>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="text-sm">{log.destination?.name}</TableCell>
+                                            <TableCell className="text-sm">{log.location?.name}</TableCell>
                                             <TableCell className="font-mono text-sm">
                                                 {formatDecimal(Number(log.quantity_before))}
                                             </TableCell>
@@ -86,7 +86,7 @@ export default function Inventory({ logs }: InventoryLogData) {
                                                 {formatDecimal(Number(log.quantity_after))}
                                             </TableCell>
                                             <TableCell className="text-sm text-muted-foreground">
-                                                {log.transfer_to_destination?.name ?? '-'}
+                                                {log.transfer_to_location?.name ?? '-'}
                                             </TableCell>
                                             <TableCell className="text-sm">{log.user?.name ?? '-'}</TableCell>
                                             <TableCell className="text-sm text-muted-foreground">

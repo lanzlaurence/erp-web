@@ -19,13 +19,13 @@ import {
 } from '@/components/ui/alert-dialog';
 import { usePermissions } from '@/hooks/use-permissions';
 import AppLayout from '@/layouts/app-layout';
-import type { DestinationData } from '@/types';
+import type { LocationData } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import { Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
 
-export default function Index({ destinations }: DestinationData) {
+export default function Index({ locations }: LocationData) {
     const { hasPermission } = usePermissions();
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; code: string; name: string }>({
         open: false,
@@ -39,22 +39,22 @@ export default function Index({ destinations }: DestinationData) {
     };
 
     const handleDeleteConfirm = () => {
-        router.delete(`/destinations/${deleteDialog.id}`);
+        router.delete(`/locations/${deleteDialog.id}`);
         setDeleteDialog({ open: false, id: 0, code: '', name: '' });
     };
 
     return (
         <>
-            <Head title="Destinations" />
+            <Head title="Locations" />
 
             <div className="space-y-4 p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-semibold">Destinations</h1>
-                    {hasPermission('destination-create') && (
+                    <h1 className="text-2xl font-semibold">Locations</h1>
+                    {hasPermission('location-create') && (
                         <Button asChild size="sm">
-                            <Link href="/destinations/create">
+                            <Link href="/locations/create">
                                 <Plus className="mr-2 h-4 w-4" />
-                                Add Destination
+                                Add Location
                             </Link>
                         </Button>
                     )}
@@ -71,27 +71,27 @@ export default function Index({ destinations }: DestinationData) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {destinations.data.map((destination) => (
-                                <TableRow key={destination.id}>
-                                    <TableCell className="font-medium">{destination.code}</TableCell>
-                                    <TableCell>{destination.name}</TableCell>
+                            {locations.data.map((location) => (
+                                <TableRow key={location.id}>
+                                    <TableCell className="font-medium">{location.code}</TableCell>
+                                    <TableCell>{location.name}</TableCell>
                                     <TableCell className="text-muted-foreground">
-                                        {destination.description || '-'}
+                                        {location.description || '-'}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            {hasPermission('destination-edit') && (
+                                            {hasPermission('location-edit') && (
                                                 <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/destinations/${destination.id}/edit`}>
+                                                    <Link href={`/locations/${location.id}/edit`}>
                                                         <Edit className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
                                             )}
-                                            {hasPermission('destination-delete') && (
+                                            {hasPermission('location-delete') && (
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    onClick={() => handleDeleteClick(destination.id, destination.code, destination.name)}
+                                                    onClick={() => handleDeleteClick(location.id, location.code, location.name)}
                                                 >
                                                     <Trash2 className="h-4 w-4 text-red-600" />
                                                 </Button>
@@ -110,7 +110,7 @@ export default function Index({ destinations }: DestinationData) {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This will permanently delete destination <span className="font-semibold">{deleteDialog.code} - {deleteDialog.name}</span>. This action cannot be undone.
+                            This will permanently delete location <span className="font-semibold">{deleteDialog.code} - {deleteDialog.name}</span>. This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -129,7 +129,7 @@ Index.layout = (page: React.ReactNode) => (
     <AppLayout
         breadcrumbs={[
             { title: 'Dashboard', href: '/dashboard' },
-            { title: 'Destinations', href: '/destinations' },
+            { title: 'Locations', href: '/locations' },
         ]}
     >
         {page}

@@ -16,16 +16,16 @@ export default function Create() {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        post('/destinations');
+        post('/locations');
     };
 
     return (
         <>
-            <Head title="Create Destination" />
+            <Head title="Create Location" />
             <div className="mx-auto max-w-2xl space-y-6 p-4">
                 <div>
-                    <h1 className="text-2xl font-semibold">Create Destination</h1>
-                    <p className="text-sm text-muted-foreground">Add a new destination</p>
+                    <h1 className="text-2xl font-semibold">Create Location</h1>
+                    <p className="text-sm text-muted-foreground">Add a new location</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -67,7 +67,7 @@ export default function Create() {
 
                     <div className="flex gap-2">
                         <Button type="submit" disabled={processing}>
-                            Create Destination
+                            Create Location
                         </Button>
                         <Button type="button" variant="outline" onClick={() => window.history.back()}>
                             Cancel
@@ -83,8 +83,8 @@ Create.layout = (page: React.ReactNode) => (
     <AppLayout
         breadcrumbs={[
             { title: 'Dashboard', href: '/dashboard' },
-            { title: 'Destinations', href: '/destinations' },
-            { title: 'Create', href: '/destinations/create' },
+            { title: 'Locations', href: '/locations' },
+            { title: 'Create', href: '/locations/create' },
         ]}
     >
         {page}

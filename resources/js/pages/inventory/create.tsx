@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import type { Destination, Material } from '@/types';
+import type { Location, Material } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import ReactSelect from 'react-select';
@@ -10,13 +10,13 @@ import InputAmount from '@/components/ui/input-amount';
 
 type Props = {
     materials: Material[];
-    destinations: Destination[];
+    locations: Location[];
 };
 
-export default function Create({ materials, destinations }: Props) {
+export default function Create({ materials, locations }: Props) {
     const { data, setData, post, processing, errors } = useForm({
         material_id: '',
-        destination_id: '',
+        location_id: '',
         quantity: '0',
         remarks: '',
     });
@@ -27,7 +27,7 @@ export default function Create({ materials, destinations }: Props) {
     };
 
     const materialOptions = materials.map((m) => ({ value: String(m.id), label: `${m.code} — ${m.name}` }));
-    const destinationOptions = destinations.map((d) => ({ value: String(d.id), label: `${d.code} — ${d.name}` }));
+    const locationOptions = locations.map((d) => ({ value: String(d.id), label: `${d.code} — ${d.name}` }));
 
     const selectClass = {
         control: () => 'border border-input bg-background text-sm rounded-md px-1 py-0.5 min-h-9',
@@ -70,11 +70,11 @@ export default function Create({ materials, destinations }: Props) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Destination</Label>
+                            <Label>location</Label>
                             <ReactSelect
-                                options={destinationOptions}
-                                onChange={(opt) => setData('destination_id', opt?.value ?? '')}
-                                placeholder="Select destination..."
+                                options={locationOptions}
+                                onChange={(opt) => setData('location_id', opt?.value ?? '')}
+                                placeholder="Select location..."
                                 classNames={{
                                     ...selectClass,
                                     menu: () => 'bg-popover border border-border rounded-md shadow-md text-sm mt-1 min-w-max',
@@ -83,7 +83,7 @@ export default function Create({ materials, destinations }: Props) {
                                 styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                                 unstyled
                             />
-                            {errors.destination_id && <p className="text-sm text-red-600">{errors.destination_id}</p>}
+                            {errors.location_id && <p className="text-sm text-red-600">{errors.location_id}</p>}
                         </div>
 
                         <div className="space-y-2">

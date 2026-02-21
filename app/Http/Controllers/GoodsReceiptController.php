@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreGoodsReceiptRequest;
 use App\Http\Requests\UpdateGoodsReceiptRequest;
-use App\Models\Destination;
+use App\Models\Location;
 use App\Models\GoodsReceipt;
 use App\Models\GoodsReceiptItem;
 use App\Models\Inventory;
@@ -34,7 +34,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $grs = GoodsReceipt::with(['purchaseOrder.vendor', 'destination', 'user'])
+        $grs = GoodsReceipt::with(['purchaseOrder.vendor', 'location', 'user'])
             ->latest()
             ->paginate(10);
 
@@ -59,7 +59,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
 
         return Inertia::render('purchasing/goods-receipt/create', [
             'purchaseOrder' => $purchaseOrder,
-            'destinations'  => Destination::all(['id', 'code', 'name']),
+            'locations'  => Location::all(['id', 'code', 'name']),
         ]);
     }
 
@@ -71,7 +71,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
             $gr = GoodsReceipt::create([
                 'purchase_order_id' => $po->id,
                 'user_id'           => Auth::id(),
-                'destination_id'    => $request->destination_id,
+                'location_id'    => $request->location_id,
                 'status'            => 'pending',
                 'gr_date'           => $request->gr_date,
                 'transaction_date'  => $request->transaction_date,
@@ -119,7 +119,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
     {
         $goodsReceipt->load([
             'purchaseOrder.vendor',
-            'destination',
+            'location',
             'user',
             'items.material',
             'items.purchaseOrderItem',
@@ -141,14 +141,14 @@ class GoodsReceiptController extends Controller implements HasMiddleware
         $goodsReceipt->load([
             'purchaseOrder.vendor',
             'purchaseOrder.items.material',
-            'destination',
+            'location',
             'items.material',
             'items.purchaseOrderItem',
         ]);
 
         return Inertia::render('purchasing/goods-receipt/edit', [
             'goodsReceipt' => $goodsReceipt,
-            'destinations' => Destination::all(['id', 'code', 'name']),
+            'locations' => Location::all(['id', 'code', 'name']),
         ]);
     }
 
@@ -161,7 +161,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
 
         DB::transaction(function () use ($request, $goodsReceipt) {
             $goodsReceipt->update([
-                'destination_id'   => $request->destination_id,
+                'location_id'   => $request->location_id,
                 'gr_date'          => $request->gr_date,
                 'transaction_date' => $request->transaction_date,
                 'remarks'          => $request->remarks,
@@ -233,7 +233,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                 // Update inventory
                 $inventory = Inventory::withTrashed()
                     ->where('material_id', $grItem->material_id)
-                    ->where('destination_id', $goodsReceipt->destination_id)
+                    ->where('location_id', $goodsReceipt->location_id)
                     ->first();
 
                 if ($inventory) {
@@ -245,7 +245,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                     $inventory = Inventory::create([
                         'code'           => Inventory::generateCode(),
                         'material_id'    => $grItem->material_id,
-                        'destination_id' => $goodsReceipt->destination_id,
+                        'location_id' => $goodsReceipt->location_id,
                         'quantity'       => $qtyToReceive,
                     ]);
                 }
@@ -254,7 +254,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                     'movement_code'   => InventoryLog::generateMovementCode(),
                     'inventory_id'    => $inventory->id,
                     'material_id'     => $grItem->material_id,
-                    'destination_id'  => $goodsReceipt->destination_id,
+                    'location_id'  => $goodsReceipt->location_id,
                     'user_id'         => Auth::id(),
                     'type'            => 'purchase_receipt',
                     'quantity_before' => $qtyBefore,
@@ -300,7 +300,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                     if ($qtyToReverse <= 0) continue;
 
                     $inventory = Inventory::where('material_id', $grItem->material_id)
-                        ->where('destination_id', $goodsReceipt->destination_id)
+                        ->where('location_id', $goodsReceipt->location_id)
                         ->first();
 
                     if ($inventory) {
@@ -312,7 +312,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                             'movement_code'   => InventoryLog::generateMovementCode(),
                             'inventory_id'    => $inventory->id,
                             'material_id'     => $grItem->material_id,
-                            'destination_id'  => $goodsReceipt->destination_id,
+                            'location_id'  => $goodsReceipt->location_id,
                             'user_id'         => Auth::id(),
                             'type'            => 'purchase_return',
                             'quantity_before' => $qtyBefore,

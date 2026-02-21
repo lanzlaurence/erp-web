@@ -38,8 +38,8 @@ export default function Adjust({ inventory }: { inventory: Inventory }) {
                                 <p className="text-sm">{inventory.material?.name}</p>
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-muted-foreground">Destination</p>
-                                <p className="text-sm">{inventory.destination?.name}</p>
+                                <p className="text-sm font-medium text-muted-foreground">Location</p>
+                                <p className="text-sm">{inventory.location?.name}</p>
                             </div>
                         </div>
                     </div>

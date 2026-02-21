@@ -12,7 +12,7 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderCharge;
 use App\Models\PurchaseOrderItem;
 use App\Models\Vendor;
-use App\Models\Destination;
+use App\Models\Location;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +24,7 @@ class PurchaseOrderSeeder extends Seeder
         $user         = User::first();
         $vendors      = Vendor::where('status', 'active')->get();
         $materials    = Material::where('status', 'active')->get();
-        $destinations = Destination::all();
+        $locations = Location::all();
 
         $orders = [
             // 1. Fully received + completed GR
@@ -42,7 +42,7 @@ class PurchaseOrderSeeder extends Seeder
                 ],
                 'gr' => [
                     [
-                        'destination_code' => 'WH-MNL',
+                        'location_code' => 'WH-MNL',
                         'gr_date'          => '2026-01-10',
                         'transaction_date' => '2026-01-10',
                         'status'           => 'completed',
@@ -69,7 +69,7 @@ class PurchaseOrderSeeder extends Seeder
                 ],
                 'gr' => [
                     [
-                        'destination_code' => 'WH-CEB',
+                        'location_code' => 'WH-CEB',
                         'gr_date'          => '2026-01-20',
                         'transaction_date' => '2026-01-20',
                         'status'           => 'completed',
@@ -96,7 +96,7 @@ class PurchaseOrderSeeder extends Seeder
                 ],
                 'gr' => [
                     [
-                        'destination_code' => 'WH-MNL',
+                        'location_code' => 'WH-MNL',
                         'gr_date'          => '2026-01-28',
                         'transaction_date' => '2026-01-28',
                         'status'           => 'completed',
@@ -108,7 +108,7 @@ class PurchaseOrderSeeder extends Seeder
                         ],
                     ],
                     [
-                        'destination_code' => 'WH-MNL',
+                        'location_code' => 'WH-MNL',
                         'gr_date'          => '2026-02-03',
                         'transaction_date' => '2026-02-03',
                         'status'           => 'pending',
@@ -169,7 +169,7 @@ class PurchaseOrderSeeder extends Seeder
             $vendor = $vendors->where('code', $orderData['vendor_code'])->first();
             if (!$vendor) continue;
 
-            DB::transaction(function () use ($orderData, $vendor, $materials, $destinations, $user) {
+            DB::transaction(function () use ($orderData, $vendor, $materials, $locations, $user) {
                 // ── Create PO ────────────────────────────────────────────────
                 $po = PurchaseOrder::create([
                     'vendor_id'       => $vendor->id,
@@ -274,13 +274,13 @@ class PurchaseOrderSeeder extends Seeder
 
                 // ── Create GRs ───────────────────────────────────────────────
                 foreach ($orderData['gr'] as $grData) {
-                    $destination = $destinations->where('code', $grData['destination_code'])->first();
-                    if (!$destination) continue;
+                    $location = $locations->where('code', $grData['location_code'])->first();
+                    if (!$location) continue;
 
                     $gr = GoodsReceipt::create([
                         'purchase_order_id' => $po->id,
                         'user_id'           => $user->id,
-                        'destination_id'    => $destination->id,
+                        'location_id'    => $location->id,
                         'status'            => 'pending',
                         'gr_date'           => $grData['gr_date'],
                         'transaction_date'  => $grData['transaction_date'],
@@ -332,7 +332,7 @@ class PurchaseOrderSeeder extends Seeder
 
                             $inventory = Inventory::withTrashed()
                                 ->where('material_id', $grItem->material_id)
-                                ->where('destination_id', $destination->id)
+                                ->where('location_id', $location->id)
                                 ->first();
 
                             if ($inventory) {
@@ -344,7 +344,7 @@ class PurchaseOrderSeeder extends Seeder
                                 $inventory = Inventory::create([
                                     'code'           => Inventory::generateCode(),
                                     'material_id'    => $grItem->material_id,
-                                    'destination_id' => $destination->id,
+                                    'location_id' => $location->id,
                                     'quantity'       => $qtyToReceive,
                                 ]);
                             }
@@ -353,7 +353,7 @@ class PurchaseOrderSeeder extends Seeder
                                 'movement_code'   => InventoryLog::generateMovementCode(),
                                 'inventory_id'    => $inventory->id,
                                 'material_id'     => $grItem->material_id,
-                                'destination_id'  => $destination->id,
+                                'location_id'  => $location->id,
                                 'user_id'         => $user->id,
                                 'type'            => 'purchase_receipt',
                                 'quantity_before' => $qtyBefore,

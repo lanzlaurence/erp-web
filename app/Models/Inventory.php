@@ -13,7 +13,7 @@ class Inventory extends Model
     protected $fillable = [
         'code',
         'material_id',
-        'destination_id',
+        'location_id',
         'quantity',
     ];
 
@@ -37,9 +37,9 @@ class Inventory extends Model
         return $this->belongsTo(Material::class);
     }
 
-    public function destination()
+    public function location()
     {
-        return $this->belongsTo(Destination::class);
+        return $this->belongsTo(Location::class);
     }
 
     public function logs()

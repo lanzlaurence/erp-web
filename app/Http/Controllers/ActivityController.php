@@ -20,7 +20,7 @@ class ActivityController extends Controller implements HasMiddleware
 
     public function inventoryLog()
     {
-        $logs = InventoryLog::with(['material', 'destination', 'transferToDestination', 'user', 'inventory'])
+        $logs = InventoryLog::with(['material', 'location', 'transferToLocation', 'user', 'inventory'])
             ->latest()
             ->paginate(20);
 

@@ -13,7 +13,6 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { usePermissions } from '@/hooks/use-permissions';
-import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
@@ -57,7 +56,7 @@ export function AppSidebar() {
     const mainNavItems: NavItem[] = [
         {
             title: 'Dashboard',
-            href: dashboard(),
+            href: '/dashboard',
             icon: LayoutGrid,
         },
         {
@@ -115,7 +114,7 @@ export function AppSidebar() {
                 { title: 'Brands', href: '/brands', icon: Tag, permission: 'brand-view' },
                 { title: 'Categories', href: '/categories', icon: Folder, permission: 'category-view' },
                 { title: 'UOM', href: '/uoms', icon: Box, permission: 'uom-view' },
-                { title: 'Destinations', href: '/destinations', icon: MapPin, permission: 'destination-view' },
+                { title: 'Locations', href: '/locations', icon: MapPin, permission: 'location-view' },
                 { title: 'Charges', href: '/charges', icon: CreditCard, permission: 'charge-view' },
                 // { title: 'Currencies', href: '/currencies', icon: Coins, permission: 'currency-view' },
             ],
@@ -167,7 +166,7 @@ export function AppSidebar() {
                     <SidebarMenu>
                         <SidebarMenuItem>
                             <SidebarMenuButton size="lg" asChild>
-                                <Link href={dashboard()} prefetch>
+                                <Link href="/dashboard" prefetch>
                                     <AppLogo />
                                 </Link>
                             </SidebarMenuButton>

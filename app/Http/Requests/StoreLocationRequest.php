@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreDestinationRequest extends FormRequest
+class StoreLocationRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -19,7 +19,7 @@ class StoreDestinationRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('destinations')->whereNull('deleted_at'),
+                Rule::unique('locations')->whereNull('deleted_at'),
             ],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],

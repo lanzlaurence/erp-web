@@ -12,10 +12,10 @@ class TransferInventoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'destination_id' => [
+            'location_id' => [
                 'required',
-                'exists:destinations,id',
-                'different:current_destination_id',
+                'exists:locations,id',
+                'different:current_location_id',
             ],
             'quantity'       => [
                 'required',
@@ -30,7 +30,7 @@ class TransferInventoryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'destination_id.different' => 'Transfer destination must be different from current destination.',
+            'location_id.different' => 'Transfer location must be different from current location.',
             'quantity.max'             => 'Transfer quantity cannot exceed available stock.',
         ];
     }

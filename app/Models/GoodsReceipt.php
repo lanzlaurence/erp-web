@@ -15,7 +15,7 @@ class GoodsReceipt extends Model
 
     protected $fillable = [
         'code', 'gr_number', 'purchase_order_id', 'user_id',
-        'destination_id', 'status', 'gr_date',
+        'location_id', 'status', 'gr_date',
         'transaction_date', 'remarks',
     ];
 
@@ -51,7 +51,7 @@ class GoodsReceipt extends Model
 
     public function purchaseOrder(): BelongsTo { return $this->belongsTo(PurchaseOrder::class); }
     public function user(): BelongsTo          { return $this->belongsTo(User::class); }
-    public function destination(): BelongsTo   { return $this->belongsTo(Destination::class); }
+    public function location(): BelongsTo   { return $this->belongsTo(Location::class); }
     public function items(): HasMany           { return $this->hasMany(GoodsReceiptItem::class); }
     public function logs(): MorphMany          { return $this->morphMany(TransactionLog::class, 'loggable'); }
 

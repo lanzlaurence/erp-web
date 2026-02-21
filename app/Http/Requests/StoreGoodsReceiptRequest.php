@@ -13,7 +13,7 @@ class StoreGoodsReceiptRequest extends FormRequest
     {
         return [
             'purchase_order_id'              => ['required', 'exists:purchase_orders,id'],
-            'destination_id'                 => ['required', 'exists:destinations,id'],
+            'location_id'                 => ['required', 'exists:locations,id'],
             'gr_date'                        => ['required', 'date'],
             'transaction_date'               => ['required', 'date'],
             'remarks'                        => ['nullable', 'string'],

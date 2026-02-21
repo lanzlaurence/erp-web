@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('movement_code')->unique();
             $table->foreignId('inventory_id')->constrained()->cascadeOnDelete();
             $table->foreignId('material_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('destination_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('location_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->enum('type', [
                 // Inventory module
@@ -33,9 +33,9 @@ return new class extends Migration
             $table->decimal('quantity_before', 15, 2)->default(0);
             $table->decimal('quantity_change', 15, 2)->default(0);
             $table->decimal('quantity_after', 15, 2)->default(0);
-            $table->foreignId('transfer_to_destination_id')
+            $table->foreignId('transfer_to_location_id')
                 ->nullable()
-                ->constrained('destinations')
+                ->constrained('locations')
                 ->nullOnDelete(); // only for transfer
             $table->nullableMorphs('reference'); // creates reference_id (unsignedBigInteger) + reference_type (string) both nullable
             $table->text('remarks')->nullable();

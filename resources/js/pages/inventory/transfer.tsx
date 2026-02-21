@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import type { Destination, Inventory } from '@/types';
+import type { Location, Inventory } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import ReactSelect from 'react-select';
@@ -11,13 +11,13 @@ import { useFormatters } from '@/hooks/use-formatters';
 
 type Props = {
     inventory: Inventory;
-    destinations: Destination[];
+    locations: Location[];
 };
 
-export default function Transfer({ inventory, destinations }: Props) {
+export default function Transfer({ inventory, locations }: Props) {
     const { formatDecimal } = useFormatters();
     const { data, setData, post, processing, errors } = useForm({
-        destination_id: '',
+        location_id: '',
         quantity: '0',
         remarks: '',
     });
@@ -27,7 +27,7 @@ export default function Transfer({ inventory, destinations }: Props) {
         post(`/inventories/${inventory.id}/transfer`);
     };
 
-    const destinationOptions = destinations.map((d) => ({ value: String(d.id), label: `${d.code} — ${d.name}` }));
+    const locationOptions = locations.map((d) => ({ value: String(d.id), label: `${d.code} — ${d.name}` }));
 
     const selectClass = {
         control: () => 'border border-input bg-background text-sm rounded-md px-1 py-0.5 min-h-9',
@@ -45,7 +45,7 @@ export default function Transfer({ inventory, destinations }: Props) {
             <div className="mx-auto max-w-xl space-y-6 p-4">
                 <div>
                     <h1 className="text-2xl font-semibold">Transfer Stock</h1>
-                    <p className="text-sm text-muted-foreground">Move stock to another destination</p>
+                    <p className="text-sm text-muted-foreground">Move stock to another location</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -58,7 +58,7 @@ export default function Transfer({ inventory, destinations }: Props) {
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-muted-foreground">From</p>
-                                <p className="text-sm">{inventory.destination?.name}</p>
+                                <p className="text-sm">{inventory.location?.name}</p>
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-muted-foreground">Available Quantity</p>
@@ -73,13 +73,13 @@ export default function Transfer({ inventory, destinations }: Props) {
                         <div className="space-y-2">
                             <Label>Transfer To</Label>
                             <ReactSelect
-                                options={destinationOptions}
-                                onChange={(opt) => setData('destination_id', opt?.value ?? '')}
-                                placeholder="Select destination..."
+                                options={locationOptions}
+                                onChange={(opt) => setData('location_id', opt?.value ?? '')}
+                                placeholder="Select location..."
                                 classNames={selectClass}
                                 unstyled
                             />
-                            {errors.destination_id && <p className="text-sm text-red-600">{errors.destination_id}</p>}
+                            {errors.location_id && <p className="text-sm text-red-600">{errors.location_id}</p>}
                         </div>
 
                         <div className="space-y-2">

@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import type { Destination } from '@/types';
+import type { Location } from '@/types';
 import type { GoodsReceipt } from '@/types/transactions';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
@@ -15,14 +15,14 @@ import DatePicker from '@/components/ui/date-picker';
 
 type Props = {
     goodsReceipt: GoodsReceipt;
-    destinations: Destination[];
+    locations: Location[];
 };
 
-export default function Edit({ goodsReceipt, destinations }: Props) {
+export default function Edit({ goodsReceipt, locations }: Props) {
     const { formatAmount, formatDecimal } = useFormatters();
 
     const { data, setData, put, processing, errors } = useForm({
-        destination_id:   String(goodsReceipt.destination_id),
+        location_id:   String(goodsReceipt.location_id),
         gr_date:          goodsReceipt.gr_date,
         transaction_date: goodsReceipt.transaction_date,
         remarks:          goodsReceipt.remarks ?? '',
@@ -49,7 +49,7 @@ export default function Edit({ goodsReceipt, destinations }: Props) {
         placeholder: () => 'text-muted-foreground',
     };
 
-    const destinationOptions = destinations.map((d) => ({ value: String(d.id), label: `${d.code} — ${d.name}` }));
+    const locationOptions = locations.map((d) => ({ value: String(d.id), label: `${d.code} — ${d.name}` }));
 
     // When material tracks serial number, auto-split into qty=1 rows
     const updateItem = (index: number, field: string, value: string) => {
@@ -124,18 +124,18 @@ export default function Edit({ goodsReceipt, destinations }: Props) {
                                 {errors.transaction_date && <p className="text-sm text-red-600">{errors.transaction_date}</p>}
                             </div>
                             <div className="space-y-2">
-                                <Label>Destination</Label>
+                                <Label>location</Label>
                                 <ReactSelect
-                                    options={destinationOptions}
-                                    value={destinationOptions.find((o) => o.value === data.destination_id) ?? null}
-                                    onChange={(opt) => setData('destination_id', opt?.value ?? '')}
-                                    placeholder="Select destination..."
+                                    options={locationOptions}
+                                    value={locationOptions.find((o) => o.value === data.location_id) ?? null}
+                                    onChange={(opt) => setData('location_id', opt?.value ?? '')}
+                                    placeholder="Select location..."
                                     classNames={selectClass}
                                     menuPortalTarget={document.body}
                                     styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                                     unstyled
                                 />
-                                {errors.destination_id && <p className="text-sm text-red-600">{errors.destination_id}</p>}
+                                {errors.location_id && <p className="text-sm text-red-600">{errors.location_id}</p>}
                             </div>
                         </div>
                     </div>

@@ -10,13 +10,13 @@ class InventoryLog extends Model
         'movement_code',
         'inventory_id',
         'material_id',
-        'destination_id',
+        'location_id',
         'user_id',
         'type',
         'quantity_before',
         'quantity_change',
         'quantity_after',
-        'transfer_to_destination_id',
+        'transfer_to_location_id',
         'reference_id',
         'reference_type',
         'remarks',
@@ -56,9 +56,9 @@ class InventoryLog extends Model
         return $this->belongsTo(Material::class);
     }
 
-    public function destination()
+    public function location()
     {
-        return $this->belongsTo(Destination::class);
+        return $this->belongsTo(Location::class);
     }
 
     public function user()
@@ -66,9 +66,9 @@ class InventoryLog extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function transferToDestination()
+    public function transferToLocation()
     {
-        return $this->belongsTo(Destination::class, 'transfer_to_destination_id');
+        return $this->belongsTo(Location::class, 'transfer_to_location_id');
     }
 
     public function reference()

@@ -1,5 +1,5 @@
 // types/transactions.ts
-import type { Material, Destination, Charge, Vendor } from './modules';
+import type { Material, Location, Charge, Vendor } from './modules';
 import type { User } from './auth';
 
 // ── Purchase Order ────────────────────────────────────────────────────────────
@@ -115,14 +115,14 @@ export type GoodsReceipt = {
     gr_number: string;
     purchase_order_id: number;
     user_id: number;
-    destination_id: number;
+    location_id: number;
     status: GoodsReceiptStatus;
     gr_date: string;
     transaction_date: string;
     remarks: string | null;
     purchase_order?: PurchaseOrder;
     purchaseOrder?: PurchaseOrder;
-    destination?: Destination;
+    location?: Location;
     user?: User;
     items?: GoodsReceiptItem[];
     logs?: TransactionLog[];
@@ -153,10 +153,10 @@ export type Inventory = {
     id: number;
     code: string;
     material_id: number;
-    destination_id: number;
+    location_id: number;
     quantity: number | string;
     material?: Material;
-    destination?: Destination;
+    location?: Location;
     created_at: string;
     updated_at: string;
     deleted_at?: string | null;
@@ -169,20 +169,20 @@ export type InventoryLog = {
     movement_code: string;
     inventory_id: number;
     material_id: number;
-    destination_id: number;
+    location_id: number;
     user_id: number;
     type: 'initial' | 'adjustment' | 'transfer_in' | 'transfer_out' | 'purchase_receipt' | 'purchase_return' | 'sales_issue' | 'sales_return';
     quantity_before: number | string;
     quantity_change: number | string;
     quantity_after: number | string;
-    transfer_to_destination_id: number | null;
+    transfer_to_location_id: number | null;
     reference_id: number | null;
     reference_type: string | null;
     remarks: string | null;
     inventory?: Inventory;
     material?: Material;
-    destination?: Destination;
-    transfer_to_destination?: Destination;
+    location?: Location;
+    transfer_to_location?: Location;
     user?: User;
     created_at: string;
     updated_at: string;

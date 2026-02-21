@@ -5,7 +5,7 @@ export type * from './ui';
 export type * from './transactions';
 
 import type { Auth, Permission, Role, User } from './auth';
-import type { Brand, Category, Charge, Currency, Customer, Destination, Material, Uom, Vendor } from './modules';
+import type { Brand, Category, Charge, Currency, Customer, Location, Material, Uom, Vendor } from './modules';
 import type { PurchaseOrder, GoodsReceipt, Inventory, InventoryLog } from './transactions';
 
 export type FlashMessage = {
@@ -85,8 +85,8 @@ export type UomData = {
     uoms: PaginatedData<Uom>;
 };
 
-export type DestinationData = {
-    destinations: PaginatedData<Destination>;
+export type LocationData = {
+    locations: PaginatedData<Location>;
 };
 
 export type ChargeData = {
@@ -129,7 +129,7 @@ export type GoodsReceiptData = {
 
 export type GoodsReceiptShowData = {
     goodsReceipt: GoodsReceipt;
-    destinations?: Destination[];
+    locations?: Location[];
 };
 
 export type InventoryData = {

@@ -43,7 +43,7 @@ export default function Index({ inventories }: InventoryData) {
                             <TableRow>
                                 <TableHead>Inventory Code</TableHead>
                                 <TableHead>Material</TableHead>
-                                <TableHead>Destination</TableHead>
+                                <TableHead>Location</TableHead>
                                 <TableHead>Quantity</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
@@ -65,7 +65,7 @@ export default function Index({ inventories }: InventoryData) {
                                                 <p className="text-xs text-muted-foreground">{inventory.material?.code}</p>
                                             </div>
                                         </TableCell>
-                                        <TableCell>{inventory.destination?.name}</TableCell>
+                                        <TableCell>{inventory.location?.name}</TableCell>
                                         <TableCell className="font-mono">{formatDecimal(Number(inventory.quantity))}</TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreInventoryRequest;
 use App\Http\Requests\TransferInventoryRequest;
 use App\Http\Requests\AdjustInventoryRequest;
-use App\Models\Destination;
+use App\Models\Location;
 use App\Models\Inventory;
 use App\Models\InventoryLog;
 use App\Models\Material;
@@ -30,7 +30,7 @@ class InventoryController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $inventories = Inventory::with(['material', 'destination'])
+        $inventories = Inventory::with(['material', 'location'])
             ->latest()
             ->paginate(10);
 
@@ -43,7 +43,7 @@ class InventoryController extends Controller implements HasMiddleware
     {
         return Inertia::render('inventory/create', [
             'materials'    => Material::where('status', 'active')->get(['id', 'code', 'name']),
-            'destinations' => Destination::all(['id', 'code', 'name']),
+            'locations' => Location::all(['id', 'code', 'name']),
         ]);
     }
 
@@ -53,7 +53,7 @@ class InventoryController extends Controller implements HasMiddleware
             $inventory = Inventory::create([
                 'code'           => Inventory::generateCode(),
                 'material_id'    => $request->material_id,
-                'destination_id' => $request->destination_id,
+                'location_id' => $request->location_id,
                 'quantity'       => $request->quantity,
             ]);
 
@@ -61,7 +61,7 @@ class InventoryController extends Controller implements HasMiddleware
                 'movement_code'  => InventoryLog::generateMovementCode(),
                 'inventory_id'   => $inventory->id,
                 'material_id'    => $inventory->material_id,
-                'destination_id' => $inventory->destination_id,
+                'location_id' => $inventory->location_id,
                 'user_id'        => Auth::id(),
                 'type'           => 'initial',
                 'quantity_before' => 0,
@@ -77,9 +77,9 @@ class InventoryController extends Controller implements HasMiddleware
 
     public function show(Inventory $inventory)
     {
-        $inventory->load(['material', 'destination']);
+        $inventory->load(['material', 'location']);
 
-        $logs = InventoryLog::with(['user', 'destination', 'transferToDestination'])
+        $logs = InventoryLog::with(['user', 'location', 'transferToLocation'])
             ->where('inventory_id', $inventory->id)
             ->latest()
             ->paginate(10);
@@ -93,7 +93,7 @@ class InventoryController extends Controller implements HasMiddleware
     public function adjust(Inventory $inventory)
     {
         return Inertia::render('inventory/adjust', [
-            'inventory' => $inventory->load(['material', 'destination']),
+            'inventory' => $inventory->load(['material', 'location']),
         ]);
     }
 
@@ -109,7 +109,7 @@ class InventoryController extends Controller implements HasMiddleware
                 'movement_code'   => InventoryLog::generateMovementCode(),
                 'inventory_id'    => $inventory->id,
                 'material_id'     => $inventory->material_id,
-                'destination_id'  => $inventory->destination_id,
+                'location_id'  => $inventory->location_id,
                 'user_id'         => Auth::id(),
                 'type'            => 'adjustment',
                 'quantity_before' => $quantityBefore,
@@ -126,8 +126,8 @@ class InventoryController extends Controller implements HasMiddleware
     public function transfer(Inventory $inventory)
     {
         return Inertia::render('inventory/transfer', [
-            'inventory'    => $inventory->load(['material', 'destination']),
-            'destinations' => Destination::where('id', '!=', $inventory->destination_id)
+            'inventory'    => $inventory->load(['material', 'location']),
+            'locations' => Location::where('id', '!=', $inventory->location_id)
                 ->get(['id', 'code', 'name']),
         ]);
     }
@@ -147,20 +147,20 @@ class InventoryController extends Controller implements HasMiddleware
                 'movement_code'             => InventoryLog::generateMovementCode(),
                 'inventory_id'              => $inventory->id,
                 'material_id'               => $inventory->material_id,
-                'destination_id'            => $inventory->destination_id,
+                'location_id'            => $inventory->location_id,
                 'user_id'                   => Auth::id(),
                 'type'                      => 'transfer_out',
                 'quantity_before'           => $quantityBefore,
                 'quantity_change'           => -$transferQty,
                 'quantity_after'            => $quantityAfter,
-                'transfer_to_destination_id' => $request->destination_id,
+                'transfer_to_location_id' => $request->location_id,
                 'remarks'                   => $request->remarks,
             ]);
 
-            // Find or create destination inventory
+            // Find or create location inventory
             $targetInventory = Inventory::withTrashed()
                 ->where('material_id', $inventory->material_id)
-                ->where('destination_id', $request->destination_id)
+                ->where('location_id', $request->location_id)
                 ->first();
 
             if ($targetInventory) {
@@ -173,7 +173,7 @@ class InventoryController extends Controller implements HasMiddleware
                 $targetBefore    = 0;
                 $targetInventory = Inventory::create([
                     'material_id'    => $inventory->material_id,
-                    'destination_id' => $request->destination_id,
+                    'location_id' => $request->location_id,
                     'quantity'       => $transferQty,
                 ]);
             }
@@ -183,13 +183,13 @@ class InventoryController extends Controller implements HasMiddleware
             'movement_code'                 => InventoryLog::generateMovementCode(),
                 'inventory_id'              => $targetInventory->id,
                 'material_id'               => $inventory->material_id,
-                'destination_id'            => $request->destination_id,
+                'location_id'            => $request->location_id,
                 'user_id'                   => Auth::id(),
                 'type'                      => 'transfer_in',
                 'quantity_before'           => $targetBefore,
                 'quantity_change'           => $transferQty,
                 'quantity_after'            => $targetBefore + $transferQty,
-                'transfer_to_destination_id' => $inventory->destination_id,
+                'transfer_to_location_id' => $inventory->location_id,
                 'remarks'                   => $request->remarks,
             ]);
         });

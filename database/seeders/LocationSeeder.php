@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Models\Destination;
+use App\Models\Location;
 use Illuminate\Database\Seeder;
 
-class DestinationSeeder extends Seeder
+class LocationSeeder extends Seeder
 {
     public function run(): void
     {
-        $destinations = [
+        $locations = [
             ['code' => 'WH-MNL', 'name' => 'Manila Warehouse', 'description' => 'Main warehouse in Manila'],
             ['code' => 'WH-CEB', 'name' => 'Cebu Warehouse', 'description' => 'Distribution center in Cebu'],
             ['code' => 'WH-DAV', 'name' => 'Davao Warehouse', 'description' => 'Regional warehouse in Davao'],
@@ -27,8 +27,8 @@ class DestinationSeeder extends Seeder
             ['code' => 'SVC-MNL', 'name' => 'Service Center Manila', 'description' => 'Customer service center'],
         ];
 
-        foreach ($destinations as $destination) {
-            Destination::create($destination);
+        foreach ($locations as $location) {
+            Location::create($location);
         }
     }
 }

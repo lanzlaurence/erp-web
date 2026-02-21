@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePurchaseOrderRequest;
 use App\Http\Requests\UpdatePurchaseOrderRequest;
 use App\Models\Charge;
-use App\Models\Destination;
+use App\Models\Location;
 use App\Models\Material;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
@@ -94,7 +94,7 @@ class PurchaseOrderController extends Controller implements HasMiddleware
             'vendor', 'user',
             'items.material',
             'charges.charge',
-            'goodsReceipts.destination',
+            'goodsReceipts.location',
             'goodsReceipts.user',
             'logs.user',
         ]);

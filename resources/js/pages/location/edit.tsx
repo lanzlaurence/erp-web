@@ -3,34 +3,34 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import type { Destination } from '@/types';
+import type { Location } from '@/types';
 import { useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import { Head } from '@inertiajs/react';
 
 type Props = {
-    destination: Destination;
+    location: Location;
 };
 
-export default function Edit({ destination }: Props) {
+export default function Edit({ location }: Props) {
     const { data, setData, put, processing, errors } = useForm({
-        code: destination.code,
-        name: destination.name,
-        description: destination.description || '',
+        code: location.code,
+        name: location.name,
+        description: location.description || '',
     });
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        put(`/destinations/${destination.id}`);
+        put(`/locations/${location.id}`);
     };
 
     return (
         <>
-            <Head title="Edit Destination" />
+            <Head title="Edit Location" />
             <div className="mx-auto max-w-2xl space-y-6 p-4">
                 <div>
-                    <h1 className="text-2xl font-semibold">Edit Destination</h1>
-                    <p className="text-sm text-muted-foreground">Update destination information</p>
+                    <h1 className="text-2xl font-semibold">Edit Location</h1>
+                    <p className="text-sm text-muted-foreground">Update location information</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -71,7 +71,7 @@ export default function Edit({ destination }: Props) {
 
                     <div className="flex gap-2">
                         <Button type="submit" disabled={processing}>
-                            Update Destination
+                            Update Location
                         </Button>
                         <Button type="button" variant="outline" onClick={() => window.history.back()}>
                             Cancel
@@ -87,7 +87,7 @@ Edit.layout = (page: React.ReactNode) => (
     <AppLayout
         breadcrumbs={[
             { title: 'Dashboard', href: '/dashboard' },
-            { title: 'Destinations', href: '/destinations' },
+            { title: 'Locations', href: '/locations' },
             { title: 'Edit', href: '#' },
         ]}
     >

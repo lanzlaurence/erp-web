@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Destination;
+use App\Models\Location;
 use App\Models\Inventory;
 use App\Models\InventoryLog;
 use App\Models\Material;
@@ -15,63 +15,63 @@ class InventorySeeder extends Seeder
     {
         $user = User::first();
         $materials = Material::where('status', 'active')->get();
-        $destinations = Destination::all();
+        $locations = Location::all();
 
         $inventoryData = [
             // Manila Warehouse - main stock
-            ['material' => '300001', 'destination' => 'WH-MNL', 'quantity' => 250.00],
-            ['material' => '300002', 'destination' => 'WH-MNL', 'quantity' => 500.00],
-            ['material' => '300003', 'destination' => 'WH-MNL', 'quantity' => 120.00],
-            ['material' => '300004', 'destination' => 'WH-MNL', 'quantity' => 80.00],
-            ['material' => '300005', 'destination' => 'WH-MNL', 'quantity' => 200.00],
-            ['material' => '300006', 'destination' => 'WH-MNL', 'quantity' => 1000.00],
-            ['material' => '300007', 'destination' => 'WH-MNL', 'quantity' => 300.00],
-            ['material' => '300008', 'destination' => 'WH-MNL', 'quantity' => 30.00],
+            ['material' => '300001', 'location' => 'WH-MNL', 'quantity' => 250.00],
+            ['material' => '300002', 'location' => 'WH-MNL', 'quantity' => 500.00],
+            ['material' => '300003', 'location' => 'WH-MNL', 'quantity' => 120.00],
+            ['material' => '300004', 'location' => 'WH-MNL', 'quantity' => 80.00],
+            ['material' => '300005', 'location' => 'WH-MNL', 'quantity' => 200.00],
+            ['material' => '300006', 'location' => 'WH-MNL', 'quantity' => 1000.00],
+            ['material' => '300007', 'location' => 'WH-MNL', 'quantity' => 300.00],
+            ['material' => '300008', 'location' => 'WH-MNL', 'quantity' => 30.00],
 
             // Cebu Warehouse
-            ['material' => '300001', 'destination' => 'WH-CEB', 'quantity' => 100.00],
-            ['material' => '300002', 'destination' => 'WH-CEB', 'quantity' => 200.00],
-            ['material' => '300003', 'destination' => 'WH-CEB', 'quantity' => 50.00],
-            ['material' => '300005', 'destination' => 'WH-CEB', 'quantity' => 80.00],
+            ['material' => '300001', 'location' => 'WH-CEB', 'quantity' => 100.00],
+            ['material' => '300002', 'location' => 'WH-CEB', 'quantity' => 200.00],
+            ['material' => '300003', 'location' => 'WH-CEB', 'quantity' => 50.00],
+            ['material' => '300005', 'location' => 'WH-CEB', 'quantity' => 80.00],
 
             // Davao Warehouse
-            ['material' => '300001', 'destination' => 'WH-DAV', 'quantity' => 75.00],
-            ['material' => '300002', 'destination' => 'WH-DAV', 'quantity' => 150.00],
-            ['material' => '300006', 'destination' => 'WH-DAV', 'quantity' => 400.00],
-            ['material' => '300007', 'destination' => 'WH-DAV', 'quantity' => 120.00],
+            ['material' => '300001', 'location' => 'WH-DAV', 'quantity' => 75.00],
+            ['material' => '300002', 'location' => 'WH-DAV', 'quantity' => 150.00],
+            ['material' => '300006', 'location' => 'WH-DAV', 'quantity' => 400.00],
+            ['material' => '300007', 'location' => 'WH-DAV', 'quantity' => 120.00],
 
             // BGC Store
-            ['material' => '300004', 'destination' => 'ST-BGC', 'quantity' => 20.00],
-            ['material' => '300006', 'destination' => 'ST-BGC', 'quantity' => 150.00],
-            ['material' => '300009', 'destination' => 'ST-BGC', 'quantity' => 30.00],
-            ['material' => '300010', 'destination' => 'ST-BGC', 'quantity' => 15.00],
+            ['material' => '300004', 'location' => 'ST-BGC', 'quantity' => 20.00],
+            ['material' => '300006', 'location' => 'ST-BGC', 'quantity' => 150.00],
+            ['material' => '300009', 'location' => 'ST-BGC', 'quantity' => 30.00],
+            ['material' => '300010', 'location' => 'ST-BGC', 'quantity' => 15.00],
 
             // Makati Store
-            ['material' => '300004', 'destination' => 'ST-MAK', 'quantity' => 15.00],
-            ['material' => '300006', 'destination' => 'ST-MAK', 'quantity' => 200.00],
-            ['material' => '300010', 'destination' => 'ST-MAK', 'quantity' => 10.00],
+            ['material' => '300004', 'location' => 'ST-MAK', 'quantity' => 15.00],
+            ['material' => '300006', 'location' => 'ST-MAK', 'quantity' => 200.00],
+            ['material' => '300010', 'location' => 'ST-MAK', 'quantity' => 10.00],
 
             // North DC
-            ['material' => '300001', 'destination' => 'DC-NTH', 'quantity' => 180.00],
-            ['material' => '300002', 'destination' => 'DC-NTH', 'quantity' => 300.00],
-            ['material' => '300011', 'destination' => 'DC-NTH', 'quantity' => 600.00],
-            ['material' => '300012', 'destination' => 'DC-NTH', 'quantity' => 25.00],
+            ['material' => '300001', 'location' => 'DC-NTH', 'quantity' => 180.00],
+            ['material' => '300002', 'location' => 'DC-NTH', 'quantity' => 300.00],
+            ['material' => '300011', 'location' => 'DC-NTH', 'quantity' => 600.00],
+            ['material' => '300012', 'location' => 'DC-NTH', 'quantity' => 25.00],
 
             // Clark Hub
-            ['material' => '300013', 'destination' => 'HUB-CLK', 'quantity' => 100.00],
-            ['material' => '300014', 'destination' => 'HUB-CLK', 'quantity' => 200.00],
+            ['material' => '300013', 'location' => 'HUB-CLK', 'quantity' => 100.00],
+            ['material' => '300014', 'location' => 'HUB-CLK', 'quantity' => 200.00],
         ];
 
         foreach ($inventoryData as $item) {
             $material    = $materials->where('code', $item['material'])->first();
-            $destination = $destinations->where('code', $item['destination'])->first();
+            $location = $locations->where('code', $item['location'])->first();
 
-            if (!$material || !$destination) continue;
+            if (!$material || !$location) continue;
 
             $inventory = Inventory::create([
                 'code'           => Inventory::generateCode(),
                 'material_id'    => $material->id,
-                'destination_id' => $destination->id,
+                'location_id' => $location->id,
                 'quantity'       => $item['quantity'],
             ]);
 
@@ -80,7 +80,7 @@ class InventorySeeder extends Seeder
                 'movement_code'   => InventoryLog::generateMovementCode(),
                 'inventory_id'    => $inventory->id,
                 'material_id'     => $material->id,
-                'destination_id'  => $destination->id,
+                'location_id'  => $location->id,
                 'user_id'         => $user->id,
                 'type'            => 'initial',
                 'quantity_before' => 0,
@@ -92,19 +92,19 @@ class InventorySeeder extends Seeder
 
         // Add some adjustment logs on Manila Warehouse items
         $adjustments = [
-            ['material' => '300001', 'destination' => 'WH-MNL', 'quantity' => 270.00, 'remarks' => 'Stock count correction'],
-            ['material' => '300002', 'destination' => 'WH-MNL', 'quantity' => 480.00, 'remarks' => 'Damaged goods deduction'],
-            ['material' => '300004', 'destination' => 'WH-MNL', 'quantity' => 90.00,  'remarks' => 'Physical count adjustment'],
+            ['material' => '300001', 'location' => 'WH-MNL', 'quantity' => 270.00, 'remarks' => 'Stock count correction'],
+            ['material' => '300002', 'location' => 'WH-MNL', 'quantity' => 480.00, 'remarks' => 'Damaged goods deduction'],
+            ['material' => '300004', 'location' => 'WH-MNL', 'quantity' => 90.00,  'remarks' => 'Physical count adjustment'],
         ];
 
         foreach ($adjustments as $adj) {
             $material    = $materials->where('code', $adj['material'])->first();
-            $destination = $destinations->where('code', $adj['destination'])->first();
+            $location = $locations->where('code', $adj['location'])->first();
 
-            if (!$material || !$destination) continue;
+            if (!$material || !$location) continue;
 
             $inventory = Inventory::where('material_id', $material->id)
-                ->where('destination_id', $destination->id)
+                ->where('location_id', $location->id)
                 ->first();
 
             if (!$inventory) continue;
@@ -118,7 +118,7 @@ class InventorySeeder extends Seeder
                 'movement_code'   => InventoryLog::generateMovementCode(),
                 'inventory_id'    => $inventory->id,
                 'material_id'     => $material->id,
-                'destination_id'  => $destination->id,
+                'location_id'  => $location->id,
                 'user_id'         => $user->id,
                 'type'            => 'adjustment',
                 'quantity_before' => $quantityBefore,
@@ -148,13 +148,13 @@ class InventorySeeder extends Seeder
 
         foreach ($transfers as $transfer) {
             $material    = $materials->where('code', $transfer['material'])->first();
-            $fromDest    = $destinations->where('code', $transfer['from'])->first();
-            $toDest      = $destinations->where('code', $transfer['to'])->first();
+            $fromDest    = $locations->where('code', $transfer['from'])->first();
+            $toDest      = $locations->where('code', $transfer['to'])->first();
 
             if (!$material || !$fromDest || !$toDest) continue;
 
             $sourceInventory = Inventory::where('material_id', $material->id)
-                ->where('destination_id', $fromDest->id)
+                ->where('location_id', $fromDest->id)
                 ->first();
 
             if (!$sourceInventory) continue;
@@ -169,18 +169,18 @@ class InventorySeeder extends Seeder
                 'movement_code'              => InventoryLog::generateMovementCode(),
                 'inventory_id'               => $sourceInventory->id,
                 'material_id'                => $material->id,
-                'destination_id'             => $fromDest->id,
+                'location_id'             => $fromDest->id,
                 'user_id'                    => $user->id,
                 'type'                       => 'transfer_out',
                 'quantity_before'            => $sourceBefore,
                 'quantity_change'            => -$qty,
                 'quantity_after'             => $sourceAfter,
-                'transfer_to_destination_id' => $toDest->id,
+                'transfer_to_location_id' => $toDest->id,
                 'remarks'                    => $transfer['remarks'],
             ]);
 
             $targetInventory = Inventory::where('material_id', $material->id)
-                ->where('destination_id', $toDest->id)
+                ->where('location_id', $toDest->id)
                 ->first();
 
             $targetBefore = $targetInventory ? $targetInventory->quantity : 0;
@@ -192,7 +192,7 @@ class InventorySeeder extends Seeder
                 $targetInventory = Inventory::create([
                     'code'           => Inventory::generateCode(),
                     'material_id'    => $material->id,
-                    'destination_id' => $toDest->id,
+                    'location_id' => $toDest->id,
                     'quantity'       => $targetAfter,
                 ]);
             }
@@ -201,13 +201,13 @@ class InventorySeeder extends Seeder
                 'movement_code'              => InventoryLog::generateMovementCode(),
                 'inventory_id'               => $targetInventory->id,
                 'material_id'                => $material->id,
-                'destination_id'             => $toDest->id,
+                'location_id'             => $toDest->id,
                 'user_id'                    => $user->id,
                 'type'                       => 'transfer_in',
                 'quantity_before'            => $targetBefore,
                 'quantity_change'            => $qty,
                 'quantity_after'             => $targetAfter,
-                'transfer_to_destination_id' => $fromDest->id,
+                'transfer_to_location_id' => $fromDest->id,
                 'remarks'                    => $transfer['remarks'],
             ]);
         }

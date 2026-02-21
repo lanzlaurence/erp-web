@@ -26,7 +26,7 @@ export type Uom = {
     deleted_at?: string | null;
 };
 
-export type Destination = {
+export type Location = {
     id: number;
     code: string;
     name: string;

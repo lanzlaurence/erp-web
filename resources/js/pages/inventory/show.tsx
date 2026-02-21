@@ -30,7 +30,7 @@ export default function Show({ inventory, logs }: InventoryShowData) {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold">{inventory.material?.name}</h1>
-                        <p className="text-sm text-muted-foreground">{inventory.destination?.name}</p>
+                        <p className="text-sm text-muted-foreground">{inventory.location?.name}</p>
                     </div>
                     <div className="flex gap-2">
                         <Button variant="outline" size="sm" asChild>
@@ -63,8 +63,8 @@ export default function Show({ inventory, logs }: InventoryShowData) {
                         <p className="text-sm">{inventory.material?.code}</p>
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-muted-foreground">Destination</p>
-                        <p className="text-sm">{inventory.destination?.name}</p>
+                        <p className="text-sm font-medium text-muted-foreground">location</p>
+                        <p className="text-sm">{inventory.location?.name}</p>
                     </div>
                     <div>
                         <p className="text-sm font-medium text-muted-foreground">Current Quantity</p>
@@ -102,7 +102,7 @@ export default function Show({ inventory, logs }: InventoryShowData) {
                                         </TableCell>
                                         <TableCell className="font-mono">{formatDecimal(Number(log.quantity_after))}</TableCell>
                                         <TableCell className="text-sm text-muted-foreground">
-                                            {log.transfer_to_destination?.name ?? '-'}
+                                            {log.transfer_to_location?.name ?? '-'}
                                         </TableCell>
                                         <TableCell className="text-sm">{log.user?.name ?? '-'}</TableCell>
                                         <TableCell className="text-sm text-muted-foreground">{log.remarks ?? '-'}</TableCell>

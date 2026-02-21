@@ -46,7 +46,7 @@ export default function Index({ goodsReceipts }: GoodsReceiptData) {
                                 <TableHead>GR Code</TableHead>
                                 <TableHead>PO Code</TableHead>
                                 <TableHead>Vendor</TableHead>
-                                <TableHead>Destination</TableHead>
+                                <TableHead>Location</TableHead>
                                 <TableHead>GR Date</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Created By</TableHead>
@@ -67,7 +67,7 @@ export default function Index({ goodsReceipts }: GoodsReceiptData) {
                                         <TableCell className="font-mono font-medium">{gr.code}</TableCell>
                                         <TableCell className="font-mono">{gr.purchase_order?.code}</TableCell>
                                         <TableCell>{gr.purchase_order?.vendor?.name}</TableCell>
-                                        <TableCell>{gr.destination?.name}</TableCell>
+                                        <TableCell>{gr.location?.name}</TableCell>
                                         <TableCell>{formatDate(gr.gr_date)}</TableCell>
                                         <TableCell>
                                             <Badge variant={badge.variant}>{badge.label}</Badge>

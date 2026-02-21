@@ -12,12 +12,12 @@ return new class extends Migration
             $table->id();
             $table->string('code')->unique();
             $table->foreignId('material_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('destination_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('location_id')->constrained()->cascadeOnDelete();
             $table->decimal('quantity', 15, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();
 
-            $table->unique(['material_id', 'destination_id']); // no duplicate material+destination
+            $table->unique(['material_id', 'location_id']); // no duplicate material+location
         });
     }
 
