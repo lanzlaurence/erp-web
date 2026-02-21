@@ -41,7 +41,7 @@ export default function Index({ purchaseOrders }: PurchaseOrderData) {
                         <h1 className="text-2xl font-semibold">Purchase Orders</h1>
                         <p className="text-sm text-muted-foreground">Manage procurement from vendors</p>
                     </div>
-                    {hasPermission('po-create') && (
+                    {hasPermission('purchase-order-create') && (
                         <Button asChild size="sm">
                             <Link href="/purchase-orders/create">
                                 <Plus className="mr-2 h-4 w-4" />
@@ -94,21 +94,21 @@ export default function Index({ purchaseOrders }: PurchaseOrderData) {
                                         <TableCell className="text-sm text-muted-foreground">{po.user?.name}</TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
-                                                {hasPermission('po-view') && (
+                                                {hasPermission('purchase-order-view') && (
                                                     <Button variant="ghost" size="sm" asChild>
                                                         <Link href={`/purchase-orders/${po.id}`}>
                                                             <Eye className="h-4 w-4" />
                                                         </Link>
                                                     </Button>
                                                 )}
-                                                {hasPermission('po-edit') && po.status === 'draft' && (
+                                                {hasPermission('purchase-order-edit') && po.status === 'draft' && (
                                                     <Button variant="ghost" size="sm" asChild>
                                                         <Link href={`/purchase-orders/${po.id}/edit`}>
                                                             <Edit className="h-4 w-4" />
                                                         </Link>
                                                     </Button>
                                                 )}
-                                                {hasPermission('po-delete') && po.status === 'draft' && (
+                                                {hasPermission('purchase-order-delete') && po.status === 'draft' && (
                                                     <Button variant="ghost" size="sm"
                                                         onClick={() => setDeleteDialog({ open: true, id: po.id, code: po.code })}>
                                                         <Trash2 className="h-4 w-4 text-red-600" />

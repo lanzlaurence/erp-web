@@ -84,21 +84,21 @@ export default function Index({ goodsReceipts }: GoodsReceiptData) {
                                         </TableCell>
                                         <TableCell className="text-sm text-muted-foreground">{gr.user?.name}</TableCell>
                                         <TableCell className="text-right">
-                                            {hasPermission('gr-view') && (
+                                            {hasPermission('goods-receipt-view') && (
                                                 <Button variant="ghost" size="sm" asChild>
                                                     <Link href={`/goods-receipts/${gr.id}`}>
                                                         <Eye className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
                                             )}
-                                            {hasPermission('gr-edit') && gr.status === 'pending' && (
+                                            {hasPermission('goods-receipt-edit') && gr.status === 'pending' && (
                                                 <Button variant="ghost" size="sm" asChild>
                                                     <Link href={`/goods-receipts/${gr.id}/edit`}>
                                                         <Edit className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
                                             )}
-                                            {hasPermission('gr-delete') && gr.status === 'pending' && (
+                                            {hasPermission('goods-receipt-delete') && gr.status === 'pending' && (
                                                 <Button variant="ghost" size="sm"
                                                     onClick={() => setDeleteDialog({ open: true, id: gr.id, code: gr.code })}>
                                                     <Trash2 className="h-4 w-4 text-red-600" />

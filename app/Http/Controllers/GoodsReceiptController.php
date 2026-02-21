@@ -22,13 +22,13 @@ class GoodsReceiptController extends Controller implements HasMiddleware
         public static function middleware(): array
     {
         return [
-            new Middleware('permission:gr-view',     only: ['index', 'show']),
-            new Middleware('permission:gr-create',   only: ['create', 'store']),
-            new Middleware('permission:gr-edit',     only: ['edit', 'update']),
-            new Middleware('permission:gr-delete',   only: ['destroy']),
-            new Middleware('permission:gr-complete', only: ['complete']),
-            new Middleware('permission:gr-cancel',   only: ['cancel']),
-            new Middleware('permission:gr-revert',   only: ['revert']),
+            new Middleware('permission:goods-receipt-view',     only: ['index', 'show']),
+            new Middleware('permission:goods-receipt-create',   only: ['create', 'store']),
+            new Middleware('permission:goods-receipt-edit',     only: ['edit', 'update']),
+            new Middleware('permission:goods-receipt-delete',   only: ['destroy']),
+            new Middleware('permission:goods-receipt-complete', only: ['complete']),
+            new Middleware('permission:goods-receipt-cancel',   only: ['cancel']),
+            new Middleware('permission:goods-receipt-revert',   only: ['revert']),
         ];
     }
 

@@ -66,7 +66,7 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                             <Link href="/purchase-orders"><ArrowLeft className="mr-2 h-4 w-4" />Back</Link>
                         </Button>
 
-                        {hasPermission('po-edit') && purchaseOrder.status === 'draft' && (
+                        {hasPermission('purchase-order-edit') && purchaseOrder.status === 'draft' && (
                             <Button variant="outline" size="sm" asChild>
                                 <Link href={`/purchase-orders/${purchaseOrder.id}/edit`}>
                                     <Edit className="mr-2 h-4 w-4" />Edit
@@ -74,21 +74,21 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                             </Button>
                         )}
 
-                        {hasPermission('po-post') && purchaseOrder.status === 'draft' && (
+                        {hasPermission('purchase-order-post') && purchaseOrder.status === 'draft' && (
                             <Button size="sm"
                                 onClick={() => triggerAction('post', 'Post Purchase Order', 'This will post the purchase order and lock it from editing.')}>
                                 <CheckCircle className="mr-2 h-4 w-4" />Post
                             </Button>
                         )}
 
-                        {hasPermission('po-revert') && purchaseOrder.status === 'posted' && (
+                        {hasPermission('purchase-order-revert') && purchaseOrder.status === 'posted' && (
                             <Button size="sm" variant="outline"
                                 onClick={() => triggerAction('revert', 'Revert to Draft', 'This will revert the purchase order back to draft status.')}>
                                 <RotateCcw className="mr-2 h-4 w-4" />Revert to Draft
                             </Button>
                         )}
 
-                        {hasPermission('gr-create') && ['posted', 'partially_received'].includes(purchaseOrder.status) && (
+                        {hasPermission('goods-receipt-create') && ['posted', 'partially_received'].includes(purchaseOrder.status) && (
                             <Button size="sm" asChild>
                                 <Link href={`/purchase-orders/${purchaseOrder.id}/goods-receipts/create`}>
                                     <PackageCheck className="mr-2 h-4 w-4" />Create GR
@@ -97,7 +97,7 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                         )}
 
                         {/* Cancel */}
-                        {hasPermission('po-cancel') && !['draft', 'cancelled'].includes(purchaseOrder.status) && (() => {
+                        {hasPermission('purchase-order-cancel') && !['draft', 'cancelled'].includes(purchaseOrder.status) && (() => {
                             const hasCompletedGr = purchaseOrder.goodsReceipts?.some((gr) => gr.status === 'completed');
                             return hasCompletedGr ? (
                                 <Button size="sm" variant="outline" disabled title="Cancel all goods receipts before cancelling this PO">
@@ -112,7 +112,7 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                         })()}
 
                         {/* Allow cancel from draft too */}
-                        {hasPermission('po-cancel') && purchaseOrder.status === 'draft' && (
+                        {hasPermission('purchase-order-cancel') && purchaseOrder.status === 'draft' && (
                             <Button size="sm" variant="destructive"
                                 onClick={() => triggerAction('cancel', 'Cancel Purchase Order', 'This will cancel the purchase order.')}>
                                 <XCircle className="mr-2 h-4 w-4" />Cancel

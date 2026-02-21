@@ -64,7 +64,7 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                             <Link href="/goods-receipts"><ArrowLeft className="mr-2 h-4 w-4" />Back</Link>
                         </Button>
 
-                        {hasPermission('gr-edit') && goodsReceipt.status === 'pending' && (
+                        {hasPermission('goods-receipt-edit') && goodsReceipt.status === 'pending' && (
                             <Button variant="outline" size="sm" asChild>
                                 <Link href={`/goods-receipts/${goodsReceipt.id}/edit`}>
                                     <Edit className="mr-2 h-4 w-4" />Edit
@@ -73,7 +73,7 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                         )}
 
                         {/* Complete — only from pending */}
-                        {hasPermission('gr-complete') && goodsReceipt.status === 'pending' && (
+                        {hasPermission('goods-receipt-complete') && goodsReceipt.status === 'pending' && (
                             <Button size="sm"
                                 onClick={() => triggerAction('complete', 'Complete Goods Receipt', 'This will receive the items and update inventory. This cannot be undone without cancelling.')}>
                                 <CheckCircle className="mr-2 h-4 w-4" />Complete
@@ -81,7 +81,7 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                         )}
 
                         {/* Cancel — from pending OR completed (completed will reverse inventory) */}
-                        {hasPermission('gr-cancel') && ['pending', 'completed'].includes(goodsReceipt.status) && (
+                        {hasPermission('goods-receipt-cancel') && ['pending', 'completed'].includes(goodsReceipt.status) && (
                             <Button size="sm" variant="destructive"
                                 onClick={() => triggerAction(
                                     'cancel',
@@ -95,7 +95,7 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                         )}
 
                         {/* Revert — only from cancelled */}
-                        {hasPermission('gr-revert') && goodsReceipt.status === 'cancelled' && (
+                        {hasPermission('goods-receipt-revert') && goodsReceipt.status === 'cancelled' && (
                             <Button size="sm" variant="outline"
                                 onClick={() => triggerAction('revert', 'Revert to Pending', 'This will revert the goods receipt back to pending. Inventory will NOT be restored — you must complete again.')}>
                                 <RotateCcw className="mr-2 h-4 w-4" />Revert
