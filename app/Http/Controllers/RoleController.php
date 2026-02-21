@@ -13,6 +13,11 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller implements HasMiddleware
 {
+    private function isProtected(Role $role): bool
+    {
+        return $role->id === 1;
+    }
+
     public static function middleware(): array
     {
         return [
@@ -62,6 +67,11 @@ class RoleController extends Controller implements HasMiddleware
 
     public function update(UpdateRoleRequest $request, Role $role)
     {
+        if ($this->isProtected($role)) {
+            return redirect()->route('roles.index')
+                ->withErrors(['error' => 'This role cannot be modified.']);
+        }
+
         $role->update(['name' => $request->name]);
 
         if ($request->permissions) {
@@ -73,6 +83,11 @@ class RoleController extends Controller implements HasMiddleware
 
     public function destroy(Role $role)
     {
+        if ($this->isProtected($role)) {
+            return redirect()->route('roles.index')
+                ->withErrors(['error' => 'This role cannot be deleted.']);
+        }
+
         $role->delete();
         return redirect()->route('roles.index')->with('success', 'Role deleted successfully');
     }

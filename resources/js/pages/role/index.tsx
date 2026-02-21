@@ -22,9 +22,10 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 import { usePermissions } from '@/hooks/use-permissions';
 import AppLayout from '@/layouts/app-layout';
-import type { Permission, RoleData } from '@/types';
+import type { Permission, RoleData, Role } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import { ChevronDown, Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -65,6 +66,8 @@ export default function Index({ roles }: RoleData) {
             {} as Record<string, Permission[]>,
         );
     };
+
+    const isProtected = (role: Role) => role.id === 1;
 
     return (
         <>
@@ -121,21 +124,26 @@ export default function Index({ roles }: RoleData) {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
-                                                    {hasPermission('role-edit') && (
-                                                        <Button variant="ghost" size="sm" asChild>
-                                                            <Link href={`/roles/${role.id}/edit`}>
-                                                                <Edit className="h-4 w-4" />
-                                                            </Link>
-                                                        </Button>
-                                                    )}
-                                                    {hasPermission('role-delete') && (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => handleDeleteClick(role.id, role.name)}
-                                                        >
-                                                            <Trash2 className="h-4 w-4 text-red-600" />
-                                                        </Button>
+                                                    {isProtected(role) ? (
+                                                        <Badge variant="outline" className="text-xs">
+                                                            Protected
+                                                        </Badge>
+                                                    ) : (
+                                                        <>
+                                                            {hasPermission('role-edit') && (
+                                                                <Button variant="ghost" size="sm" asChild>
+                                                                    <Link href={`/roles/${role.id}/edit`}>
+                                                                        <Edit className="h-4 w-4" />
+                                                                    </Link>
+                                                                </Button>
+                                                            )}
+                                                            {hasPermission('role-delete') && (
+                                                                <Button variant="ghost" size="sm"
+                                                                    onClick={() => handleDeleteClick(role.id, role.name)}>
+                                                                    <Trash2 className="h-4 w-4 text-red-600" />
+                                                                </Button>
+                                                            )}
+                                                        </>
                                                     )}
                                                 </div>
                                             </TableCell>

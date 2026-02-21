@@ -37,11 +37,9 @@ import {
     TrendingUp,
     Warehouse,
     ShoppingBag,
-    Coins,
     Activity as ActivityIcon,
     ClipboardList,
     BarChart2,
-    PackageSearch,
     PackageCheck,
     Truck,
     FileText,
@@ -92,8 +90,8 @@ export function AppSidebar() {
             href: '#',
             icon: ActivityIcon,
             items: [
-                { title: 'Transaction Log',  href: '/activity/transaction-log',  icon: FileText,      permission: 'activity-transaction-log' },
-                { title: 'Inventory Log',    href: '/activity/inventory-log',    icon: ClipboardList, permission: 'activity-inventory-log' },
+                { title: 'Transaction Log', href: '/activity/transaction-log', icon: FileText, permission: 'activity-transaction-log' },
+                { title: 'Inventory Log', href: '/activity/inventory-log', icon: ClipboardList, permission: 'activity-inventory-log' },
             ],
         },
         {

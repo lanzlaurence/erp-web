@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @class(['dark' => ($appearance ?? 'light') == 'dark'])>
     <head>
+        <script src="http://localhost:8097"></script>
+
         @php
             $appName = \App\Models\Preference::get('app_name', config('app.name', 'ERP Web'));
             $appLogo = \App\Models\Preference::get('app_logo', 'default-logo.jpg');
