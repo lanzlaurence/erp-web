@@ -7,6 +7,7 @@ import { Edit, ArrowLeft } from 'lucide-react';
 import { usePermissions } from '@/hooks/use-permissions';
 import { useFormatters } from '@/hooks/use-formatters';
 import { Head } from '@inertiajs/react';
+import EntityLogSection from '@/components/ui/entity-log';
 
 type Props = {
     material: Material;
@@ -124,11 +125,19 @@ export default function Show({ material }: Props) {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">Unit Cost</p>
-                            <p className="text-sm">{formatAmount(Number(material.unit_cost))}</p>
+                            <p className="text-sm font-mono">{formatAmount(Number(material.unit_cost))}</p>
                         </div>
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">Unit Price</p>
-                            <p className="text-sm">{formatAmount(Number(material.unit_price))}</p>
+                            <p className="text-sm font-mono">{formatAmount(Number(material.unit_price))}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">Avg Unit Cost</p>
+                            <p className="text-sm font-mono text-muted-foreground">{formatAmount(Number(material.avg_unit_cost))}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">Avg Unit Price</p>
+                            <p className="text-sm font-mono text-muted-foreground">{formatAmount(Number(material.avg_unit_price))}</p>
                         </div>
                     </div>
                 </div>
@@ -163,6 +172,8 @@ export default function Show({ material }: Props) {
                         </div>
                     </div>
                 </div>
+
+                <EntityLogSection logs={material.logs ?? []} />
             </div>
         </>
     );

@@ -74,6 +74,8 @@ export default function Index({ materials }: MaterialData) {
                                 <TableHead>UOM</TableHead>
                                 <TableHead>Unit Cost</TableHead>
                                 <TableHead>Unit Price</TableHead>
+                                <TableHead>Avg Cost</TableHead>
+                                <TableHead>Avg Price</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
@@ -95,6 +97,8 @@ export default function Index({ materials }: MaterialData) {
                                     </TableCell>
                                     <TableCell>{formatAmount(Number(material.unit_cost))}</TableCell>
                                     <TableCell>{formatAmount(Number(material.unit_price))}</TableCell>
+                                    <TableCell>{formatAmount(Number(material.avg_unit_cost))}</TableCell>
+                                    <TableCell>{formatAmount(Number(material.avg_unit_price))}</TableCell>
                                     <TableCell>
                                         <Badge
                                             variant={

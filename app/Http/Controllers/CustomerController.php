@@ -35,12 +35,14 @@ class CustomerController extends Controller implements HasMiddleware
     public function store(StoreCustomerRequest $request)
     {
         $customer = Customer::create($request->validated());
+        $customer->logCreated();
         return redirect()->route('customers.index')
             ->with('success', "Customer created successfully with code: {$customer->code}");
     }
 
     public function show(Customer $customer)
     {
+        $customer->load(['logs.user']);
         return Inertia::render('customer/show', ['customer' => $customer]);
     }
 
@@ -51,7 +53,9 @@ class CustomerController extends Controller implements HasMiddleware
 
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
+        $old = $customer->only($customer->getFillable());
         $customer->update($request->validated());
+        $customer->logUpdated($old, $request->validated());
         return redirect()->route('customers.index')
             ->with('success', "Customer {$customer->code} updated successfully");
     }
@@ -59,6 +63,7 @@ class CustomerController extends Controller implements HasMiddleware
     public function destroy(Customer $customer)
     {
         $code = $customer->code;
+        $customer->logDeleted();
         $customer->delete();
         return redirect()->route('customers.index')
             ->with('success', "Customer {$code} deleted successfully");

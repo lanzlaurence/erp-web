@@ -24,6 +24,8 @@ return new class extends Migration
             $table->integer('reorder_level')->default(0);
             $table->decimal('unit_cost', 15, 2)->default(0);
             $table->decimal('unit_price', 15, 2)->default(0);
+            $table->decimal('avg_unit_cost', 15, 2)->default(0);
+            $table->decimal('avg_unit_price', 15, 2)->default(0);
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->boolean('track_serial_number')->default(false);
             $table->boolean('track_batch_number')->default(false);

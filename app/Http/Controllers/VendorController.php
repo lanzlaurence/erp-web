@@ -35,12 +35,14 @@ class VendorController extends Controller implements HasMiddleware
     public function store(StoreVendorRequest $request)
     {
         $vendor = Vendor::create($request->validated());
+        $vendor->logCreated();
         return redirect()->route('vendors.index')
             ->with('success', "Vendor created successfully with code: {$vendor->code}");
     }
 
     public function show(Vendor $vendor)
     {
+        $vendor->load(['logs.user']);
         return Inertia::render('vendor/show', ['vendor' => $vendor]);
     }
 
@@ -51,7 +53,9 @@ class VendorController extends Controller implements HasMiddleware
 
     public function update(UpdateVendorRequest $request, Vendor $vendor)
     {
+        $old = $vendor->only($vendor->getFillable());
         $vendor->update($request->validated());
+        $vendor->logUpdated($old, $request->validated());
         return redirect()->route('vendors.index')
             ->with('success', "Vendor {$vendor->code} updated successfully");
     }
@@ -59,6 +63,7 @@ class VendorController extends Controller implements HasMiddleware
     public function destroy(Vendor $vendor)
     {
         $code = $vendor->code;
+        $vendor->logDeleted();
         $vendor->delete();
         return redirect()->route('vendors.index')
             ->with('success', "Vendor {$code} deleted successfully");

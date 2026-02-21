@@ -39,6 +39,8 @@ class UpdateMaterialRequest extends FormRequest
             'reorder_level' => ['required', 'integer', 'min:0'],
             'unit_cost' => ['required', 'numeric', 'min:0'],
             'unit_price' => ['required', 'numeric', 'min:0'],
+            'avg_unit_cost' => ['required', 'numeric', 'min:0'],
+            'avg_unit_price' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'in:active,inactive'],
             'track_serial_number' => ['boolean'],
             'track_batch_number' => ['boolean'],

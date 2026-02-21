@@ -7,6 +7,7 @@ import { Edit, ArrowLeft } from 'lucide-react';
 import { usePermissions } from '@/hooks/use-permissions';
 import { useFormatters } from '@/hooks/use-formatters';
 import { Head } from '@inertiajs/react';
+import EntityLogSection from '@/components/ui/entity-log';
 
 type Props = {
     customer: Customer;
@@ -135,6 +136,8 @@ export default function Show({ customer }: Props) {
                         <p className="text-sm text-muted-foreground">No contact persons added</p>
                     )}
                 </div>
+
+                <EntityLogSection logs={customer.logs ?? []} />
             </div>
         </>
     );
