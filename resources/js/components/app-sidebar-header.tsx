@@ -58,11 +58,10 @@ export function AppSidebarHeader({
                 </Button>
 
                 {/* Notifications */}
-                <DropdownMenu>
+                {/* <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="relative h-8 w-8">
                             <Bell className="h-4 w-4" />
-                            {/* Indicator */}
                             <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
                         </Button>
                     </DropdownMenuTrigger>
@@ -73,7 +72,7 @@ export function AppSidebarHeader({
                             No notifications
                         </div>
                     </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu> */}
             </div>
         </header>
     );

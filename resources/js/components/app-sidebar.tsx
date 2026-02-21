@@ -73,13 +73,19 @@ export function AppSidebar() {
             href: '#',
             icon: TrendingUp,
             isActive: true,
-            badge: 1,
+            // badge: 1,
             items: [
-                { title: 'Purchase Orders', href: '/purchase-orders', icon: ShoppingCart, permission: 'po-view', badge: 9 },
-                { title: 'Goods Receipts',  href: '/goods-receipts',  icon: PackageCheck, permission: 'gr-view' },
-                { title: 'Sales Orders',           href: '#',                icon: ShoppingBag },
-                { title: 'Goods Issues',           href: '#',                icon: Truck},
-                { title: 'Inventory',       href: '/inventories',     icon: Warehouse,    permission: 'inventory-view' },
+                {
+                    title: 'Purchase Orders',
+                    href: '/purchase-orders',
+                    icon: ShoppingCart,
+                    permission: 'po-view',
+                    // badge: 9
+                },
+                { title: 'Goods Receipts', href: '/goods-receipts', icon: PackageCheck, permission: 'gr-view' },
+                { title: 'Sales Orders', href: '#', icon: ShoppingBag },
+                { title: 'Goods Issues', href: '#', icon: Truck},
+                { title: 'Inventory', href: '/inventories', icon: Warehouse, permission: 'inventory-view' },
             ],
         },
         {
@@ -127,17 +133,17 @@ export function AppSidebar() {
     ];
 
     const footerNavItems: NavItem[] = [
-        {
-            title: 'Documentation',
-            href: '#',
-            icon: BookOpen,
-        },
-        {
-            title: 'System Updates',
-            href: '#',
-            icon: GitBranch,
-            onClick: () => setShowUpdates(true),
-        },
+        // {
+        //     title: 'Documentation',
+        //     href: '#',
+        //     icon: BookOpen,
+        // },
+        // {
+        //     title: 'System Updates',
+        //     href: '#',
+        //     icon: GitBranch,
+        //     onClick: () => setShowUpdates(true),
+        // },
     ];
 
     const filterNavItems = (items: NavItem[]): NavItem[] => {

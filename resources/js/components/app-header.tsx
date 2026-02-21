@@ -36,29 +36,19 @@ import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
+type RequiredHrefNavItem = Omit<NavItem, 'href'> & { href: string };
+
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
 };
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
+const mainNavItems: RequiredHrefNavItem[] = [
+    { title: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
 ];
 
-const rightNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
+const rightNavItems: RequiredHrefNavItem[] = [
+    // { title: 'Repository', href: 'https://github.com/laravel/react-starter-kit', icon: Folder },
+    // { title: 'Documentation', href: 'https://laravel.com/docs/starter-kits#react',  icon: BookOpen },
 ];
 
 const activeItemStyles =
