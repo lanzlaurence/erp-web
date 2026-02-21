@@ -33,7 +33,7 @@ class InventoryLog extends Model
         $yy = now()->format('y');   // 26
         $mm = now()->format('m');   // 01
 
-        $prefix = '3' . $yy . $mm; // 32601
+        $prefix = '5' . $yy . $mm; // 52601
 
         $last = self::where('movement_code', 'like', $prefix . '%')
             ->orderBy('id', 'desc')

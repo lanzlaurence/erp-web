@@ -22,13 +22,13 @@ const STATUS_BADGE: Record<PurchaseOrderStatus, { label: string; variant: 'defau
 export default function Index({ purchaseOrders }: PurchaseOrderData) {
     const { hasPermission } = usePermissions();
     const { formatAmount, formatDate } = useFormatters();
-    const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; poNumber: string }>({
-        open: false, id: 0, poNumber: '',
+    const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; code: string }>({
+        open: false, id: 0, code: '',
     });
 
     const handleDeleteConfirm = () => {
         router.delete(`/purchase-orders/${deleteDialog.id}`);
-        setDeleteDialog({ open: false, id: 0, poNumber: '' });
+        setDeleteDialog({ open: false, id: 0, code: '' });
     };
 
     return (
@@ -102,7 +102,7 @@ export default function Index({ purchaseOrders }: PurchaseOrderData) {
                                                 )}
                                                 {hasPermission('po-delete') && po.status === 'draft' && (
                                                     <Button variant="ghost" size="sm"
-                                                        onClick={() => setDeleteDialog({ open: true, id: po.id, poNumber: po.po_number })}>
+                                                        onClick={() => setDeleteDialog({ open: true, id: po.id, code: po.code })}>
                                                         <Trash2 className="h-4 w-4 text-red-600" />
                                                     </Button>
                                                 )}
@@ -121,7 +121,7 @@ export default function Index({ purchaseOrders }: PurchaseOrderData) {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete Purchase Order?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This will permanently delete <span className="font-semibold">{deleteDialog.poNumber}</span>. This action cannot be undone.
+                            This will permanently delete <span className="font-semibold">{deleteDialog.code}</span>. This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

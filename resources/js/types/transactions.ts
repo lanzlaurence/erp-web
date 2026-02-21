@@ -53,7 +53,6 @@ export type PurchaseOrderCharge = {
 export type PurchaseOrder = {
     id: number;
     code: string;
-    po_number: string;
     vendor_id: number;
     user_id: number;
     status: PurchaseOrderStatus;
@@ -112,7 +111,6 @@ export type GoodsReceiptItem = {
 export type GoodsReceipt = {
     id: number;
     code: string;
-    gr_number: string;
     purchase_order_id: number;
     user_id: number;
     location_id: number;

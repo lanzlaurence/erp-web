@@ -107,7 +107,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
             $po->logs()->create([
                 'user_id' => Auth::id(),
                 'action'  => 'gr_created',
-                'remarks' => "GR {$gr->gr_number} created",
+                'remarks' => "GR {$gr->code} created",
             ]);
         });
 
@@ -262,7 +262,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                     'quantity_after'  => $qtyBefore + $qtyToReceive,
                     'reference_id'    => $goodsReceipt->id,
                     'reference_type'  => GoodsReceipt::class,
-                    'remarks'         => "GR {$goodsReceipt->gr_number} completed",
+                    'remarks'         => "GR {$goodsReceipt->code} completed",
                 ]);
             }
 
@@ -320,7 +320,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                             'quantity_after'  => $newQty,
                             'reference_id'    => $goodsReceipt->id,
                             'reference_type'  => GoodsReceipt::class,
-                            'remarks'         => "GR {$goodsReceipt->gr_number} cancelled - inventory reversed",
+                            'remarks'         => "GR {$goodsReceipt->code} cancelled - inventory reversed",
                         ]);
                     }
                 }

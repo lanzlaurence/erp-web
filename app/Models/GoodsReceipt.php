@@ -14,7 +14,7 @@ class GoodsReceipt extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'code', 'gr_number', 'purchase_order_id', 'user_id',
+        'code', 'purchase_order_id', 'user_id',
         'location_id', 'status', 'gr_date',
         'transaction_date', 'remarks',
     ];
@@ -28,24 +28,15 @@ class GoodsReceipt extends Model
     {
         parent::boot();
         static::creating(function ($gr) {
-            if (empty($gr->gr_number)) $gr->gr_number = self::generateGrNumber();
             if (empty($gr->code))      $gr->code      = self::generateCode();
         });
     }
 
     public static function generateCode(): string
     {
-        $prefix = '2' . now()->format('ym');
-        $last   = self::withTrashed()->where('code', 'like', $prefix . '%')->orderBy('id', 'desc')->first();
-        $next   = $last ? ((int) substr($last->code, -4)) + 1 : 1;
-        return $prefix . str_pad($next, 4, '0', STR_PAD_LEFT);
-    }
-
-    public static function generateGrNumber(): string
-    {
-        $prefix = 'GR-' . now()->format('Ym');
-        $last   = self::withTrashed()->where('gr_number', 'like', $prefix . '%')->orderBy('id', 'desc')->first();
-        $next   = $last ? ((int) substr($last->gr_number, -4)) + 1 : 1;
+        $prefix = 'GR-4' . now()->format('ym');
+        $last = self::withTrashed()->where('code', 'like', $prefix . '%')->orderBy('id', 'desc')->first();
+        $next = $last ? ((int) substr($last->code, -4)) + 1 : 1;
         return $prefix . str_pad($next, 4, '0', STR_PAD_LEFT);
     }
 

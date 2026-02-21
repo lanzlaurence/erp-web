@@ -2,14 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Charge;
 use App\Models\GoodsReceipt;
 use App\Models\GoodsReceiptItem;
 use App\Models\Inventory;
 use App\Models\InventoryLog;
 use App\Models\Material;
 use App\Models\PurchaseOrder;
-use App\Models\PurchaseOrderCharge;
 use App\Models\PurchaseOrderItem;
 use App\Models\Vendor;
 use App\Models\Location;
@@ -21,20 +19,19 @@ class PurchaseOrderSeeder extends Seeder
 {
     public function run(): void
     {
-        $user         = User::first();
-        $vendors      = Vendor::where('status', 'active')->get();
-        $materials    = Material::where('status', 'active')->get();
+        $user = User::first();
+        $vendors = Vendor::where('status', 'active')->get();
+        $materials = Material::where('status', 'active')->get();
         $locations = Location::all();
 
         $orders = [
-            // 1. Fully received + completed GR
             [
-                'vendor_code'   => '200001',
-                'order_date'    => '2026-01-05',
+                'vendor_code' => '200001',
+                'order_date' => '2026-01-05',
                 'delivery_date' => '2026-01-15',
-                'reference_no'  => 'REF-2026-001',
-                'status'        => 'fully_received',
-                'remarks'       => 'First order of the year',
+                'reference_no' => 'REF-2026-001',
+                'status' => 'fully_received',
+                'remarks' => 'First order of the year',
                 'items' => [
                     ['code' => '300001', 'qty' => 50,  'unit_price' => 240.00, 'discount_type' => 'percentage', 'discount_amount' => 5,  'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
                     ['code' => '300002', 'qty' => 100, 'unit_price' => 170.00, 'discount_type' => null,         'discount_amount' => 0,  'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
@@ -43,10 +40,10 @@ class PurchaseOrderSeeder extends Seeder
                 'gr' => [
                     [
                         'location_code' => 'WH-MNL',
-                        'gr_date'          => '2026-01-10',
+                        'gr_date' => '2026-01-10',
                         'transaction_date' => '2026-01-10',
-                        'status'           => 'completed',
-                        'remarks'          => 'Full delivery received',
+                        'status' => 'completed',
+                        'remarks' => 'Full delivery received',
                         'items' => [
                             ['code' => '300001', 'qty_to_receive' => 50],
                             ['code' => '300002', 'qty_to_receive' => 100],
@@ -55,14 +52,13 @@ class PurchaseOrderSeeder extends Seeder
                     ],
                 ],
             ],
-            // 2. Fully received + completed GR
             [
-                'vendor_code'   => '200002',
-                'order_date'    => '2026-01-12',
+                'vendor_code' => '200002',
+                'order_date' => '2026-01-12',
                 'delivery_date' => '2026-01-25',
-                'reference_no'  => 'REF-2026-002',
-                'status'        => 'fully_received',
-                'remarks'       => 'Electrical supplies order',
+                'reference_no' => 'REF-2026-002',
+                'status' => 'fully_received',
+                'remarks' => 'Electrical supplies order',
                 'items' => [
                     ['code' => '300005', 'qty' => 80,  'unit_price' => 820.00, 'discount_type' => 'percentage', 'discount_amount' => 5, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
                     ['code' => '300007', 'qty' => 150, 'unit_price' => 110.00, 'discount_type' => null,         'discount_amount' => 0, 'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
@@ -70,10 +66,10 @@ class PurchaseOrderSeeder extends Seeder
                 'gr' => [
                     [
                         'location_code' => 'WH-CEB',
-                        'gr_date'          => '2026-01-20',
+                        'gr_date' => '2026-01-20',
                         'transaction_date' => '2026-01-20',
-                        'status'           => 'completed',
-                        'remarks'          => 'Full delivery received',
+                        'status' => 'completed',
+                        'remarks' => 'Full delivery received',
                         'items' => [
                             ['code' => '300005', 'qty_to_receive' => 80],
                             ['code' => '300007', 'qty_to_receive' => 150],
@@ -81,14 +77,13 @@ class PurchaseOrderSeeder extends Seeder
                     ],
                 ],
             ],
-            // 3. Partially received — 2 GRs (1 completed, 1 pending)
             [
-                'vendor_code'   => '200001',
-                'order_date'    => '2026-01-20',
+                'vendor_code' => '200001',
+                'order_date' => '2026-01-20',
                 'delivery_date' => '2026-02-05',
-                'reference_no'  => 'REF-2026-003',
-                'status'        => 'partially_received',
-                'remarks'       => 'Partial delivery expected',
+                'reference_no' => 'REF-2026-003',
+                'status' => 'partially_received',
+                'remarks' => 'Partial delivery expected',
                 'items' => [
                     ['code' => '300004', 'qty' => 40,  'unit_price' => 1150.00, 'discount_type' => 'fixed',      'discount_amount' => 50, 'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
                     ['code' => '300006', 'qty' => 500, 'unit_price' => 42.00,   'discount_type' => 'percentage', 'discount_amount' => 3,  'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
@@ -97,10 +92,10 @@ class PurchaseOrderSeeder extends Seeder
                 'gr' => [
                     [
                         'location_code' => 'WH-MNL',
-                        'gr_date'          => '2026-01-28',
+                        'gr_date' => '2026-01-28',
                         'transaction_date' => '2026-01-28',
-                        'status'           => 'completed',
-                        'remarks'          => 'First partial delivery',
+                        'status' => 'completed',
+                        'remarks' => 'First partial delivery',
                         'items' => [
                             ['code' => '300004', 'qty_to_receive' => 20],
                             ['code' => '300006', 'qty_to_receive' => 300],
@@ -109,10 +104,10 @@ class PurchaseOrderSeeder extends Seeder
                     ],
                     [
                         'location_code' => 'WH-MNL',
-                        'gr_date'          => '2026-02-03',
+                        'gr_date' => '2026-02-03',
                         'transaction_date' => '2026-02-03',
-                        'status'           => 'pending',
-                        'remarks'          => 'Second delivery pending',
+                        'status' => 'pending',
+                        'remarks' => 'Second delivery pending',
                         'items' => [
                             ['code' => '300004', 'qty_to_receive' => 20],
                             ['code' => '300006', 'qty_to_receive' => 200],
@@ -121,14 +116,13 @@ class PurchaseOrderSeeder extends Seeder
                     ],
                 ],
             ],
-            // 4. Posted — no GR yet
             [
-                'vendor_code'   => '200003',
-                'order_date'    => '2026-02-01',
+                'vendor_code' => '200003',
+                'order_date' => '2026-02-01',
                 'delivery_date' => '2026-02-15',
-                'reference_no'  => 'REF-2026-004',
-                'status'        => 'posted',
-                'remarks'       => 'Pending delivery',
+                'reference_no' => 'REF-2026-004',
+                'status' => 'posted',
+                'remarks' => 'Pending delivery',
                 'items' => [
                     ['code' => '300008', 'qty' => 20,  'unit_price' => 750.00, 'discount_type' => null,         'discount_amount' => 0, 'is_vatable' => false, 'vat_type' => null, 'vat_rate' => 0],
                     ['code' => '300011', 'qty' => 300, 'unit_price' => 26.00,  'discount_type' => 'percentage', 'discount_amount' => 5, 'is_vatable' => false, 'vat_type' => null, 'vat_rate' => 0],
@@ -136,28 +130,26 @@ class PurchaseOrderSeeder extends Seeder
                 ],
                 'gr' => [],
             ],
-            // 5. Draft — no GR
             [
-                'vendor_code'   => '200002',
-                'order_date'    => '2026-02-05',
+                'vendor_code' => '200002',
+                'order_date' => '2026-02-05',
                 'delivery_date' => '2026-02-20',
-                'reference_no'  => 'REF-2026-005',
-                'status'        => 'draft',
-                'remarks'       => 'Draft order for review',
+                'reference_no' => 'REF-2026-005',
+                'status' => 'draft',
+                'remarks' => 'Draft order for review',
                 'items' => [
                     ['code' => '300013', 'qty' => 50,  'unit_price' => 170.00, 'discount_type' => null,    'discount_amount' => 0,  'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
                     ['code' => '300014', 'qty' => 100, 'unit_price' => 230.00, 'discount_type' => 'fixed', 'discount_amount' => 10, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
                 ],
                 'gr' => [],
             ],
-            // 6. Cancelled PO
             [
-                'vendor_code'   => '200001',
-                'order_date'    => '2026-02-08',
+                'vendor_code' => '200001',
+                'order_date' => '2026-02-08',
                 'delivery_date' => '2026-02-22',
-                'reference_no'  => 'REF-2026-006',
-                'status'        => 'cancelled',
-                'remarks'       => 'Cancelled order',
+                'reference_no' => 'REF-2026-006',
+                'status' => 'cancelled',
+                'remarks' => 'Cancelled order',
                 'items' => [
                     ['code' => '300001', 'qty' => 10, 'unit_price' => 240.00, 'discount_type' => null, 'discount_amount' => 0, 'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
                 ],
@@ -170,41 +162,39 @@ class PurchaseOrderSeeder extends Seeder
             if (!$vendor) continue;
 
             DB::transaction(function () use ($orderData, $vendor, $materials, $locations, $user) {
-                // ── Create PO ────────────────────────────────────────────────
                 $po = PurchaseOrder::create([
-                    'vendor_id'       => $vendor->id,
-                    'user_id'         => $user->id,
-                    'status'          => 'draft',
-                    'order_date'      => $orderData['order_date'],
-                    'delivery_date'   => $orderData['delivery_date'],
-                    'reference_no'    => $orderData['reference_no'],
-                    'remarks'         => $orderData['remarks'],
-                    'discount_type'   => null,
+                    'vendor_id' => $vendor->id,
+                    'user_id' => $user->id,
+                    'status' => 'draft',
+                    'order_date' => $orderData['order_date'],
+                    'delivery_date' => $orderData['delivery_date'],
+                    'reference_no' => $orderData['reference_no'],
+                    'remarks' => $orderData['remarks'],
+                    'discount_type' => null,
                     'discount_amount' => 0,
                 ]);
 
                 $po->logs()->create([
-                    'user_id'   => $user->id,
-                    'action'    => 'created',
+                    'user_id' => $user->id,
+                    'action' => 'created',
                     'to_status' => 'draft',
-                    'remarks'   => 'Purchase order created',
+                    'remarks' => 'Purchase order created',
                 ]);
 
-                // ── Create items ─────────────────────────────────────────────
                 foreach ($orderData['items'] as $index => $itemData) {
                     $material = $materials->where('code', $itemData['code'])->first();
                     if (!$material) continue;
 
-                    $unitPrice   = $itemData['unit_price'];
-                    $qty         = $itemData['qty'];
-                    $discType    = $itemData['discount_type'];
-                    $discAmt     = $itemData['discount_amount'];
-                    $isVatable   = $itemData['is_vatable'];
-                    $vatType     = $itemData['vat_type'];
-                    $vatRate     = $itemData['vat_rate'];
+                    $unitPrice = $itemData['unit_price'];
+                    $qty = $itemData['qty'];
+                    $discType = $itemData['discount_type'];
+                    $discAmt = $itemData['discount_amount'];
+                    $isVatable = $itemData['is_vatable'];
+                    $vatType = $itemData['vat_type'];
+                    $vatRate = $itemData['vat_rate'];
 
                     $unitAfterDiscount = $unitPrice;
-                    if ($discType === 'fixed')      $unitAfterDiscount = max(0, $unitPrice - $discAmt);
+                    if ($discType === 'fixed') $unitAfterDiscount = max(0, $unitPrice - $discAmt);
                     elseif ($discType === 'percentage') $unitAfterDiscount = $unitPrice * (1 - $discAmt / 100);
 
                     $netPrice = $unitAfterDiscount * $qty;
@@ -215,86 +205,81 @@ class PurchaseOrderSeeder extends Seeder
                     $grossPrice = ($vatType === 'exclusive') ? $netPrice + $vatPrice : $netPrice;
 
                     PurchaseOrderItem::create([
-                        'purchase_order_id'         => $po->id,
-                        'material_id'               => $material->id,
-                        'line_number'               => $index + 1,
-                        'qty_ordered'               => $qty,
-                        'qty_received'              => 0,
-                        'unit_price'                => $unitPrice,
-                        'discount_type'             => $discType,
-                        'discount_amount'           => $discAmt,
+                        'purchase_order_id' => $po->id,
+                        'material_id' => $material->id,
+                        'line_number' => $index + 1,
+                        'qty_ordered' => $qty,
+                        'qty_received' => 0,
+                        'unit_price' => $unitPrice,
+                        'discount_type' => $discType,
+                        'discount_amount' => $discAmt,
                         'unit_price_after_discount' => $unitAfterDiscount,
-                        'net_price'                 => $netPrice,
-                        'is_vatable'                => $isVatable,
-                        'vat_type'                  => $vatType,
-                        'vat_rate'                  => $vatRate,
-                        'vat_price'                 => $vatPrice,
-                        'gross_price'               => $grossPrice,
+                        'net_price' => $netPrice,
+                        'is_vatable' => $isVatable,
+                        'vat_type' => $vatType,
+                        'vat_rate' => $vatRate,
+                        'vat_price' => $vatPrice,
+                        'gross_price' => $grossPrice,
                     ]);
                 }
 
-                // ── Recalculate totals ────────────────────────────────────────
                 $po->refresh();
                 $items = $po->items;
                 $po->update([
                     'total_before_discount' => $items->sum(fn($i) => (float)$i->unit_price * (float)$i->qty_ordered),
-                    'total_item_discount'   => $items->sum(fn($i) => ((float)$i->unit_price - (float)$i->unit_price_after_discount) * (float)$i->qty_ordered),
-                    'total_net_price'       => $items->sum(fn($i) => (float)$i->net_price),
-                    'total_vat'             => $items->sum(fn($i) => (float)$i->vat_price),
-                    'total_gross'           => $items->sum(fn($i) => (float)$i->gross_price),
+                    'total_item_discount' => $items->sum(fn($i) => ((float)$i->unit_price - (float)$i->unit_price_after_discount) * (float)$i->qty_ordered),
+                    'total_net_price' => $items->sum(fn($i) => (float)$i->net_price),
+                    'total_vat' => $items->sum(fn($i) => (float)$i->vat_price),
+                    'total_gross' => $items->sum(fn($i) => (float)$i->gross_price),
                     'header_discount_total' => 0,
-                    'total_charges'         => 0,
-                    'grand_total'           => $items->sum(fn($i) => (float)$i->gross_price),
+                    'total_charges' => 0,
+                    'grand_total' => $items->sum(fn($i) => (float)$i->gross_price),
                 ]);
 
-                // ── Post if not draft ─────────────────────────────────────────
                 if ($orderData['status'] !== 'draft') {
                     $po->update(['status' => 'posted']);
                     $po->logs()->create([
-                        'user_id'     => $user->id,
-                        'action'      => 'posted',
+                        'user_id' => $user->id,
+                        'action' => 'posted',
                         'from_status' => 'draft',
-                        'to_status'   => 'posted',
-                        'remarks'     => 'Purchase order posted',
+                        'to_status' => 'posted',
+                        'remarks' => 'Purchase order posted',
                     ]);
                 }
 
-                // ── Handle cancelled PO (no GRs) ──────────────────────────────
                 if ($orderData['status'] === 'cancelled') {
                     $po->update(['status' => 'cancelled']);
                     $po->logs()->create([
-                        'user_id'     => $user->id,
-                        'action'      => 'cancelled',
+                        'user_id' => $user->id,
+                        'action' => 'cancelled',
                         'from_status' => 'posted',
-                        'to_status'   => 'cancelled',
-                        'remarks'     => 'Purchase order cancelled',
+                        'to_status' => 'cancelled',
+                        'remarks' => 'Purchase order cancelled',
                     ]);
                     return;
                 }
 
-                // ── Create GRs ───────────────────────────────────────────────
                 foreach ($orderData['gr'] as $grData) {
                     $location = $locations->where('code', $grData['location_code'])->first();
                     if (!$location) continue;
 
                     $gr = GoodsReceipt::create([
                         'purchase_order_id' => $po->id,
-                        'user_id'           => $user->id,
-                        'location_id'    => $location->id,
-                        'status'            => 'pending',
-                        'gr_date'           => $grData['gr_date'],
-                        'transaction_date'  => $grData['transaction_date'],
-                        'remarks'           => $grData['remarks'],
+                        'user_id' => $user->id,
+                        'location_id' => $location->id,
+                        'status' => 'pending',
+                        'gr_date' => $grData['gr_date'],
+                        'transaction_date' => $grData['transaction_date'],
+                        'remarks' => $grData['remarks'],
                     ]);
 
                     $gr->logs()->create([
-                        'user_id'   => $user->id,
-                        'action'    => 'created',
+                        'user_id' => $user->id,
+                        'action' => 'created',
                         'to_status' => 'pending',
-                        'remarks'   => 'GR created',
+                        'remarks' => 'GR created',
                     ]);
 
-                    // ── Create GR items ───────────────────────────────────────
                     foreach ($grData['items'] as $grItemData) {
                         $material = $materials->where('code', $grItemData['code'])->first();
                         if (!$material) continue;
@@ -303,28 +288,26 @@ class PurchaseOrderSeeder extends Seeder
                         if (!$poItem) continue;
 
                         $qtyToReceive = $grItemData['qty_to_receive'];
-                        $qtyReceived  = (float) $poItem->qty_received;
-                        $qtyOrdered   = (float) $poItem->qty_ordered;
+                        $qtyReceived = (float) $poItem->qty_received;
+                        $qtyOrdered = (float) $poItem->qty_ordered;
 
                         GoodsReceiptItem::create([
-                            'goods_receipt_id'       => $gr->id,
+                            'goods_receipt_id' => $gr->id,
                             'purchase_order_item_id' => $poItem->id,
-                            'material_id'            => $material->id,
-                            'qty_ordered'            => $qtyOrdered,
-                            'qty_received'           => $qtyReceived,
-                            'qty_to_receive'         => $qtyToReceive,
-                            'qty_remaining'          => $qtyOrdered - $qtyReceived - $qtyToReceive,
-                            'unit_cost'              => $poItem->unit_price_after_discount,
+                            'material_id' => $material->id,
+                            'qty_ordered' => $qtyOrdered,
+                            'qty_received' => $qtyReceived,
+                            'qty_to_receive' => $qtyToReceive,
+                            'qty_remaining' => $qtyOrdered - $qtyReceived - $qtyToReceive,
+                            'unit_cost' => $poItem->unit_price_after_discount,
                         ]);
 
-                        // Update PO item qty_received only for completed GRs
                         if ($grData['status'] === 'completed') {
                             $poItem->update(['qty_received' => $qtyReceived + $qtyToReceive]);
                             $poItem->refresh();
                         }
                     }
 
-                    // ── Complete GR + update inventory ────────────────────────
                     if ($grData['status'] === 'completed') {
                         foreach ($gr->items as $grItem) {
                             $qtyToReceive = (float) $grItem->qty_to_receive;
@@ -342,51 +325,50 @@ class PurchaseOrderSeeder extends Seeder
                             } else {
                                 $qtyBefore = 0;
                                 $inventory = Inventory::create([
-                                    'code'           => Inventory::generateCode(),
-                                    'material_id'    => $grItem->material_id,
+                                    'code' => Inventory::generateCode(),
+                                    'material_id' => $grItem->material_id,
                                     'location_id' => $location->id,
-                                    'quantity'       => $qtyToReceive,
+                                    'quantity' => $qtyToReceive,
                                 ]);
                             }
 
                             InventoryLog::create([
-                                'movement_code'   => InventoryLog::generateMovementCode(),
-                                'inventory_id'    => $inventory->id,
-                                'material_id'     => $grItem->material_id,
-                                'location_id'  => $location->id,
-                                'user_id'         => $user->id,
-                                'type'            => 'purchase_receipt',
+                                'movement_code' => InventoryLog::generateMovementCode(),
+                                'inventory_id' => $inventory->id,
+                                'material_id' => $grItem->material_id,
+                                'location_id' => $location->id,
+                                'user_id' => $user->id,
+                                'type' => 'purchase_receipt',
                                 'quantity_before' => $qtyBefore,
                                 'quantity_change' => $qtyToReceive,
-                                'quantity_after'  => $qtyBefore + $qtyToReceive,
-                                'reference_id'    => $gr->id,
-                                'reference_type'  => GoodsReceipt::class,
-                                'remarks'         => "GR {$gr->gr_number} received",
+                                'quantity_after' => $qtyBefore + $qtyToReceive,
+                                'reference_id' => $gr->id,
+                                'reference_type' => GoodsReceipt::class,
+                                'remarks' => "GR {$gr->code} received",
                             ]);
                         }
 
                         $gr->update(['status' => 'completed']);
                         $gr->logs()->create([
-                            'user_id'     => $user->id,
-                            'action'      => 'completed',
+                            'user_id' => $user->id,
+                            'action' => 'completed',
                             'from_status' => 'pending',
-                            'to_status'   => 'completed',
-                            'remarks'     => 'GR completed',
+                            'to_status' => 'completed',
+                            'remarks' => 'GR completed',
                         ]);
                     }
                 }
 
-                // ── Final PO status ───────────────────────────────────────────
                 $finalStatus = $orderData['status'];
                 if (!in_array($finalStatus, ['draft', 'posted', 'cancelled'])) {
                     $po->refresh();
                     $po->update(['status' => $finalStatus]);
                     $po->logs()->create([
-                        'user_id'     => $user->id,
-                        'action'      => 'status_updated',
+                        'user_id' => $user->id,
+                        'action' => 'status_updated',
                         'from_status' => 'posted',
-                        'to_status'   => $finalStatus,
-                        'remarks'     => 'Status updated',
+                        'to_status' => $finalStatus,
+                        'remarks' => 'Status updated',
                     ]);
                 }
             });

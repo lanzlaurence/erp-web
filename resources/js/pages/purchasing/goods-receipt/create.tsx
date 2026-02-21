@@ -126,7 +126,7 @@ export default function Create({ purchaseOrder, locations }: Props) {
                 <div>
                     <h1 className="text-2xl font-semibold">Create Goods Receipt</h1>
                     <p className="text-sm text-muted-foreground">
-                        Receiving for <span className="font-medium">{purchaseOrder.po_number}</span> — {purchaseOrder.vendor?.name}
+                        Receiving for <span className="font-medium">{purchaseOrder.code}</span> — {purchaseOrder.vendor?.name}
                     </p>
                 </div>
 
