@@ -163,7 +163,7 @@ export default function Index({ roles }: RoleData) {
                                                                             key={perm.id}
                                                                             className="inline-flex items-center rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary"
                                                                         >
-                                                                            {perm.name.split('-')[1]}
+                                                                            {perm.name.split('-').slice(1).join(' ')}
                                                                         </span>
                                                                     ))}
                                                                 </div>

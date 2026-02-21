@@ -107,7 +107,7 @@ export default function Create({ permissions }: Props) {
                                                     htmlFor={`permission-${permission.id}`}
                                                     className="text-sm font-normal"
                                                 >
-                                                    {permission.name.split('-')[1]}
+                                                    {permission.name.split('-').slice(1).join(' ')}
                                                 </Label>
                                             </div>
                                         ))}
