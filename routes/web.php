@@ -47,11 +47,6 @@ Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(fun
     Route::get('inventories/{inventory}/transfer',  [App\Http\Controllers\InventoryController::class, 'transfer'])->name('inventories.transfer');
     Route::post('inventories/{inventory}/transfer', [App\Http\Controllers\InventoryController::class, 'processTransfer'])->name('inventories.transfer.process');
 
-    Route::prefix('activity')->name('activity.')->group(function () {
-        Route::get('transaction-log', [App\Http\Controllers\ActivityController::class, 'transactionLog'])->name('transaction-log');
-        Route::get('inventory-log',   [App\Http\Controllers\ActivityController::class, 'inventoryLog'])->name('inventory-log');
-    });
-
     // Purchase Orders
     Route::resource('purchase-orders', App\Http\Controllers\PurchaseOrderController::class);
     Route::post('purchase-orders/{purchaseOrder}/post',   [App\Http\Controllers\PurchaseOrderController::class, 'post'])->name('purchase-orders.post');
@@ -67,9 +62,15 @@ Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(fun
     // GR from PO
     Route::get('purchase-orders/{purchaseOrder}/goods-receipts/create', [App\Http\Controllers\GoodsReceiptController::class, 'create'])->name('purchase-orders.goods-receipts.create');
 
-    Route::prefix('reports')->name('reports.')->group(function () {
-        Route::get('purchase-orders', [App\Http\Controllers\ReportController::class, 'purchaseOrders'])->name('purchase-orders');
+    Route::prefix('analytics')->name('analytics.')->group(function () {
+        Route::get('purchase-order-reports', [App\Http\Controllers\AnalyticsController::class, 'purchaseOrderReports'])->name('purchase-orders');
     });
+
+    Route::prefix('activity')->name('activity.')->group(function () {
+        Route::get('transaction-log', [App\Http\Controllers\ActivityController::class, 'transactionLog'])->name('transaction-log');
+        Route::get('inventory-log',   [App\Http\Controllers\ActivityController::class, 'inventoryLog'])->name('inventory-log');
+    });
+
 
     // Private file access
     Route::get('file', [App\Http\Controllers\FileController::class, 'show'])->name('file.show');

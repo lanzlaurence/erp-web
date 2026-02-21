@@ -13,8 +13,8 @@ class ActivityController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:inventory-log-view',   only: ['inventoryLog']),
-            new Middleware('permission:transaction-log-view', only: ['transactionLog']),
+            new Middleware('permission:activity-transaction-log', only: ['transactionLog']),
+            new Middleware('permission:activity-inventory-log',   only: ['inventoryLog']),
         ];
     }
 

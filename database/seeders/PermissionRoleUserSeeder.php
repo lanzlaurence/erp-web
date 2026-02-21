@@ -68,7 +68,6 @@ class PermissionRoleUserSeeder extends Seeder
             'inventory-adjust',
             'inventory-transfer',
             'inventory-delete',
-            'inventory-log-view',
             'po-view',
             'po-create',
             'po-edit',
@@ -83,7 +82,9 @@ class PermissionRoleUserSeeder extends Seeder
             'gr-cancel',
             'gr-complete',
             'gr-revert',
-            'transaction-log-view',
+            'activity-transaction-log',
+            'activity-inventory-log',
+            'analytics-purchase-order-report',
         ];
 
         foreach ($permissions as $permission) {

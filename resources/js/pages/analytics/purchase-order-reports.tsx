@@ -53,7 +53,7 @@ export default function PurchaseOrderReport({ purchaseOrders, vendors, filters }
     };
 
     const applyFilters = () => {
-        router.get('/reports/purchase-orders', {
+        router.get('/analytics/purchase-order-reports', {
             vendor_id:  vendorId  || undefined,
             status:     status    || undefined,
             date_from:  dateFrom  || undefined,
@@ -63,7 +63,7 @@ export default function PurchaseOrderReport({ purchaseOrders, vendors, filters }
 
     const clearFilters = () => {
         setVendorId(''); setStatus(''); setDateFrom(''); setDateTo('');
-        router.get('/reports/purchase-orders');
+        router.get('/analytics/purchase-order-reports');
     };
 
     // Flatten all PO items into rows
@@ -297,6 +297,6 @@ PurchaseOrderReport.layout = (page: React.ReactNode) => (
     <AppLayout breadcrumbs={[
         { title: 'Dashboard', href: '/dashboard' },
         { title: 'Analytics', href: '#' },
-        { title: 'Purchase Order Report', href: '/reports/purchase-orders' },
+        { title: 'Purchase Order Report', href: '/analytics/purchase-order-reports' },
     ]}>{page}</AppLayout>
 );

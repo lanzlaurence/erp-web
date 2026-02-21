@@ -64,7 +64,7 @@ export function AppSidebar() {
             href: '#',
             icon: BarChart2,
             items: [
-                { title: 'Purchase Order Report', href: '/reports/purchase-orders',  icon: ShoppingCart,  permission: 'po-view' },
+                { title: 'Purchase Order Report', href: '/analytics/purchase-order-reports',  icon: ShoppingCart,  permission: 'analytics-purchase-order-report' },
             ],
         },
         {
@@ -92,8 +92,8 @@ export function AppSidebar() {
             href: '#',
             icon: ActivityIcon,
             items: [
-                { title: 'Transaction Log',  href: '/activity/transaction-log',  icon: FileText,      permission: 'transaction-log-view' },
-                { title: 'Inventory Log',    href: '/activity/inventory-log',    icon: ClipboardList, permission: 'inventory-log-view' },
+                { title: 'Transaction Log',  href: '/activity/transaction-log',  icon: FileText,      permission: 'activity-transaction-log' },
+                { title: 'Inventory Log',    href: '/activity/inventory-log',    icon: ClipboardList, permission: 'activity-inventory-log' },
             ],
         },
         {
