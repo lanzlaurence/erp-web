@@ -68,20 +68,48 @@ export default function Edit({ goodsReceipt, locations }: Props) {
     };
 
     const splitSerialLines = (index: number) => {
-        const item    = data.items[index];
-        const qty     = Math.floor(parseFloat(item.qty_to_receive) || 0);
+        const item = data.items[index];
+        const qty = Math.floor(parseFloat(item.qty_to_receive) || 0);
         if (qty <= 1) return;
+
+        const batchNumber = item.batch_number; // capture before split
 
         const splitItems = Array.from({ length: qty }, () => ({
             ...item,
             qty_to_receive: '1',
-            qty_remaining:  item.qty_ordered - item.qty_received - 1,
-            serial_number:  '',
-            batch_number:   item.batch_number, // keep batch
+            qty_remaining: item.qty_ordered - item.qty_received - 1,
+            serial_number: '', // each row fills their own
+            batch_number: batchNumber, // same for all
         }));
 
         const updated = [...data.items];
         updated.splice(index, 1, ...splitItems);
+        setData('items', updated);
+    };
+
+    const unsplitSerialLines = (index: number) => {
+        const item = data.items[index];
+        const poItemId = item.purchase_order_item_id;
+
+        // find all rows with same po item id
+        const matchingRows = data.items.filter((i) => i.purchase_order_item_id === poItemId);
+        if (matchingRows.length <= 1) return;
+
+        const totalQty = matchingRows.reduce((sum, i) => sum + parseFloat(i.qty_to_receive || '0'), 0);
+        const max = item.qty_ordered - item.qty_received;
+
+        const merged: typeof item = {
+            ...item,
+            qty_to_receive: String(totalQty),
+            qty_remaining: max - totalQty,
+            serial_number: '',
+            batch_number: matchingRows[0].batch_number, // keep batch from first row
+        };
+
+        // remove all matching rows, insert merged at first occurrence
+        const firstIndex = data.items.findIndex((i) => i.purchase_order_item_id === poItemId);
+        const updated = data.items.filter((i) => i.purchase_order_item_id !== poItemId);
+        updated.splice(firstIndex, 0, merged);
         setData('items', updated);
     };
 
@@ -170,40 +198,97 @@ export default function Edit({ goodsReceipt, locations }: Props) {
                                                 <TableCell className="font-mono">{formatDecimal(item.qty_ordered)}</TableCell>
                                                 <TableCell className="font-mono">{formatDecimal(item.qty_received)}</TableCell>
                                                 <TableCell className="w-32">
-                                                    <InputAmount
-                                                        value={item.qty_to_receive}
-                                                        onValueChange={(val) => {
-                                                            const max = item.qty_ordered - item.qty_received;
-                                                            const clamped = Math.min(Math.max(Number(val) || 0, 0), max);
-                                                            updateItem(index, 'qty_to_receive', String(clamped));
-                                                        }}
-                                                    />
+                                                    {(() => {
+                                                        const isSplit = data.items.filter(
+                                                            (i) => i.purchase_order_item_id === item.purchase_order_item_id
+                                                        ).length > 1;
+
+                                                        return isSplit ? (
+                                                            <span className="font-mono text-sm px-2">{formatDecimal(parseFloat(item.qty_to_receive))}</span>
+                                                        ) : (
+                                                            <InputAmount
+                                                                value={item.qty_to_receive}
+                                                                onValueChange={(val) => {
+                                                                    const max = item.qty_ordered - item.qty_received;
+                                                                    const clamped = Math.min(Math.max(Number(val) || 0, 0), max);
+                                                                    updateItem(index, 'qty_to_receive', String(clamped));
+                                                                }}
+                                                            />
+                                                        );
+                                                    })()}
                                                 </TableCell>
                                                 <TableCell className={`font-mono text-sm ${item.qty_remaining < 0 ? 'text-red-600' : ''}`}>
                                                     {formatDecimal(item.qty_remaining)}
                                                 </TableCell>
                                                 <TableCell className="font-mono text-sm">{formatAmount(item.unit_cost)}</TableCell>
                                                 <TableCell>
-                                                    {material?.track_serial_number ? (
-                                                        <div className="flex items-center gap-2">
-                                                            <Input className="h-8 text-xs w-32" value={item.serial_number}
-                                                                onChange={(e) => updateItem(index, 'serial_number', e.target.value)}
-                                                                placeholder="Serial no." />
-                                                            {parseFloat(item.qty_to_receive) > 1 && (
-                                                                <Button type="button" variant="outline" size="sm"
-                                                                    onClick={() => splitSerialLines(index)}
-                                                                    title="Split into individual serial lines">
-                                                                    Split
-                                                                </Button>
-                                                            )}
-                                                        </div>
-                                                    ) : <span className="text-xs text-muted-foreground">N/A</span>}
+                                                    {material?.track_serial_number ? (() => {
+                                                        const firstIndex = data.items.findIndex(
+                                                            (i) => i.purchase_order_item_id === item.purchase_order_item_id
+                                                        );
+                                                        const isFirst = firstIndex === index;
+                                                        const splitCount = data.items.filter(
+                                                            (i) => i.purchase_order_item_id === item.purchase_order_item_id
+                                                        ).length;
+                                                        const isSplit = splitCount > 1;
+
+                                                        return (
+                                                            <div className="flex items-center gap-2">
+                                                                <Input
+                                                                    className="h-8 text-xs w-32"
+                                                                    value={item.serial_number}
+                                                                    onChange={(e) => updateItem(index, 'serial_number', e.target.value)}
+                                                                    placeholder="Serial no."
+                                                                />
+                                                                {/* Split button — only on first row when not yet split */}
+                                                                {isFirst && !isSplit && parseFloat(item.qty_to_receive) > 1 && (
+                                                                    <Button type="button" variant="outline" size="sm"
+                                                                        onClick={() => splitSerialLines(index)}
+                                                                        title="Split into individual serial lines">
+                                                                        Split
+                                                                    </Button>
+                                                                )}
+                                                                {/* Unsplit button — only on first row when already split */}
+                                                                {isFirst && isSplit && (
+                                                                    <Button type="button" variant="outline" size="sm"
+                                                                        onClick={() => unsplitSerialLines(index)}
+                                                                        title="Merge back into one row">
+                                                                        Unsplit
+                                                                    </Button>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })() : <span className="text-xs text-muted-foreground">N/A</span>}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {material?.track_batch_number ? (
-                                                        <Input className="h-8 text-xs w-32" value={item.batch_number}
-                                                            onChange={(e) => updateItem(index, 'batch_number', e.target.value)} />
-                                                    ) : <span className="text-xs text-muted-foreground">N/A</span>}
+                                                    {material?.track_batch_number ? (() => {
+                                                        // find if this is the first row with this po item id
+                                                        const firstIndex = data.items.findIndex(
+                                                            (i) => i.purchase_order_item_id === item.purchase_order_item_id
+                                                        );
+                                                        const isFirst = firstIndex === index;
+
+                                                        return isFirst ? (
+                                                            <Input
+                                                                className="h-8 text-xs w-32"
+                                                                value={item.batch_number}
+                                                                onChange={(e) => {
+                                                                    // auto-fill all rows with same po item id
+                                                                    const updated = data.items.map((i, idx) =>
+                                                                        i.purchase_order_item_id === item.purchase_order_item_id
+                                                                            ? { ...i, batch_number: e.target.value }
+                                                                            : i
+                                                                    );
+                                                                    setData('items', updated);
+                                                                }}
+                                                                placeholder="Batch no."
+                                                            />
+                                                        ) : (
+                                                            <span className="text-xs text-muted-foreground font-mono">
+                                                                {item.batch_number || '—'}
+                                                            </span>
+                                                        );
+                                                    })() : <span className="text-xs text-muted-foreground">N/A</span>}
                                                 </TableCell>
                                                 <TableCell>
                                                     <Input className="h-8 text-xs w-32" value={item.remarks}
