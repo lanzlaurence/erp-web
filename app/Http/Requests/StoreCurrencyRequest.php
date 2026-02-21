@@ -14,6 +14,7 @@ class StoreCurrencyRequest extends FormRequest
             'code' => ['required', 'string', 'max:10', 'unique:currencies,code'],
             'name' => ['required', 'string', 'max:255'],
             'symbol' => ['required', 'string', 'max:10'],
+            'exchange_rate' => ['required', 'numeric', 'min:0.000001'],
             'is_active' => ['boolean'],
         ];
     }

@@ -11,6 +11,7 @@ export default function Create() {
         code: '',
         name: '',
         symbol: '',
+        exchange_rate: '1.000000',
         is_active: true,
     });
 
@@ -47,6 +48,22 @@ export default function Create() {
                                     onChange={(e) => setData('symbol', e.target.value)}
                                     placeholder="e.g., $" maxLength={10} required />
                                 {errors.symbol && <p className="text-sm text-red-600">{errors.symbol}</p>}
+                            </div>
+
+                            <div className="col-span-2 space-y-2">
+                                <Label htmlFor="exchange_rate">Exchange Rate</Label>
+                                <Input
+                                    id="exchange_rate"
+                                    type="number"
+                                    step="0.000001"
+                                    min="0.000001"
+                                    value={data.exchange_rate}
+                                    onChange={(e) => setData('exchange_rate', e.target.value)}
+                                    placeholder="e.g., 1.000000"
+                                    required
+                                />
+                                <p className="text-xs text-muted-foreground">Rate relative to your base currency</p>
+                                {errors.exchange_rate && <p className="text-sm text-red-600">{errors.exchange_rate}</p>}
                             </div>
 
                             <div className="col-span-2 space-y-2">

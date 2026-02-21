@@ -55,6 +55,7 @@ export type Currency = {
     name: string;
     symbol: string;
     is_active: boolean;
+    exchange_rate: number | string;
     created_at: string;
     updated_at: string;
 };

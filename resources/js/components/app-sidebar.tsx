@@ -117,7 +117,7 @@ export function AppSidebar() {
                 { title: 'UOM', href: '/uoms', icon: Box, permission: 'uom-view' },
                 { title: 'Destinations', href: '/destinations', icon: MapPin, permission: 'destination-view' },
                 { title: 'Charges', href: '/charges', icon: CreditCard, permission: 'charge-view' },
-                { title: 'Currencies', href: '/currencies', icon: Coins, permission: 'currency-view' },
+                // { title: 'Currencies', href: '/currencies', icon: Coins, permission: 'currency-view' },
             ],
         },
         {

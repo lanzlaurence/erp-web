@@ -43,6 +43,7 @@ export default function Index({ currencies }: CurrencyData) {
                                 <TableHead>Code</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Symbol</TableHead>
+                                <TableHead>Exchange Rate</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
@@ -53,6 +54,9 @@ export default function Index({ currencies }: CurrencyData) {
                                     <TableCell className="font-medium">{currency.code}</TableCell>
                                     <TableCell>{currency.name}</TableCell>
                                     <TableCell className="font-mono">{currency.symbol}</TableCell>
+                                    <TableCell className="font-mono text-sm">
+                                        {Number(currency.exchange_rate).toFixed(6)}
+                                    </TableCell>
                                     <TableCell>
                                         <Badge variant={currency.is_active ? 'default' : 'secondary'}>
                                             {currency.is_active ? 'Active' : 'Inactive'}
