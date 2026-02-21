@@ -140,6 +140,7 @@ export type TransactionLog = {
     remarks: string | null;
     loggable_id: number;
     loggable_type: string;
+    loggable?: { id: number; code: string } | null;
     user?: User;
     created_at: string;
     updated_at: string;
@@ -173,14 +174,14 @@ export type InventoryLog = {
     quantity_before: number | string;
     quantity_change: number | string;
     quantity_after: number | string;
-    transfer_to_location_id: number | null;
+    transfer_location_id: number | null;
     reference_id: number | null;
     reference_type: string | null;
     remarks: string | null;
     inventory?: Inventory;
     material?: Material;
     location?: Location;
-    transfer_to_location?: Location;
+    transfer_location?: Location;
     user?: User;
     created_at: string;
     updated_at: string;

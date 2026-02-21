@@ -5,6 +5,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { InventoryLogData } from '@/types';
 import { useFormatters } from '@/hooks/use-formatters';
 import { Head } from '@inertiajs/react';
+import ClickableCode from '@/components/ui/clickable-code';
 
 const LOG_TYPE_BADGE: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
     initial:          { label: 'Initial',       variant: 'default' },
@@ -66,9 +67,10 @@ export default function Inventory({ logs }: InventoryLogData) {
                                             <TableCell>
                                                 <Badge variant={badge.variant}>{badge.label}</Badge>
                                             </TableCell>
-                                            <TableCell className="font-mono text-sm">
-                                                {log.inventory?.code ?? '-'}
-                                            </TableCell>
+                                            <ClickableCode
+                                                href={`/inventories/${log.inventory?.id}`}
+                                                value={log.inventory?.code}
+                                            />
                                             <TableCell>
                                                 <div>
                                                     <p className="text-sm font-medium">{log.material?.name}</p>
@@ -86,7 +88,7 @@ export default function Inventory({ logs }: InventoryLogData) {
                                                 {formatDecimal(Number(log.quantity_after))}
                                             </TableCell>
                                             <TableCell className="text-sm text-muted-foreground">
-                                                {log.transfer_to_location?.name ?? '-'}
+                                                {log.transfer_location?.name ?? '-'}
                                             </TableCell>
                                             <TableCell className="text-sm">{log.user?.name ?? '-'}</TableCell>
                                             <TableCell className="text-sm text-muted-foreground">

@@ -10,6 +10,7 @@ import { usePermissions } from '@/hooks/use-permissions';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Edit } from 'lucide-react';
 import { useState } from 'react';
+import ClickableCode from '@/components/ui/clickable-code';
 
 const STATUS_BADGE: Record<GoodsReceiptStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
     pending:   { label: 'Pending',   variant: 'secondary' },
@@ -109,14 +110,17 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                     <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
                             <p className="text-muted-foreground">Purchase Order</p>
-                            <Link href={`/purchase-orders/${goodsReceipt.purchase_order?.id}`}
-                                className="font-mono text-primary hover:underline">
-                                {goodsReceipt.purchase_order?.code}
-                            </Link>
+                            <ClickableCode
+                                href={`/purchase-orders/${goodsReceipt.purchase_order?.id}`}
+                                value={goodsReceipt.purchase_order?.code}
+                            />
                         </div>
                         <div>
                             <p className="text-muted-foreground">Vendor</p>
-                            <p>{goodsReceipt.purchase_order?.vendor?.name}</p>
+                            <ClickableCode
+                                href={`/vendors/${goodsReceipt.purchase_order?.vendor?.id}`}
+                                value={goodsReceipt.purchase_order?.vendor?.name}
+                            />
                         </div>
                         <div>
                             <p className="text-muted-foreground">Location</p>

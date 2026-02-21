@@ -102,7 +102,7 @@ export default function Show({ inventory, logs }: InventoryShowData) {
                                         </TableCell>
                                         <TableCell className="font-mono">{formatDecimal(Number(log.quantity_after))}</TableCell>
                                         <TableCell className="text-sm text-muted-foreground">
-                                            {log.transfer_to_location?.name ?? '-'}
+                                            {log.transfer_location?.name ?? '-'}
                                         </TableCell>
                                         <TableCell className="text-sm">{log.user?.name ?? '-'}</TableCell>
                                         <TableCell className="text-sm text-muted-foreground">{log.remarks ?? '-'}</TableCell>

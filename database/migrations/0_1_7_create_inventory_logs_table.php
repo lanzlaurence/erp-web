@@ -33,7 +33,7 @@ return new class extends Migration
             $table->decimal('quantity_before', 15, 2)->default(0);
             $table->decimal('quantity_change', 15, 2)->default(0);
             $table->decimal('quantity_after', 15, 2)->default(0);
-            $table->foreignId('transfer_to_location_id')
+            $table->foreignId('transfer_location_id')
                 ->nullable()
                 ->constrained('locations')
                 ->nullOnDelete(); // only for transfer

@@ -153,7 +153,7 @@ class InventoryController extends Controller implements HasMiddleware
                 'quantity_before'           => $quantityBefore,
                 'quantity_change'           => -$transferQty,
                 'quantity_after'            => $quantityAfter,
-                'transfer_to_location_id' => $request->location_id,
+                'transfer_location_id' => $request->location_id,
                 'remarks'                   => $request->remarks,
             ]);
 
@@ -189,7 +189,7 @@ class InventoryController extends Controller implements HasMiddleware
                 'quantity_before'           => $targetBefore,
                 'quantity_change'           => $transferQty,
                 'quantity_after'            => $targetBefore + $transferQty,
-                'transfer_to_location_id' => $inventory->location_id,
+                'transfer_location_id' => $inventory->location_id,
                 'remarks'                   => $request->remarks,
             ]);
         });

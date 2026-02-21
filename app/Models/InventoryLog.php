@@ -16,7 +16,7 @@ class InventoryLog extends Model
         'quantity_before',
         'quantity_change',
         'quantity_after',
-        'transfer_to_location_id',
+        'transfer_location_id',
         'reference_id',
         'reference_type',
         'remarks',
@@ -68,7 +68,7 @@ class InventoryLog extends Model
 
     public function transferToLocation()
     {
-        return $this->belongsTo(Location::class, 'transfer_to_location_id');
+        return $this->belongsTo(Location::class, 'transfer_location_id');
     }
 
     public function reference()

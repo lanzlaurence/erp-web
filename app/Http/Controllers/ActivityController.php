@@ -18,15 +18,6 @@ class ActivityController extends Controller implements HasMiddleware
         ];
     }
 
-    public function inventoryLog()
-    {
-        $logs = InventoryLog::with(['material', 'location', 'transferToLocation', 'user', 'inventory'])
-            ->latest()
-            ->paginate(20);
-
-        return Inertia::render('activity/inventory-log', ['logs' => $logs]);
-    }
-
     public function transactionLog()
     {
         $logs = TransactionLog::with(['user', 'loggable'])
@@ -34,5 +25,14 @@ class ActivityController extends Controller implements HasMiddleware
             ->paginate(20);
 
         return Inertia::render('activity/transaction-log', ['logs' => $logs]);
+    }
+
+    public function inventoryLog()
+    {
+        $logs = InventoryLog::with(['material', 'location', 'transferToLocation', 'user', 'inventory'])
+            ->latest()
+            ->paginate(20);
+
+        return Inertia::render('activity/inventory-log', ['logs' => $logs]);
     }
 }

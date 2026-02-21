@@ -11,6 +11,7 @@ import { Edit, Eye, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { router } from '@inertiajs/react';
+import ClickableCode from '@/components/ui/clickable-code';
 
 const STATUS_BADGE: Record<GoodsReceiptStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
     pending:   { label: 'Pending',   variant: 'secondary' },
@@ -64,9 +65,18 @@ export default function Index({ goodsReceipts }: GoodsReceiptData) {
                                 const badge = STATUS_BADGE[gr.status];
                                 return (
                                     <TableRow key={gr.id}>
-                                        <TableCell className="font-mono font-medium">{gr.code}</TableCell>
-                                        <TableCell className="font-mono">{gr.purchase_order?.code}</TableCell>
-                                        <TableCell>{gr.purchase_order?.vendor?.name}</TableCell>
+                                        <TableCell>
+                                            <ClickableCode href={`/goods-receipts/${gr.id}`} value={gr.code} />
+                                        </TableCell>
+                                        <TableCell>
+                                            <ClickableCode href={`/purchase-orders/${gr.purchase_order?.id}`} value={gr.purchase_order?.code} />
+                                        </TableCell>
+                                        <TableCell>
+                                            <ClickableCode
+                                                href={`/vendors/${gr.purchase_order?.vendor?.id}`}
+                                                value={gr.purchase_order?.vendor?.name}
+                                            />
+                                        </TableCell>
                                         <TableCell>{gr.location?.name}</TableCell>
                                         <TableCell>{formatDate(gr.gr_date)}</TableCell>
                                         <TableCell>

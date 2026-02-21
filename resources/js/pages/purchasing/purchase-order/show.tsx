@@ -10,6 +10,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Edit, CheckCircle, XCircle, RotateCcw, PackageCheck, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import ClickableCode from '@/components/ui/clickable-code';
 
 const STATUS_BADGE: Record<PurchaseOrderStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
     draft:              { label: 'Draft',            variant: 'secondary' },
@@ -127,7 +128,10 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
                                 <p className="text-muted-foreground">Vendor</p>
-                                <p className="font-medium">{purchaseOrder.vendor?.name}</p>
+                                <ClickableCode
+                                    href={`/vendors/${purchaseOrder.vendor?.id}`}
+                                    value={purchaseOrder.vendor?.name}
+                                />
                             </div>
                             <div>
                                 <p className="text-muted-foreground">Reference No.</p>
@@ -296,7 +300,9 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                             <TableBody>
                                 {purchaseOrder.goods_receipts.map((gr) => (
                                     <TableRow key={gr.id}>
-                                        <TableCell className="font-mono font-medium">{gr.code}</TableCell>
+                                        <TableCell>
+                                            <ClickableCode href={`/goods-receipts/${gr.id}`} value={gr.code} />
+                                        </TableCell>
                                         <TableCell>{gr.location?.name}</TableCell>
                                         <TableCell>{formatDate(gr.gr_date)}</TableCell>
                                         <TableCell>{formatDate(gr.transaction_date)}</TableCell>

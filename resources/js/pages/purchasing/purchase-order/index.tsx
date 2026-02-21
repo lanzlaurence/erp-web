@@ -10,6 +10,7 @@ import type { PurchaseOrderStatus } from '@/types/transactions';
 import { Head, Link, router } from '@inertiajs/react';
 import { Eye, Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import ClickableCode from '@/components/ui/clickable-code';
 
 const STATUS_BADGE: Record<PurchaseOrderStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
     draft:              { label: 'Draft',            variant: 'secondary' },
@@ -75,8 +76,15 @@ export default function Index({ purchaseOrders }: PurchaseOrderData) {
                                 const badge = STATUS_BADGE[po.status];
                                 return (
                                     <TableRow key={po.id}>
-                                        <TableCell className="font-mono font-medium">{po.code}</TableCell>
-                                        <TableCell>{po.vendor?.name}</TableCell>
+                                        <TableCell>
+                                            <ClickableCode href={`/purchase-orders/${po.id}`} value={po.code} />
+                                        </TableCell>
+                                        <TableCell>
+                                            <ClickableCode
+                                                href={`/vendors/${po.vendor?.id}`}
+                                                value={po.vendor?.name}
+                                            />
+                                        </TableCell>
                                         <TableCell>{formatDate(po.order_date)}</TableCell>
                                         <TableCell>{po.delivery_date ? formatDate(po.delivery_date) : '-'}</TableCell>
                                         <TableCell className="font-mono">{formatAmount(Number(po.grand_total))}</TableCell>

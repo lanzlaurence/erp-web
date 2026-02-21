@@ -175,7 +175,7 @@ class InventorySeeder extends Seeder
                 'quantity_before'            => $sourceBefore,
                 'quantity_change'            => -$qty,
                 'quantity_after'             => $sourceAfter,
-                'transfer_to_location_id' => $toDest->id,
+                'transfer_location_id' => $toDest->id,
                 'remarks'                    => $transfer['remarks'],
             ]);
 
@@ -207,7 +207,7 @@ class InventorySeeder extends Seeder
                 'quantity_before'            => $targetBefore,
                 'quantity_change'            => $qty,
                 'quantity_after'             => $targetAfter,
-                'transfer_to_location_id' => $fromDest->id,
+                'transfer_location_id' => $fromDest->id,
                 'remarks'                    => $transfer['remarks'],
             ]);
         }

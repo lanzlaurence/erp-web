@@ -48,8 +48,8 @@ Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(fun
     Route::post('inventories/{inventory}/transfer', [App\Http\Controllers\InventoryController::class, 'processTransfer'])->name('inventories.transfer.process');
 
     Route::prefix('activity')->name('activity.')->group(function () {
-        Route::get('inventory-log',   [App\Http\Controllers\ActivityController::class, 'inventoryLog'])->name('inventory-log');
         Route::get('transaction-log', [App\Http\Controllers\ActivityController::class, 'transactionLog'])->name('transaction-log');
+        Route::get('inventory-log',   [App\Http\Controllers\ActivityController::class, 'inventoryLog'])->name('inventory-log');
     });
 
     // Purchase Orders

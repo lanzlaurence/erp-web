@@ -5,6 +5,7 @@ import { useFormatters } from '@/hooks/use-formatters';
 import { Head, Link } from '@inertiajs/react';
 import type { PaginatedData } from '@/types';
 import type { TransactionLog } from '@/types/transactions';
+import ClickableCode from '@/components/ui/clickable-code';
 
 type Props = {
     logs: PaginatedData<TransactionLog>;
@@ -35,7 +36,7 @@ export default function TransactionLogPage({ logs }: Props) {
     const getHref = (log: TransactionLog) => {
         const type = log.loggable_type?.split('\\').pop();
         if (type === 'PurchaseOrder') return `/purchase-orders/${log.loggable_id}`;
-        if (type === 'GoodsReceipt')  return `/goods-receipts/${log.loggable_id}`;
+        if (type === 'GoodsReceipt') return `/goods-receipts/${log.loggable_id}`;
         return null;
     };
 
@@ -84,13 +85,14 @@ export default function TransactionLogPage({ logs }: Props) {
                                         <TableCell className="text-sm text-muted-foreground">
                                             {docType}
                                         </TableCell>
-                                        <TableCell className="font-mono text-sm">
+                                        <TableCell>
                                             {href ? (
-                                                <Link href={href} className="text-primary hover:underline">
-                                                    #{log.loggable_id}
-                                                </Link>
+                                                <ClickableCode
+                                                    href={href}
+                                                    value={(log.loggable as any)?.code ?? `#${log.loggable_id}`}
+                                                />
                                             ) : (
-                                                <span>#{log.loggable_id}</span>
+                                                <span className="font-mono text-sm text-muted-foreground">#{log.loggable_id}</span>
                                             )}
                                         </TableCell>
                                         <TableCell>
