@@ -398,123 +398,108 @@ export default function Create({ vendors, materials, charges }: Props) {
                         </div>
                     </div>
 
-                    {/* Charges + Header Discount */}
+                    {/* Left: Charges + Discount stacked | Right: Summary */}
                     <div className="grid grid-cols-2 gap-6">
-                        {/* Charges */}
-                        <div className="space-y-4 rounded-lg border p-6">
-                            <div className="flex items-center justify-between">
-                                <h3 className="font-semibold">Charges</h3>
-                                <Button type="button" size="sm" variant="outline" onClick={addCharge}>
-                                    <Plus className="mr-2 h-4 w-4" />Add Charge
-                                </Button>
+                        {/* Left column */}
+                        <div className="space-y-6">
+                            {/* Header Discount */}
+                            <div className="space-y-4 rounded-lg border p-6">
+                                <h3 className="font-semibold">Header Discount</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Discount Type</Label>
+                                        <Select value={data.discount_type || 'none'}
+                                            onValueChange={(val) => setData('discount_type', val === 'none' ? '' : val as 'fixed' | 'percentage' | '')}>
+                                            <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="none">None</SelectItem>
+                                                <SelectItem value="fixed">Fixed</SelectItem>
+                                                <SelectItem value="percentage">Percentage</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Discount Amount</Label>
+                                        <InputAmount value={data.discount_amount}
+                                            onValueChange={(val) => setData('discount_amount', String(val ?? 0))}
+                                            disabled={!data.discount_type} />
+                                    </div>
+                                </div>
                             </div>
-                            {data.charges.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">No charges added.</p>
-                            ) : (
-                                <div className="space-y-2">
-                                    {data.charges.map((cr, index) => (
-                                        <div key={index} className="flex items-center gap-3">
-                                            <div className="flex-1">
-                                                <ReactSelect
-                                                    options={chargeOptions.filter((o) =>
-                                                        !data.charges.some((c, i) => i !== index && c.charge_id === o.value)
-                                                    )}
-                                                    value={chargeOptions.find((o) => o.value === cr.charge_id) ?? null}
-                                                    onChange={(opt) => {
-                                                        const updated = [...data.charges];
-                                                        updated[index] = { charge_id: opt?.value ?? '' };
-                                                        setData('charges', updated);
-                                                    }}
-                                                    placeholder="Select charge..."
-                                                    classNames={selectClass}
-                                                    menuPortalTarget={document.body}
-                                                    styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
-                                                    unstyled
-                                                />
+
+                            {/* Charges */}
+                            <div className="space-y-4 rounded-lg border p-6">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-semibold">Charges</h3>
+                                    <Button type="button" size="sm" variant="outline" onClick={addCharge}>
+                                        <Plus className="mr-2 h-4 w-4" />Add Charge
+                                    </Button>
+                                </div>
+                                {data.charges.length === 0 ? (
+                                    <p className="text-sm text-muted-foreground">No charges added.</p>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {data.charges.map((cr, index) => (
+                                            <div key={index} className="flex items-center gap-3">
+                                                <div className="flex-1">
+                                                    <ReactSelect
+                                                        options={chargeOptions.filter((o) =>
+                                                            !data.charges.some((c, i) => i !== index && c.charge_id === o.value)
+                                                        )}
+                                                        value={chargeOptions.find((o) => o.value === cr.charge_id) ?? null}
+                                                        onChange={(opt) => {
+                                                            const updated = [...data.charges];
+                                                            updated[index] = { charge_id: opt?.value ?? '' };
+                                                            setData('charges', updated);
+                                                        }}
+                                                        placeholder="Select charge..."
+                                                        classNames={selectClass}
+                                                        menuPortalTarget={document.body}
+                                                        styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                                                        unstyled
+                                                    />
+                                                </div>
+                                                {cr.charge_id && (() => {
+                                                    const charge = charges.find((c) => String(c.id) === cr.charge_id);
+                                                    return charge ? (
+                                                        <div className="text-sm text-muted-foreground whitespace-nowrap text-right">
+                                                            <p>{charge.value_type === 'percentage' ? `${charge.value}%` : formatAmount(Number(charge.value))} — {charge.type}</p>
+                                                            {charge.description && <p className="text-xs">{charge.description}</p>}
+                                                        </div>
+                                                    ) : null;
+                                                })()}
+                                                <Button type="button" variant="ghost" size="sm" onClick={() => removeCharge(index)}>
+                                                    <Trash2 className="h-4 w-4 text-red-600" />
+                                                </Button>
                                             </div>
-                                            {cr.charge_id && (() => {
-                                                const charge = charges.find((c) => String(c.id) === cr.charge_id);
-                                                return charge ? (
-                                                    <div className="text-sm text-muted-foreground whitespace-nowrap text-right">
-                                                        <p>{charge.value_type === 'percentage' ? `${charge.value}%` : formatAmount(Number(charge.value))} — {charge.type}</p>
-                                                        {charge.description && <p className="text-xs">{charge.description}</p>}
-                                                    </div>
-                                                ) : null;
-                                            })()}
-                                            <Button type="button" variant="ghost" size="sm" onClick={() => removeCharge(index)}>
-                                                <Trash2 className="h-4 w-4 text-red-600" />
-                                            </Button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Header Discount */}
-                        <div className="space-y-4 rounded-lg border p-6">
-                            <h3 className="font-semibold">Header Discount</h3>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Discount Type</Label>
-                                    <Select value={data.discount_type || 'none'}
-                                        onValueChange={(val) => setData('discount_type', val === 'none' ? '' : val as 'fixed' | 'percentage' | '')}>
-                                        <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="none">None</SelectItem>
-                                            <SelectItem value="fixed">Fixed</SelectItem>
-                                            <SelectItem value="percentage">Percentage</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Discount Amount</Label>
-                                    <InputAmount value={data.discount_amount}
-                                        onValueChange={(val) => setData('discount_amount', String(val ?? 0))}
-                                        disabled={!data.discount_type} />
-                                </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
-                    </div>
 
-                    {/* Summary */}
-                    <div className="rounded-lg border p-6">
-                        <h3 className="font-semibold mb-4">Summary</h3>
-                        <div className="grid grid-cols-2 gap-6 text-sm">
-                            {/* Left side */}
-                            <div className="space-y-2">
-                                {[
-                                    { label: 'Total Before Discount', value: totalBeforeDiscount },
-                                    { label: 'Total Item Discount',   value: -totalItemDiscount },
-                                    { label: 'Total Net Price',        value: totalNetPrice },
-                                    { label: 'Total VAT',              value: totalVat },
-                                    { label: 'Total Gross',            value: totalGross },
-                                ].map(({ label, value }) => (
-                                    <div key={label} className="flex justify-between">
-                                        <span className="text-muted-foreground">{label}</span>
-                                        <span className={`font-mono ${value < 0 ? 'text-red-600' : ''}`}>
-                                            {value < 0 ? '-' : ''}{formatAmount(Math.abs(value))}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Right side */}
-                            <div className="space-y-2">
-                                {[
-                                    { label: 'Total Charges',    value: totalCharges },
-                                    { label: 'Header Discount',  value: -headerDiscount },
-                                ].map(({ label, value }) => (
-                                    <div key={label} className="flex justify-between">
-                                        <span className="text-muted-foreground">{label}</span>
-                                        <span className={`font-mono ${value < 0 ? 'text-red-600' : ''}`}>
-                                            {value < 0 ? '-' : ''}{formatAmount(Math.abs(value))}
-                                        </span>
-                                    </div>
-                                ))}
-                                <div className="flex justify-between border-t pt-2 font-semibold text-base">
-                                    <span>Grand Total</span>
-                                    <span className="font-mono">{formatAmount(grandTotal)}</span>
+                        {/* Right column: Summary */}
+                        <div className="rounded-lg border p-6 space-y-2 text-sm">
+                            <h3 className="font-semibold mb-4">Summary</h3>
+                            {[
+                                { label: 'Total Before Discount', value: totalBeforeDiscount },
+                                { label: 'Total Item Discount', value: -totalItemDiscount },
+                                { label: 'Total Net Price', value: totalNetPrice },
+                                { label: 'Total VAT', value: totalVat },
+                                { label: 'Total Gross', value: totalGross },
+                                { label: 'Header Discount', value: -headerDiscount },
+                                { label: 'Total Charges', value: totalCharges },
+                            ].map(({ label, value }) => (
+                                <div key={label} className="flex justify-between">
+                                    <span className="text-muted-foreground">{label}</span>
+                                    <span className={`font-mono ${value < 0 ? 'text-red-600' : ''}`}>
+                                        {value < 0 ? '-' : ''}{formatAmount(Math.abs(value))}
+                                    </span>
                                 </div>
+                            ))}
+                            <div className="flex justify-between border-t pt-2 font-semibold text-base">
+                                <span>Grand Total</span>
+                                <span className="font-mono">{formatAmount(grandTotal)}</span>
                             </div>
                         </div>
                     </div>
