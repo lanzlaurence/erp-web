@@ -1,5 +1,5 @@
 // types/transactions.ts
-import type { Material, Location, Charge, Vendor } from './modules';
+import type { Material, Location, Charge, Vendor, Customer } from './modules';
 import type { User } from './auth';
 
 // ── Purchase Order ────────────────────────────────────────────────────────────
@@ -123,6 +123,130 @@ export type GoodsReceipt = {
     location?: Location;
     user?: User;
     items?: GoodsReceiptItem[];
+    logs?: TransactionLog[];
+    created_at: string;
+    updated_at: string;
+    deleted_at?: string | null;
+};
+
+// ── Sales Order ───────────────────────────────────────────────────────────────
+
+export type SalesOrderStatus =
+    | 'draft'
+    | 'posted'
+    | 'partially_issued'
+    | 'fully_issued'
+    | 'cancelled';
+
+export type SalesOrderItem = {
+    id: number;
+    sales_order_id: number;
+    material_id: number;
+    line_number: number;
+    qty_ordered: number | string;
+    qty_issued: number | string;
+    unit_price: number | string;
+    discount_type: DiscountType | null;
+    discount_amount: number | string;
+    unit_price_after_discount: number | string;
+    net_price: number | string;
+    is_vatable: boolean;
+    vat_type: VatType | null;
+    vat_rate: number | string;
+    vat_price: number | string;
+    gross_price: number | string;
+    remarks: string | null;
+    material?: Material;
+    qty_remaining?: number;
+    created_at: string;
+    updated_at: string;
+};
+
+export type SalesOrderCharge = {
+    id: number;
+    sales_order_id: number;
+    charge_id: number;
+    name: string;
+    type: 'tax' | 'discount';
+    value_type: 'percentage' | 'fixed';
+    value: number | string;
+    computed_amount: number | string;
+    charge?: Charge;
+};
+
+export type SalesOrder = {
+    id: number;
+    code: string;
+    customer_id: number;
+    user_id: number;
+    status: SalesOrderStatus;
+    order_date: string;
+    delivery_date: string | null;
+    reference_no: string | null;
+    discount_type: DiscountType | null;
+    discount_amount: number | string;
+    total_before_discount: number | string;
+    total_item_discount: number | string;
+    total_net_price: number | string;
+    total_vat: number | string;
+    total_gross: number | string;
+    total_charges: number | string;
+    header_discount_total: number | string;
+    grand_total: number | string;
+    remarks: string | null;
+    customer?: Customer;
+    user?: User;
+    items?: SalesOrderItem[];
+    charges?: SalesOrderCharge[];
+    goodsIssues?: GoodsIssue[];
+    goods_issues?: GoodsIssue[];
+    logs?: TransactionLog[];
+    created_at: string;
+    updated_at: string;
+    deleted_at?: string | null;
+};
+
+// ── Goods Issue ───────────────────────────────────────────────────────────────
+
+export type GoodsIssueStatus =
+    | 'pending'
+    | 'completed'
+    | 'cancelled';
+
+export type GoodsIssueItem = {
+    id: number;
+    goods_issue_id: number;
+    sales_order_item_id: number;
+    material_id: number;
+    qty_ordered: number | string;
+    qty_issued: number | string;
+    qty_to_issue: number | string;
+    qty_remaining: number | string;
+    unit_price: number | string;
+    serial_number: string | null;
+    batch_number: string | null;
+    remarks: string | null;
+    material?: Material;
+    salesOrderItem?: SalesOrderItem;
+    created_at: string;
+    updated_at: string;
+};
+
+export type GoodsIssue = {
+    id: number;
+    code: string;
+    sales_order_id: number;
+    user_id: number;
+    location_id: number;
+    status: GoodsIssueStatus;
+    gi_date: string;
+    transaction_date: string;
+    remarks: string | null;
+    sales_order?: SalesOrder;
+    salesOrder?: SalesOrder;
+    location?: Location;
+    user?: User;
+    items?: GoodsIssueItem[];
     logs?: TransactionLog[];
     created_at: string;
     updated_at: string;

@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             CurrencySeeder::class,
             InventorySeeder::class,
             PurchaseOrderSeeder::class,
+            SalesOrderSeeder::class,
         ]);
     }
 }

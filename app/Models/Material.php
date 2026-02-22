@@ -90,4 +90,24 @@ class Material extends Model
             'avg_unit_cost' => round($avgCost, 2),
         ]);
     }
+
+    public function recalculateAvgUnitPrice(): void
+    {
+        $giItems = GoodsIssueItem::whereHas('goodsIssue', function ($q) {
+                $q->where('status', 'completed');
+            })
+            ->where('material_id', $this->id)
+            ->get();
+
+        if ($giItems->isEmpty()) return;
+
+        $totalQty   = $giItems->sum(fn($i) => (float) $i->qty_to_issue);
+        $totalValue = $giItems->sum(fn($i) => (float) $i->qty_to_issue * (float) $i->unit_price);
+
+        if ($totalQty <= 0) return;
+
+        Material::where('id', $this->id)->update([
+            'avg_unit_price' => round($totalValue / $totalQty, 2),
+        ]);
+    }
 }

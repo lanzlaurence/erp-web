@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\PurchaseOrder;
 use App\Models\Vendor;
+use App\Models\SalesOrder;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Routing\Controllers\Middleware;
@@ -14,6 +16,7 @@ class AnalyticsController extends Controller
     {
         return [
             new Middleware('permission:analytics-purchase-order-report', only: ['purchaseOrderReports']),
+            new Middleware('permission:analytics-sales-order-report', only: ['salesOrderReports']),
         ];
     }
 
@@ -36,6 +39,28 @@ class AnalyticsController extends Controller
             'purchaseOrders' => $purchaseOrders,
             'vendors'        => Vendor::where('status', 'active')->get(['id', 'code', 'name']),
             'filters'        => $request->only(['vendor_id', 'status', 'date_from', 'date_to']),
+        ]);
+    }
+
+    public function salesOrderReports(Request $request)
+    {
+        $query = SalesOrder::with([
+            'customer',
+            'items.material.uom',
+        ])
+        ->when($request->customer_id, fn($q) => $q->where('customer_id', $request->customer_id))
+        ->when($request->status,      fn($q) => $q->where('status', $request->status))
+        ->when($request->date_from,   fn($q) => $q->whereDate('order_date', '>=', $request->date_from))
+        ->when($request->date_to,     fn($q) => $q->whereDate('order_date', '<=', $request->date_to))
+        ->whereNotIn('status', ['draft', 'cancelled'])
+        ->latest('order_date');
+
+        $salesOrders = $query->paginate(50)->withQueryString();
+
+        return Inertia::render('analytics/sales-order-reports', [
+            'salesOrders' => $salesOrders,
+            'customers'   => Customer::where('status', 'active')->get(['id', 'code', 'name']),
+            'filters'     => $request->only(['customer_id', 'status', 'date_from', 'date_to']),
         ]);
     }
 }

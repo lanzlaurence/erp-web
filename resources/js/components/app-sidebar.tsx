@@ -63,6 +63,7 @@ export function AppSidebar() {
             icon: BarChart2,
             items: [
                 { title: 'Purchase Order Report', href: '/analytics/purchase-order-reports',  icon: ShoppingCart,  permission: 'analytics-purchase-order-report' },
+                { title: 'Sales Order Report', href: '/analytics/sales-order-reports', icon: ShoppingBag, permission: 'analytics-sales-order-report' },
             ],
         },
         {
@@ -80,8 +81,8 @@ export function AppSidebar() {
                     // badge: 9
                 },
                 { title: 'Goods Receipts', href: '/goods-receipts', icon: PackageCheck, permission: 'goods-receipt-view' },
-                { title: 'Sales Orders', href: '#', icon: ShoppingBag, permission: 'sales-order-view' },
-                { title: 'Goods Issues', href: '#', icon: Truck, permission: 'goods-issue-view'},
+                { title: 'Sales Orders', href: '/sales-orders', icon: ShoppingBag, permission: 'sales-order-view' },
+                { title: 'Goods Issues', href: '/goods-issues', icon: Truck, permission: 'goods-issue-view' },
                 { title: 'Inventory', href: '/inventories', icon: Warehouse, permission: 'inventory-view' },
             ],
         },

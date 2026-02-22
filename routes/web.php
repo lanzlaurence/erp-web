@@ -39,8 +39,7 @@ Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(fun
     Route::resource('vendors', App\Http\Controllers\VendorController::class);
     Route::resource('customers', App\Http\Controllers\CustomerController::class);
 
-    Route::resource('inventories', App\Http\Controllers\InventoryController::class)
-    ->except(['edit', 'update']);
+    Route::resource('inventories', App\Http\Controllers\InventoryController::class)->except(['edit', 'update']);
 
     Route::get('inventories/{inventory}/adjust',   [App\Http\Controllers\InventoryController::class, 'adjust'])->name('inventories.adjust');
     Route::post('inventories/{inventory}/adjust',  [App\Http\Controllers\InventoryController::class, 'processAdjust'])->name('inventories.adjust.process');
@@ -62,8 +61,24 @@ Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(fun
     // GR from PO
     Route::get('purchase-orders/{purchaseOrder}/goods-receipts/create', [App\Http\Controllers\GoodsReceiptController::class, 'create'])->name('purchase-orders.goods-receipts.create');
 
+    // Sales Orders
+    Route::resource('sales-orders', App\Http\Controllers\SalesOrderController::class);
+    Route::post('sales-orders/{salesOrder}/post',   [App\Http\Controllers\SalesOrderController::class, 'post'])->name('sales-orders.post');
+    Route::post('sales-orders/{salesOrder}/cancel', [App\Http\Controllers\SalesOrderController::class, 'cancel'])->name('sales-orders.cancel');
+    Route::post('sales-orders/{salesOrder}/revert', [App\Http\Controllers\SalesOrderController::class, 'revert'])->name('sales-orders.revert');
+
+    // Goods Issues
+    Route::resource('goods-issues', App\Http\Controllers\GoodsIssueController::class);
+    Route::post('goods-issues/{goodsIssue}/complete', [App\Http\Controllers\GoodsIssueController::class, 'complete'])->name('goods-issues.complete');
+    Route::post('goods-issues/{goodsIssue}/cancel',   [App\Http\Controllers\GoodsIssueController::class, 'cancel'])->name('goods-issues.cancel');
+    Route::post('goods-issues/{goodsIssue}/revert',   [App\Http\Controllers\GoodsIssueController::class, 'revert'])->name('goods-issues.revert');
+
+    // GI from SO
+    Route::get('sales-orders/{salesOrder}/goods-issues/create', [App\Http\Controllers\GoodsIssueController::class, 'create'])->name('sales-orders.goods-issues.create');
+
     Route::prefix('analytics')->name('analytics.')->group(function () {
         Route::get('purchase-order-reports', [App\Http\Controllers\AnalyticsController::class, 'purchaseOrderReports'])->name('purchase-orders');
+        Route::get('sales-order-reports', [App\Http\Controllers\AnalyticsController::class, 'salesOrderReports'])->name('sales-orders');
     });
 
     Route::prefix('activity')->name('activity.')->group(function () {
