@@ -26,10 +26,10 @@ type Props = {
 type ItemRow = {
     material_id: string;
     qty_ordered: string;
-    unit_price: string;
+    unit_cost: string;
     discount_type: 'fixed' | 'percentage' | '';
     discount_amount: string;
-    unit_price_after_discount: number;
+    unit_cost_after_discount: number;
     net_price: number;
     is_vatable: boolean;
     vat_type: 'exclusive' | 'inclusive';
@@ -42,7 +42,7 @@ type ItemRow = {
 type ChargeRow = { charge_id: string };
 
 function computeItem(item: ItemRow): ItemRow {
-    const unitPrice   = parseFloat(item.unit_price)    || 0;
+    const unitPrice   = parseFloat(item.unit_cost)    || 0;
     const qty         = parseFloat(item.qty_ordered)   || 0;
     const discountAmt = parseFloat(item.discount_amount) || 0;
     const vatRate     = parseFloat(item.vat_rate)      || 0;
@@ -61,7 +61,7 @@ function computeItem(item: ItemRow): ItemRow {
 
     return {
         ...item,
-        unit_price_after_discount: unitAfterDiscount,
+        unit_cost_after_discount: unitAfterDiscount,
         net_price: netPrice,
         vat_price: vatPrice,
         gross_price: item.vat_type === 'exclusive' ? netPrice + vatPrice : netPrice,
@@ -82,10 +82,10 @@ export default function Edit({ purchaseOrder, vendors, materials, charges }: Pro
         items: (purchaseOrder.items ?? []).map((i) => ({
             material_id:               String(i.material_id),
             qty_ordered:               String(i.qty_ordered),
-            unit_price:                String(i.unit_price),
+            unit_cost:                String(i.unit_cost),
             discount_type:             (i.discount_type ?? '') as 'fixed' | 'percentage' | '',
             discount_amount:           String(i.discount_amount),
-            unit_price_after_discount: Number(i.unit_price_after_discount),
+            unit_cost_after_discount: Number(i.unit_cost_after_discount),
             net_price:                 Number(i.net_price),
             is_vatable:                i.is_vatable,
             vat_type:                  (i.vat_type ?? 'exclusive') as 'exclusive' | 'inclusive',
@@ -119,9 +119,9 @@ export default function Edit({ purchaseOrder, vendors, materials, charges }: Pro
     }, [data.items]);
 
     const addItem    = () => setData('items', [...data.items, {
-        material_id: '', qty_ordered: '1', unit_price: '0',
+        material_id: '', qty_ordered: '1', unit_cost: '0',
         discount_type: '', discount_amount: '0',
-        unit_price_after_discount: 0, net_price: 0,
+        unit_cost_after_discount: 0, net_price: 0,
         is_vatable: false, vat_type: 'exclusive', vat_rate: '12',
         vat_price: 0, gross_price: 0, remarks: '',
     } as ItemRow]);
@@ -129,8 +129,8 @@ export default function Edit({ purchaseOrder, vendors, materials, charges }: Pro
     const addCharge  = () => setData('charges', [...data.charges, { charge_id: '' }]);
     const removeCharge = (i: number) => setData('charges', data.charges.filter((_, idx) => idx !== i));
 
-    const totalBeforeDiscount = data.items.reduce((s, i) => s + (parseFloat(i.unit_price) || 0) * (parseFloat(i.qty_ordered) || 0), 0);
-    const totalItemDiscount   = data.items.reduce((s, i) => s + ((parseFloat(i.unit_price) || 0) - i.unit_price_after_discount) * (parseFloat(i.qty_ordered) || 0), 0);
+    const totalBeforeDiscount = data.items.reduce((s, i) => s + (parseFloat(i.unit_cost) || 0) * (parseFloat(i.qty_ordered) || 0), 0);
+    const totalItemDiscount   = data.items.reduce((s, i) => s + ((parseFloat(i.unit_cost) || 0) - i.unit_cost_after_discount) * (parseFloat(i.qty_ordered) || 0), 0);
     const totalNetPrice       = data.items.reduce((s, i) => s + i.net_price, 0);
     const totalVat            = data.items.reduce((s, i) => s + i.vat_price, 0);
     const totalGross          = data.items.reduce((s, i) => s + i.gross_price, 0);
@@ -242,7 +242,7 @@ export default function Edit({ purchaseOrder, vendors, materials, charges }: Pro
                                     <TableRow>
                                         <TableHead className="min-w-[200px]">Material</TableHead>
                                         <TableHead className="min-w-[100px]">Qty</TableHead>
-                                        <TableHead className="min-w-[120px]">Unit Price</TableHead>
+                                        <TableHead className="min-w-[120px]">Unit Cost</TableHead>
                                         <TableHead className="min-w-[100px]">Disc. Type</TableHead>
                                         <TableHead className="min-w-[100px]">Disc. Amount</TableHead>
                                         <TableHead className="min-w-[120px]">Price After Disc.</TableHead>
@@ -269,7 +269,7 @@ export default function Edit({ purchaseOrder, vendors, materials, charges }: Pro
                                                         updated[index] = computeItem({
                                                             ...updated[index],
                                                             material_id: opt?.value ?? '',
-                                                            unit_price: mat ? String(mat.unit_cost) : '0',
+                                                            unit_cost: mat ? String(mat.unit_cost) : '0',
                                                         });
                                                         setData('items', updated);
                                                     }}
@@ -284,7 +284,7 @@ export default function Edit({ purchaseOrder, vendors, materials, charges }: Pro
                                                 <InputAmount value={item.qty_ordered} onValueChange={(val) => updateItem(index, 'qty_ordered', String(val ?? 0))} />
                                             </TableCell>
                                             <TableCell>
-                                                <InputAmount value={item.unit_price} onValueChange={(val) => updateItem(index, 'unit_price', String(val ?? 0))} />
+                                                <InputAmount value={item.unit_cost} onValueChange={(val) => updateItem(index, 'unit_cost', String(val ?? 0))} />
                                             </TableCell>
                                             <TableCell>
                                                 <Select value={item.discount_type || 'none'}
@@ -300,7 +300,7 @@ export default function Edit({ purchaseOrder, vendors, materials, charges }: Pro
                                             <TableCell>
                                                 <InputAmount value={item.discount_amount} onValueChange={(val) => updateItem(index, 'discount_amount', String(val ?? 0))} disabled={!item.discount_type} />
                                             </TableCell>
-                                            <TableCell className="font-mono text-sm text-muted-foreground">{formatAmount(item.unit_price_after_discount)}</TableCell>
+                                            <TableCell className="font-mono text-sm text-muted-foreground">{formatAmount(item.unit_cost_after_discount)}</TableCell>
                                             <TableCell className="font-mono text-sm text-muted-foreground">{formatAmount(item.net_price)}</TableCell>
                                             <TableCell>
                                                 <Switch checked={item.is_vatable} onCheckedChange={(val) => updateItem(index, 'is_vatable', val)} />

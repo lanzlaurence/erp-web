@@ -21,10 +21,10 @@ export type PurchaseOrderItem = {
     line_number: number;
     qty_ordered: number | string;
     qty_received: number | string;
-    unit_price: number | string;
+    unit_cost: number | string;
     discount_type: DiscountType | null;
     discount_amount: number | string;
-    unit_price_after_discount: number | string;
+    unit_cost_after_discount: number | string;
     net_price: number | string;
     is_vatable: boolean;
     vat_type: VatType | null;

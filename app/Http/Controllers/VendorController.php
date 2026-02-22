@@ -55,7 +55,7 @@ class VendorController extends Controller implements HasMiddleware
     {
         $old = $vendor->only($vendor->getFillable());
         $vendor->update($request->validated());
-        $vendor->logUpdated($old, $request->validated());
+        // $vendor->logUpdated($old, $request->validated());
         return redirect()->route('vendors.index')
             ->with('success', "Vendor {$vendor->code} updated successfully");
     }

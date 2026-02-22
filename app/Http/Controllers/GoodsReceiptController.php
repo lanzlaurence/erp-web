@@ -90,7 +90,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                     'qty_received'           => $qtyReceived,
                     'qty_to_receive'         => (float) $item['qty_to_receive'],
                     'qty_remaining'          => $qtyOrdered - $qtyReceived - (float) $item['qty_to_receive'],
-                    'unit_cost'              => $poItem->unit_price_after_discount,
+                    'unit_cost'              => $poItem->unit_cost_after_discount,
                     'serial_number'          => $item['serial_number'] ?? null,
                     'batch_number'           => $item['batch_number'] ?? null,
                     'remarks'                => $item['remarks'] ?? null,

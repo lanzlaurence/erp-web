@@ -22,7 +22,7 @@ class StorePurchaseOrderRequest extends FormRequest
             'items'                         => ['required', 'array', 'min:1'],
             'items.*.material_id'           => ['required', 'exists:materials,id'],
             'items.*.qty_ordered'           => ['required', 'numeric', 'min:0.000001'],
-            'items.*.unit_price'            => ['required', 'numeric', 'min:0'],
+            'items.*.unit_cost'            => ['required', 'numeric', 'min:0'],
             'items.*.discount_type'         => ['nullable', 'in:fixed,percentage'],
             'items.*.discount_amount'       => ['nullable', 'numeric', 'min:0'],
             'items.*.is_vatable'            => ['boolean'],

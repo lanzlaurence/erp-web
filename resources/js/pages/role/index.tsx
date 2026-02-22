@@ -30,6 +30,7 @@ import { Link, router } from '@inertiajs/react';
 import { ChevronDown, Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
+import React from 'react';
 
 export default function Index({ roles }: RoleData) {
     const { hasPermission } = usePermissions();
@@ -101,8 +102,8 @@ export default function Index({ roles }: RoleData) {
                                 const groupedPermissions = groupPermissions(role.permissions || []);
 
                                 return (
-                                    <>
-                                        <TableRow key={role.id}>
+                                    <React.Fragment key={role.id}>
+                                        <TableRow>
                                             <TableCell className="font-medium">{role.name}</TableCell>
                                             <TableCell>
                                                 <Collapsible open={isExpanded} onOpenChange={() => toggleExpand(role.id)}>
@@ -149,7 +150,7 @@ export default function Index({ roles }: RoleData) {
                                             </TableCell>
                                         </TableRow>
                                         {isExpanded && (
-                                            <TableRow>
+                                            <TableRow key={`${role.id}-expanded`}>
                                                 <TableCell colSpan={3} className="bg-muted/50">
                                                     <div className="space-y-3 py-3">
                                                         {Object.entries(groupedPermissions).map(([category, perms]) => (
@@ -173,7 +174,7 @@ export default function Index({ roles }: RoleData) {
                                                 </TableCell>
                                             </TableRow>
                                         )}
-                                    </>
+                                    </React.Fragment>
                                 );
                             })}
                         </TableBody>

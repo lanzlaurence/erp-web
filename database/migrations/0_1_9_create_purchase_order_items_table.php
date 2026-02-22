@@ -18,10 +18,10 @@ return new class extends Migration
             $table->integer('line_number');
             $table->decimal('qty_ordered',             15, 6)->default(0);
             $table->decimal('qty_received',            15, 6)->default(0);
-            $table->decimal('unit_price',              15, 2)->default(0);
+            $table->decimal('unit_cost',              15, 2)->default(0);
             $table->enum('discount_type', ['fixed', 'percentage'])->nullable();
             $table->decimal('discount_amount',         15, 2)->default(0);
-            $table->decimal('unit_price_after_discount', 15, 2)->default(0);
+            $table->decimal('unit_cost_after_discount', 15, 2)->default(0);
             $table->decimal('net_price',               15, 2)->default(0);
             $table->boolean('is_vatable')->default(false);
             $table->enum('vat_type', ['exclusive', 'inclusive'])->nullable();

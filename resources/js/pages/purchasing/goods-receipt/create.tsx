@@ -48,7 +48,7 @@ export default function Create({ purchaseOrder, locations }: Props) {
             qty_received:           Number(i.qty_received),
             qty_to_receive:         String(Number(i.qty_ordered) - Number(i.qty_received)),
             qty_remaining:          Number(i.qty_ordered) - Number(i.qty_received),
-            unit_cost:              Number(i.unit_price_after_discount),
+            unit_cost:              Number(i.unit_cost_after_discount),
             serial_number:          '',
             batch_number:           '',
             remarks:                '',
@@ -399,7 +399,7 @@ export default function Create({ purchaseOrder, locations }: Props) {
                                 </div>
                                 <div className="border-t pt-3 grid grid-cols-2 gap-3">
                                     <div><p className="text-muted-foreground">Unit Cost</p><p className="font-mono">{formatAmount(Number(m?.unit_cost))}</p></div>
-                                    <div><p className="text-muted-foreground">Unit Price</p><p className="font-mono">{formatAmount(Number(m?.unit_price))}</p></div>
+                                    <div><p className="text-muted-foreground">Unit Price</p><p className="font-mono">{formatAmount(Number(m?.unit_cost))}</p></div>
                                 </div>
                             </div>
                         );

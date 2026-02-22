@@ -33,9 +33,9 @@ class PurchaseOrderSeeder extends Seeder
                 'status' => 'fully_received',
                 'remarks' => 'First order of the year',
                 'items' => [
-                    ['code' => '300001', 'qty' => 50,  'unit_price' => 240.00, 'discount_type' => 'percentage', 'discount_amount' => 5,  'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
-                    ['code' => '300002', 'qty' => 100, 'unit_price' => 170.00, 'discount_type' => null,         'discount_amount' => 0,  'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
-                    ['code' => '300003', 'qty' => 30,  'unit_price' => 620.00, 'discount_type' => 'fixed',      'discount_amount' => 20, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300001', 'qty' => 50,  'unit_cost' => 240.00, 'discount_type' => 'percentage', 'discount_amount' => 5,  'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300002', 'qty' => 100, 'unit_cost' => 170.00, 'discount_type' => null,         'discount_amount' => 0,  'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300003', 'qty' => 30,  'unit_cost' => 620.00, 'discount_type' => 'fixed',      'discount_amount' => 20, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
                 ],
                 'gr' => [
                     [
@@ -60,8 +60,8 @@ class PurchaseOrderSeeder extends Seeder
                 'status' => 'fully_received',
                 'remarks' => 'Electrical supplies order',
                 'items' => [
-                    ['code' => '300005', 'qty' => 80,  'unit_price' => 820.00, 'discount_type' => 'percentage', 'discount_amount' => 5, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
-                    ['code' => '300007', 'qty' => 150, 'unit_price' => 110.00, 'discount_type' => null,         'discount_amount' => 0, 'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
+                    ['code' => '300005', 'qty' => 80,  'unit_cost' => 820.00, 'discount_type' => 'percentage', 'discount_amount' => 5, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300007', 'qty' => 150, 'unit_cost' => 110.00, 'discount_type' => null,         'discount_amount' => 0, 'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
                 ],
                 'gr' => [
                     [
@@ -85,9 +85,9 @@ class PurchaseOrderSeeder extends Seeder
                 'status' => 'partially_received',
                 'remarks' => 'Partial delivery expected',
                 'items' => [
-                    ['code' => '300004', 'qty' => 40,  'unit_price' => 1150.00, 'discount_type' => 'fixed',      'discount_amount' => 50, 'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
-                    ['code' => '300006', 'qty' => 500, 'unit_price' => 42.00,   'discount_type' => 'percentage', 'discount_amount' => 3,  'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
-                    ['code' => '300009', 'qty' => 20,  'unit_price' => 1800.00, 'discount_type' => null,         'discount_amount' => 0,  'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300004', 'qty' => 40,  'unit_cost' => 1150.00, 'discount_type' => 'fixed',      'discount_amount' => 50, 'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300006', 'qty' => 500, 'unit_cost' => 42.00,   'discount_type' => 'percentage', 'discount_amount' => 3,  'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300009', 'qty' => 20,  'unit_cost' => 1800.00, 'discount_type' => null,         'discount_amount' => 0,  'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
                 ],
                 'gr' => [
                     [
@@ -124,9 +124,9 @@ class PurchaseOrderSeeder extends Seeder
                 'status' => 'posted',
                 'remarks' => 'Pending delivery',
                 'items' => [
-                    ['code' => '300008', 'qty' => 20,  'unit_price' => 750.00, 'discount_type' => null,         'discount_amount' => 0, 'is_vatable' => false, 'vat_type' => null, 'vat_rate' => 0],
-                    ['code' => '300011', 'qty' => 300, 'unit_price' => 26.00,  'discount_type' => 'percentage', 'discount_amount' => 5, 'is_vatable' => false, 'vat_type' => null, 'vat_rate' => 0],
-                    ['code' => '300012', 'qty' => 30,  'unit_price' => 580.00, 'discount_type' => null,         'discount_amount' => 0, 'is_vatable' => false, 'vat_type' => null, 'vat_rate' => 0],
+                    ['code' => '300008', 'qty' => 20,  'unit_cost' => 750.00, 'discount_type' => null,         'discount_amount' => 0, 'is_vatable' => false, 'vat_type' => null, 'vat_rate' => 0],
+                    ['code' => '300011', 'qty' => 300, 'unit_cost' => 26.00,  'discount_type' => 'percentage', 'discount_amount' => 5, 'is_vatable' => false, 'vat_type' => null, 'vat_rate' => 0],
+                    ['code' => '300012', 'qty' => 30,  'unit_cost' => 580.00, 'discount_type' => null,         'discount_amount' => 0, 'is_vatable' => false, 'vat_type' => null, 'vat_rate' => 0],
                 ],
                 'gr' => [],
             ],
@@ -138,8 +138,8 @@ class PurchaseOrderSeeder extends Seeder
                 'status' => 'draft',
                 'remarks' => 'Draft order for review',
                 'items' => [
-                    ['code' => '300013', 'qty' => 50,  'unit_price' => 170.00, 'discount_type' => null,    'discount_amount' => 0,  'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
-                    ['code' => '300014', 'qty' => 100, 'unit_price' => 230.00, 'discount_type' => 'fixed', 'discount_amount' => 10, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300013', 'qty' => 50,  'unit_cost' => 170.00, 'discount_type' => null,    'discount_amount' => 0,  'is_vatable' => false, 'vat_type' => null,        'vat_rate' => 0],
+                    ['code' => '300014', 'qty' => 100, 'unit_cost' => 230.00, 'discount_type' => 'fixed', 'discount_amount' => 10, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
                 ],
                 'gr' => [],
             ],
@@ -151,7 +151,7 @@ class PurchaseOrderSeeder extends Seeder
                 'status' => 'cancelled',
                 'remarks' => 'Cancelled order',
                 'items' => [
-                    ['code' => '300001', 'qty' => 10, 'unit_price' => 240.00, 'discount_type' => null, 'discount_amount' => 0, 'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
+                    ['code' => '300001', 'qty' => 10, 'unit_cost' => 240.00, 'discount_type' => null, 'discount_amount' => 0, 'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],
                 ],
                 'gr' => [],
             ],
@@ -185,7 +185,7 @@ class PurchaseOrderSeeder extends Seeder
                     $material = $materials->where('code', $itemData['code'])->first();
                     if (!$material) continue;
 
-                    $unitPrice = $itemData['unit_price'];
+                    $unitPrice = $itemData['unit_cost'];
                     $qty = $itemData['qty'];
                     $discType = $itemData['discount_type'];
                     $discAmt = $itemData['discount_amount'];
@@ -210,10 +210,10 @@ class PurchaseOrderSeeder extends Seeder
                         'line_number' => $index + 1,
                         'qty_ordered' => $qty,
                         'qty_received' => 0,
-                        'unit_price' => $unitPrice,
+                        'unit_cost' => $unitPrice,
                         'discount_type' => $discType,
                         'discount_amount' => $discAmt,
-                        'unit_price_after_discount' => $unitAfterDiscount,
+                        'unit_cost_after_discount' => $unitAfterDiscount,
                         'net_price' => $netPrice,
                         'is_vatable' => $isVatable,
                         'vat_type' => $vatType,
@@ -226,8 +226,8 @@ class PurchaseOrderSeeder extends Seeder
                 $po->refresh();
                 $items = $po->items;
                 $po->update([
-                    'total_before_discount' => $items->sum(fn($i) => (float)$i->unit_price * (float)$i->qty_ordered),
-                    'total_item_discount' => $items->sum(fn($i) => ((float)$i->unit_price - (float)$i->unit_price_after_discount) * (float)$i->qty_ordered),
+                    'total_before_discount' => $items->sum(fn($i) => (float)$i->unit_cost * (float)$i->qty_ordered),
+                    'total_item_discount' => $items->sum(fn($i) => ((float)$i->unit_cost - (float)$i->unit_cost_after_discount) * (float)$i->qty_ordered),
                     'total_net_price' => $items->sum(fn($i) => (float)$i->net_price),
                     'total_vat' => $items->sum(fn($i) => (float)$i->vat_price),
                     'total_gross' => $items->sum(fn($i) => (float)$i->gross_price),
@@ -299,7 +299,7 @@ class PurchaseOrderSeeder extends Seeder
                             'qty_received' => $qtyReceived,
                             'qty_to_receive' => $qtyToReceive,
                             'qty_remaining' => $qtyOrdered - $qtyReceived - $qtyToReceive,
-                            'unit_cost' => $poItem->unit_price_after_discount,
+                            'unit_cost' => $poItem->unit_cost_after_discount,
                         ]);
 
                         if ($grData['status'] === 'completed') {

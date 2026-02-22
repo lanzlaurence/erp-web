@@ -249,7 +249,7 @@ class PurchaseOrderController extends Controller implements HasMiddleware
         $po->items()->delete();
 
         foreach ($items as $index => $item) {
-            $unitPrice     = (float) $item['unit_price'];
+            $unitCost     = (float) $item['unit_cost'];
             $qty           = (float) $item['qty_ordered'];
             $discountType  = $item['discount_type'] ?? null;
             $discountAmt   = (float) ($item['discount_amount'] ?? 0);
@@ -258,11 +258,11 @@ class PurchaseOrderController extends Controller implements HasMiddleware
             $vatRate       = (float) ($item['vat_rate'] ?? 12);
 
             // Unit price after discount
-            $unitAfterDiscount = $unitPrice;
+            $unitAfterDiscount = $unitCost;
             if ($discountType === 'fixed') {
-                $unitAfterDiscount = max(0, $unitPrice - $discountAmt);
+                $unitAfterDiscount = max(0, $unitCost - $discountAmt);
             } elseif ($discountType === 'percentage') {
-                $unitAfterDiscount = $unitPrice * (1 - ($discountAmt / 100));
+                $unitAfterDiscount = $unitCost * (1 - ($discountAmt / 100));
             }
 
             // Net price
@@ -286,10 +286,10 @@ class PurchaseOrderController extends Controller implements HasMiddleware
                 'line_number'               => $index + 1,
                 'qty_ordered'               => $qty,
                 'qty_received'              => 0,
-                'unit_price'                => $unitPrice,
+                'unit_cost'                => $unitCost,
                 'discount_type'             => $discountType,
                 'discount_amount'           => $discountAmt,
-                'unit_price_after_discount' => $unitAfterDiscount,
+                'unit_cost_after_discount' => $unitAfterDiscount,
                 'net_price'                 => $netPrice,
                 'is_vatable'                => $isVatable,
                 'vat_type'                  => $vatType,

@@ -200,7 +200,7 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                                     <TableHead>Material</TableHead>
                                     <TableHead>Qty Ordered</TableHead>
                                     <TableHead>Qty Received</TableHead>
-                                    <TableHead>Unit Price</TableHead>
+                                    <TableHead>Unit Cost</TableHead>
                                     <TableHead>Discount</TableHead>
                                     <TableHead>After Disc.</TableHead>
                                     <TableHead>Net Price</TableHead>
@@ -219,13 +219,13 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                                         </TableCell>
                                         <TableCell className="font-mono">{Number(item.qty_ordered).toFixed(2)}</TableCell>
                                         <TableCell className="font-mono">{Number(item.qty_received).toFixed(2)}</TableCell>
-                                        <TableCell className="font-mono">{formatAmount(Number(item.unit_price))}</TableCell>
+                                        <TableCell className="font-mono">{formatAmount(Number(item.unit_cost))}</TableCell>
                                         <TableCell className="text-sm text-muted-foreground">
                                             {item.discount_type
                                                 ? `${item.discount_type === 'percentage' ? `${item.discount_amount}%` : formatAmount(Number(item.discount_amount))}`
                                                 : '-'}
                                         </TableCell>
-                                        <TableCell className="font-mono">{formatAmount(Number(item.unit_price_after_discount))}</TableCell>
+                                        <TableCell className="font-mono">{formatAmount(Number(item.unit_cost_after_discount))}</TableCell>
                                         <TableCell className="font-mono">{formatAmount(Number(item.net_price))}</TableCell>
                                         <TableCell className="font-mono text-sm">
                                             {item.is_vatable ? formatAmount(Number(item.vat_price)) : '-'}

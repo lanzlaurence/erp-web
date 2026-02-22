@@ -222,7 +222,7 @@ export default function PurchaseOrderReport({ purchaseOrders, vendors, filters }
                                             {formatDecimal(qtyRemaining)}
                                         </TableCell>
                                         <TableCell className="font-mono text-right">
-                                            {formatAmount(Number(item.unit_price))}
+                                            {formatAmount(Number(item.unit_cost))}
                                         </TableCell>
                                         <TableCell className="text-sm text-muted-foreground">
                                             {item.discount_type

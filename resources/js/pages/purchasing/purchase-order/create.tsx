@@ -26,10 +26,10 @@ type Props = {
 type ItemRow = {
     material_id: string;
     qty_ordered: string;
-    unit_price: string;
+    unit_cost: string;
     discount_type: 'fixed' | 'percentage' | '';
     discount_amount: string;
-    unit_price_after_discount: number;
+    unit_cost_after_discount: number;
     net_price: number;
     is_vatable: boolean;
     vat_type: 'exclusive' | 'inclusive';
@@ -46,10 +46,10 @@ type ChargeRow = {
 const emptyItem = (): ItemRow => ({
     material_id: '',
     qty_ordered: '1',
-    unit_price: '0',
+    unit_cost: '0',
     discount_type: '',
     discount_amount: '0',
-    unit_price_after_discount: 0,
+    unit_cost_after_discount: 0,
     net_price: 0,
     is_vatable: false,
     vat_type: 'exclusive',
@@ -60,7 +60,7 @@ const emptyItem = (): ItemRow => ({
 });
 
 function computeItem(item: ItemRow): ItemRow {
-    const unitPrice    = parseFloat(item.unit_price)    || 0;
+    const unitPrice    = parseFloat(item.unit_cost)    || 0;
     const qty          = parseFloat(item.qty_ordered)   || 0;
     const discountAmt  = parseFloat(item.discount_amount) || 0;
     const vatRate      = parseFloat(item.vat_rate)      || 0;
@@ -89,7 +89,7 @@ function computeItem(item: ItemRow): ItemRow {
 
     return {
         ...item,
-        unit_price_after_discount: unitAfterDiscount,
+        unit_cost_after_discount: unitAfterDiscount,
         net_price: netPrice,
         vat_price: vatPrice,
         gross_price: grossPrice,
@@ -148,8 +148,8 @@ export default function Create({ vendors, materials, charges }: Props) {
     const removeCharge = (index: number) => setData('charges', data.charges.filter((_, i) => i !== index));
 
     // Summary calculations
-    const totalBeforeDiscount = data.items.reduce((s, i) => s + (parseFloat(i.unit_price) || 0) * (parseFloat(i.qty_ordered) || 0), 0);
-    const totalItemDiscount   = data.items.reduce((s, i) => s + ((parseFloat(i.unit_price) || 0) - i.unit_price_after_discount) * (parseFloat(i.qty_ordered) || 0), 0);
+    const totalBeforeDiscount = data.items.reduce((s, i) => s + (parseFloat(i.unit_cost) || 0) * (parseFloat(i.qty_ordered) || 0), 0);
+    const totalItemDiscount   = data.items.reduce((s, i) => s + ((parseFloat(i.unit_cost) || 0) - i.unit_cost_after_discount) * (parseFloat(i.qty_ordered) || 0), 0);
     const totalNetPrice       = data.items.reduce((s, i) => s + i.net_price, 0);
     const totalVat            = data.items.reduce((s, i) => s + i.vat_price, 0);
     const totalGross          = data.items.reduce((s, i) => s + i.gross_price, 0);
@@ -267,7 +267,7 @@ export default function Create({ vendors, materials, charges }: Props) {
                                         <TableHead className="min-w-[200px]">Material</TableHead>
                                         <TableHead>Info</TableHead>
                                         <TableHead className="min-w-[100px]">Qty</TableHead>
-                                        <TableHead className="min-w-[120px]">Unit Price</TableHead>
+                                        <TableHead className="min-w-[120px]">Unit Cost</TableHead>
                                         <TableHead className="min-w-[100px]">Disc. Type</TableHead>
                                         <TableHead className="min-w-[100px]">Disc. Amount</TableHead>
                                         <TableHead className="min-w-[120px]">Price After Disc.</TableHead>
@@ -293,7 +293,7 @@ export default function Create({ vendors, materials, charges }: Props) {
                                                         updated[index] = computeItem({
                                                             ...updated[index],
                                                             material_id: opt?.value ?? '',
-                                                            unit_price: mat ? String(mat.unit_cost) : '0',
+                                                            unit_cost: mat ? String(mat.unit_cost) : '0',
                                                         });
                                                         setData('items', updated);
                                                     }}
@@ -326,8 +326,8 @@ export default function Create({ vendors, materials, charges }: Props) {
                                                     onValueChange={(val) => updateItem(index, 'qty_ordered', String(val ?? 0))} />
                                             </TableCell>
                                             <TableCell>
-                                                <InputAmount value={item.unit_price}
-                                                    onValueChange={(val) => updateItem(index, 'unit_price', String(val ?? 0))} />
+                                                <InputAmount value={item.unit_cost}
+                                                    onValueChange={(val) => updateItem(index, 'unit_cost', String(val ?? 0))} />
                                             </TableCell>
                                             <TableCell>
                                                 <Select value={item.discount_type || 'none'}
@@ -346,7 +346,7 @@ export default function Create({ vendors, materials, charges }: Props) {
                                                     disabled={!item.discount_type} />
                                             </TableCell>
                                             <TableCell className="font-mono text-sm text-muted-foreground">
-                                                {formatAmount(item.unit_price_after_discount)}
+                                                {formatAmount(item.unit_cost_after_discount)}
                                             </TableCell>
                                             <TableCell className="font-mono text-sm text-muted-foreground">
                                                 {formatAmount(item.net_price)}
@@ -549,7 +549,7 @@ export default function Create({ vendors, materials, charges }: Props) {
                                 </div>
                                 <div className="border-t pt-3 grid grid-cols-2 gap-3">
                                     <div><p className="text-muted-foreground">Unit Cost</p><p className="font-mono">{formatAmount(Number(m.unit_cost))}</p></div>
-                                    <div><p className="text-muted-foreground">Unit Price</p><p className="font-mono">{formatAmount(Number(m.unit_price))}</p></div>
+                                    <div><p className="text-muted-foreground">Unit Price</p><p className="font-mono">{formatAmount(Number(m.unit_cost))}</p></div>
                                 </div>
                             </div>
                         );
