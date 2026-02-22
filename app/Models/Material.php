@@ -68,4 +68,26 @@ class Material extends Model
     public function category(): BelongsTo { return $this->belongsTo(Category::class); }
     public function uom(): BelongsTo { return $this->belongsTo(Uom::class); }
     public function logs(): HasMany { return $this->hasMany(MaterialLog::class); }
+
+    public function recalculateAvgUnitCost(): void
+    {
+        $grItems = GoodsReceiptItem::whereHas('goodsReceipt', function ($q) {
+                $q->where('status', 'completed');
+            })
+            ->where('material_id', $this->id)
+            ->get();
+
+        if ($grItems->isEmpty()) return;
+
+        $totalQty   = $grItems->sum(fn($i) => (float) $i->qty_to_receive);
+        $totalValue = $grItems->sum(fn($i) => (float) $i->qty_to_receive * (float) $i->unit_cost);
+
+        if ($totalQty <= 0) return;
+
+        $avgCost = $totalValue / $totalQty;
+
+        Material::where('id', $this->id)->update([
+            'avg_unit_cost' => round($avgCost, 2),
+        ]);
+    }
 }

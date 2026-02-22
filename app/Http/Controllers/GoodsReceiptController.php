@@ -11,6 +11,7 @@ use App\Models\Inventory;
 use App\Models\InventoryLog;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Models\Material;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
@@ -220,13 +221,14 @@ class GoodsReceiptController extends Controller implements HasMiddleware
 
         DB::transaction(function () use ($goodsReceipt) {
             $po = $goodsReceipt->purchaseOrder;
+            $affectedMaterialIds = [];
 
             foreach ($goodsReceipt->items as $grItem) {
                 $qtyToReceive = (float) $grItem->qty_to_receive;
                 if ($qtyToReceive <= 0) continue;
 
                 // Update PO item qty_received
-                $poItem         = $grItem->purchaseOrderItem;
+                $poItem = $grItem->purchaseOrderItem;
                 $newQtyReceived = (float) $poItem->qty_received + $qtyToReceive;
                 $poItem->update(['qty_received' => $newQtyReceived]);
 
@@ -243,10 +245,10 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                 } else {
                     $qtyBefore = 0;
                     $inventory = Inventory::create([
-                        'code'           => Inventory::generateCode(),
-                        'material_id'    => $grItem->material_id,
+                        'code'        => Inventory::generateCode(),
+                        'material_id' => $grItem->material_id,
                         'location_id' => $goodsReceipt->location_id,
-                        'quantity'       => $qtyToReceive,
+                        'quantity'    => $qtyToReceive,
                     ]);
                 }
 
@@ -254,7 +256,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                     'movement_code'   => InventoryLog::generateMovementCode(),
                     'inventory_id'    => $inventory->id,
                     'material_id'     => $grItem->material_id,
-                    'location_id'  => $goodsReceipt->location_id,
+                    'location_id'     => $goodsReceipt->location_id,
                     'user_id'         => Auth::id(),
                     'type'            => 'purchase_receipt',
                     'quantity_before' => $qtyBefore,
@@ -264,6 +266,9 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                     'reference_type'  => GoodsReceipt::class,
                     'remarks'         => "GR {$goodsReceipt->code} completed",
                 ]);
+
+                // collect affected materials
+                $affectedMaterialIds[] = $grItem->material_id;
             }
 
             $goodsReceipt->update(['status' => 'completed']);
@@ -275,7 +280,12 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                 'remarks'     => 'Goods receipt completed and inventory updated',
             ]);
 
-            // Update PO status
+            // Recalculate avg_unit_cost for each affected material
+            foreach (array_unique($affectedMaterialIds) as $materialId) {
+                $material = Material::find($materialId);
+                $material?->recalculateAvgUnitCost();
+            }
+
             $this->recalculatePoStatus($po);
         });
 
@@ -292,6 +302,13 @@ class GoodsReceiptController extends Controller implements HasMiddleware
         DB::transaction(function () use ($goodsReceipt) {
             $fromStatus = $goodsReceipt->status;
             $po         = $goodsReceipt->purchaseOrder;
+
+            // collect before status change
+            $affectedMaterialIds = $goodsReceipt->items
+                ->where('qty_to_receive', '>', 0)
+                ->pluck('material_id')
+                ->unique()
+                ->toArray();
 
             // If completed, reverse inventory
             if ($fromStatus === 'completed') {
@@ -312,7 +329,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                             'movement_code'   => InventoryLog::generateMovementCode(),
                             'inventory_id'    => $inventory->id,
                             'material_id'     => $grItem->material_id,
-                            'location_id'  => $goodsReceipt->location_id,
+                            'location_id'     => $goodsReceipt->location_id,
                             'user_id'         => Auth::id(),
                             'type'            => 'purchase_return',
                             'quantity_before' => $qtyBefore,
@@ -336,6 +353,14 @@ class GoodsReceiptController extends Controller implements HasMiddleware
                     ? 'Goods receipt cancelled and inventory reversed'
                     : 'Goods receipt cancelled',
             ]);
+
+            // Recalculate avg after cancel
+            if ($fromStatus === 'completed') {
+                foreach ($affectedMaterialIds as $materialId) {
+                    $material = Material::find($materialId);
+                    $material?->recalculateAvgUnitCost();
+                }
+            }
 
             $this->recalculatePoStatus($po);
         });

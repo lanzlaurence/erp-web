@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateMaterialRequest;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Material;
+use App\Models\GoodsReceiptItem;
 use App\Models\Uom;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
