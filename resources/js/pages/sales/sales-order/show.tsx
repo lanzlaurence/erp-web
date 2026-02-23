@@ -13,11 +13,11 @@ import { useState } from 'react';
 import ClickableCode from '@/components/ui/clickable-code';
 
 const STATUS_BADGE: Record<SalesOrderStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
-    draft:            { label: 'Draft',          variant: 'secondary' },
-    posted:           { label: 'Posted',         variant: 'default' },
+    draft:             { label: 'Draft',           variant: 'secondary' },
+    posted:            { label: 'Posted',          variant: 'default' },
     partially_shipped: { label: 'Partial Shipped', variant: 'outline' },
     fully_shipped:     { label: 'Fully Shipped',   variant: 'success' },
-    cancelled:        { label: 'Cancelled',      variant: 'destructive' },
+    cancelled:         { label: 'Cancelled',       variant: 'destructive' },
 };
 
 type ConfirmAction = {
@@ -48,7 +48,6 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
         <>
             <Head title={`SO ${salesOrder.code}`} />
             <div className="mx-auto max-w-7xl space-y-6 p-4">
-                {/* Header */}
                 <div className="flex items-start justify-between">
                     <div className="space-y-1">
                         <div className="flex items-center gap-3">
@@ -63,25 +62,23 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/sales-orders"><ArrowLeft className="mr-2 h-4 w-4" />Back</Link>
                         </Button>
-
                         {hasPermission('sales-order-edit') && salesOrder.status === 'draft' && (
                             <Button variant="outline" size="sm" asChild>
                                 <Link href={`/sales-orders/${salesOrder.id}/edit`}><Edit className="mr-2 h-4 w-4" />Edit</Link>
                             </Button>
                         )}
-
                         {hasPermission('sales-order-post') && salesOrder.status === 'draft' && (
-                            <Button size="sm" onClick={() => triggerAction('post', 'Post Sales Order', 'This will post the sales order and lock it from editing.')}>
+                            <Button size="sm"
+                                onClick={() => triggerAction('post', 'Post Sales Order', 'This will post the sales order and lock it from editing.')}>
                                 <CheckCircle className="mr-2 h-4 w-4" />Post
                             </Button>
                         )}
-
-                        {hasPermission('sales-order-revert') && salesOrder.status === 'posted' && (
-                            <Button size="sm" variant="outline" onClick={() => triggerAction('revert', 'Revert to Draft', 'This will revert the sales order back to draft status.')}>
+                        {hasPermission('sales-order-revert') && ['posted', 'cancelled'].includes(salesOrder.status) && (
+                            <Button size="sm" variant="outline"
+                                onClick={() => triggerAction('revert', 'Revert to Draft', 'This will revert the sales order back to draft status.')}>
                                 <RotateCcw className="mr-2 h-4 w-4" />Revert to Draft
                             </Button>
                         )}
-
                         {hasPermission('goods-issue-create') && ['posted', 'partially_shipped'].includes(salesOrder.status) && (
                             <Button size="sm" asChild>
                                 <Link href={`/sales-orders/${salesOrder.id}/goods-issues/create`}>
@@ -89,29 +86,16 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                                 </Link>
                             </Button>
                         )}
-
-                        {hasPermission('sales-order-cancel') && !['draft', 'cancelled'].includes(salesOrder.status) && (() => {
-                            const hasCompletedGi = salesOrder.goodsIssues?.some((gi) => gi.status === 'completed');
-                            return hasCompletedGi ? (
-                                <Button size="sm" variant="outline" disabled title="Cancel all goods issues before cancelling this SO">
-                                    <XCircle className="mr-2 h-4 w-4" />Cancel
-                                </Button>
-                            ) : (
-                                <Button size="sm" variant="destructive" onClick={() => triggerAction('cancel', 'Cancel Sales Order', 'This will cancel the sales order.')}>
-                                    <XCircle className="mr-2 h-4 w-4" />Cancel
-                                </Button>
-                            );
-                        })()}
-
-                        {hasPermission('sales-order-cancel') && salesOrder.status === 'draft' && (
-                            <Button size="sm" variant="destructive" onClick={() => triggerAction('cancel', 'Cancel Sales Order', 'This will cancel the sales order.')}>
+                        {hasPermission('sales-order-cancel') && salesOrder.status !== 'cancelled' && (
+                            <Button size="sm" variant="destructive"
+                                onClick={() => triggerAction('cancel', 'Cancel Sales Order',
+                                    'This will cancel the sales order and ALL related goods issues. Completed GIs will have their inventory restored.')}>
                                 <XCircle className="mr-2 h-4 w-4" />Cancel
                             </Button>
                         )}
                     </div>
                 </div>
 
-                {/* Order Info + Summary */}
                 <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Order Information</h3>
@@ -176,7 +160,6 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                     </div>
                 </div>
 
-                {/* Items */}
                 <div className="space-y-4 rounded-lg border p-6">
                     <h3 className="font-semibold">Items</h3>
                     <div className="overflow-x-auto">
@@ -208,7 +191,7 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                                         <TableCell className="font-mono">{Number(item.qty_shipped).toFixed(2)}</TableCell>
                                         <TableCell className="font-mono">{formatAmount(Number(item.unit_price))}</TableCell>
                                         <TableCell className="text-sm text-muted-foreground">
-                                            {item.discount_type ? `${item.discount_type === 'percentage' ? `${item.discount_amount}%` : formatAmount(Number(item.discount_amount))}` : '-'}
+                                            {item.discount_type ? (item.discount_type === 'percentage' ? `${item.discount_amount}%` : formatAmount(Number(item.discount_amount))) : '-'}
                                         </TableCell>
                                         <TableCell className="font-mono">{formatAmount(Number(item.unit_price_after_discount))}</TableCell>
                                         <TableCell className="font-mono">{formatAmount(Number(item.net_price))}</TableCell>
@@ -222,7 +205,6 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                     </div>
                 </div>
 
-                {/* Charges */}
                 {salesOrder.charges && salesOrder.charges.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Charges</h3>
@@ -249,12 +231,11 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                     </div>
                 )}
 
-                {/* Goods Issues */}
-                {salesOrder.goods_issues && salesOrder.goods_issues.length > 0 && (
+                {salesOrder.goodsIssues && salesOrder.goodsIssues.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">
                             Goods Issues
-                            <span className="ml-2 text-sm font-normal text-muted-foreground">({salesOrder.goods_issues.length})</span>
+                            <span className="ml-2 text-sm font-normal text-muted-foreground">({salesOrder.goodsIssues.length})</span>
                         </h3>
                         <Table>
                             <TableHeader>
@@ -269,7 +250,7 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {salesOrder.goods_issues.map((gi) => (
+                                {salesOrder.goodsIssues.map((gi) => (
                                     <TableRow key={gi.id}>
                                         <TableCell><ClickableCode href={`/goods-issues/${gi.id}`} value={gi.code} /></TableCell>
                                         <TableCell>{gi.location?.name}</TableCell>
@@ -293,7 +274,6 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                     </div>
                 )}
 
-                {/* Logs */}
                 {salesOrder.logs && salesOrder.logs.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Transaction Log</h3>

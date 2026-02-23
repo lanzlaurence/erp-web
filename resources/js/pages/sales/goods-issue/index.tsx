@@ -8,7 +8,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { GoodsIssueData } from '@/types';
 import type { GoodsIssueStatus } from '@/types/transactions';
 import { Head, Link, router } from '@inertiajs/react';
-import { Eye, Edit, Trash2 } from 'lucide-react';
+import { Eye, Edit, Trash2, CheckCircle, XCircle, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 import ClickableCode from '@/components/ui/clickable-code';
 
@@ -21,13 +21,23 @@ const STATUS_BADGE: Record<GoodsIssueStatus, { label: string; variant: 'default'
 export default function Index({ goodsIssues }: GoodsIssueData) {
     const { hasPermission } = usePermissions();
     const { formatDate } = useFormatters();
+
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; code: string }>({
         open: false, id: 0, code: '',
+    });
+    const [actionDialog, setActionDialog] = useState<{ open: boolean; id: number; code: string; action: 'complete' | 'cancel' | 'revert' | null; fromCompleted: boolean; soStatus?: string }>({
+        open: false, id: 0, code: '', action: null, fromCompleted: false, soStatus: '',
     });
 
     const handleDeleteConfirm = () => {
         router.delete(`/goods-issues/${deleteDialog.id}`);
         setDeleteDialog({ open: false, id: 0, code: '' });
+    };
+
+    const handleActionConfirm = () => {
+        if (!actionDialog.action) return;
+        router.post(`/goods-issues/${actionDialog.id}/${actionDialog.action}`);
+        setActionDialog({ open: false, id: 0, code: '', action: null, fromCompleted: false });
     };
 
     return (
@@ -62,6 +72,7 @@ export default function Index({ goodsIssues }: GoodsIssueData) {
                                 </TableRow>
                             ) : goodsIssues.data.map((gi) => {
                                 const badge = STATUS_BADGE[gi.status];
+                                const soIsCancelled = gi.sales_order?.status === 'cancelled';
                                 return (
                                     <TableRow key={gi.id}>
                                         <TableCell><ClickableCode href={`/goods-issues/${gi.id}`} value={gi.code} /></TableCell>
@@ -72,21 +83,53 @@ export default function Index({ goodsIssues }: GoodsIssueData) {
                                         <TableCell><Badge variant={badge.variant}>{badge.label}</Badge></TableCell>
                                         <TableCell className="text-sm text-muted-foreground">{gi.user?.name}</TableCell>
                                         <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
+                                            <div className="flex justify-end gap-1">
                                                 {hasPermission('goods-issue-view') && (
                                                     <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/goods-issues/${gi.id}`}><Eye className="h-4 w-4" /></Link>
+                                                        <Link href={`/goods-issues/${gi.id}`} className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                            <Eye className="h-4 w-4" />
+                                                            <span className="text-[10px] leading-none">View</span>
+                                                        </Link>
                                                     </Button>
                                                 )}
                                                 {hasPermission('goods-issue-edit') && gi.status === 'pending' && (
                                                     <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/goods-issues/${gi.id}/edit`}><Edit className="h-4 w-4" /></Link>
+                                                        <Link href={`/goods-issues/${gi.id}/edit`} className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                            <Edit className="h-4 w-4" />
+                                                            <span className="text-[10px] leading-none">Edit</span>
+                                                        </Link>
+                                                    </Button>
+                                                )}
+                                                {hasPermission('goods-issue-complete') && gi.status === 'pending' && (
+                                                    <Button variant="ghost" size="sm"
+                                                        onClick={() => setActionDialog({ open: true, id: gi.id, code: gi.code, action: 'complete', fromCompleted: false })}
+                                                        className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        <CheckCircle className="h-4 w-4 text-green-600" />
+                                                        <span className="text-[10px] leading-none">Complete</span>
+                                                    </Button>
+                                                )}
+                                                {hasPermission('goods-issue-revert') && gi.status === 'cancelled' && !soIsCancelled && (
+                                                    <Button variant="ghost" size="sm"
+                                                        onClick={() => setActionDialog({ open: true, id: gi.id, code: gi.code, action: 'revert', fromCompleted: false })}
+                                                        className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        <RotateCcw className="h-4 w-4 text-blue-600" />
+                                                        <span className="text-[10px] leading-none">Revert</span>
+                                                    </Button>
+                                                )}
+                                                {hasPermission('goods-issue-cancel') && ['pending', 'completed'].includes(gi.status) && (
+                                                    <Button variant="ghost" size="sm"
+                                                        onClick={() => setActionDialog({ open: true, id: gi.id, code: gi.code, action: 'cancel', fromCompleted: gi.status === 'completed' })}
+                                                        className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        <XCircle className="h-4 w-4 text-orange-600" />
+                                                        <span className="text-[10px] leading-none">Cancel</span>
                                                     </Button>
                                                 )}
                                                 {hasPermission('goods-issue-delete') && gi.status === 'pending' && (
                                                     <Button variant="ghost" size="sm"
-                                                        onClick={() => setDeleteDialog({ open: true, id: gi.id, code: gi.code })}>
+                                                        onClick={() => setDeleteDialog({ open: true, id: gi.id, code: gi.code })}
+                                                        className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
                                                         <Trash2 className="h-4 w-4 text-red-600" />
+                                                        <span className="text-[10px] leading-none">Delete</span>
                                                     </Button>
                                                 )}
                                             </div>
@@ -110,6 +153,28 @@ export default function Index({ goodsIssues }: GoodsIssueData) {
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={actionDialog.open} onOpenChange={(open) => setActionDialog({ ...actionDialog, open })}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            {actionDialog.action === 'complete' ? 'Complete Goods Issue?' :
+                            actionDialog.action === 'revert'   ? 'Revert to Pending?'    : 'Cancel Goods Issue?'}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {actionDialog.action === 'complete' && `This will complete ${actionDialog.code} and deduct stock from inventory.`}
+                            {actionDialog.action === 'revert'   && `This will revert ${actionDialog.code} back to pending.`}
+                            {actionDialog.action === 'cancel'   && (actionDialog.fromCompleted
+                                ? `This will cancel ${actionDialog.code} and restore inventory stock.`
+                                : `This will cancel ${actionDialog.code}.`)}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleActionConfirm}>Confirm</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

@@ -29,10 +29,9 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
     const { formatAmount, formatDate, formatDateTime, formatDecimal } = useFormatters();
     const { hasPermission } = usePermissions();
     const badge = STATUS_BADGE[goodsReceipt.status];
+    const poIsCancelled = goodsReceipt.purchaseOrder?.status === 'cancelled';
 
-    const [confirm, setConfirm] = useState<ConfirmAction>({
-        open: false, action: null, label: '', description: '',
-    });
+    const [confirm, setConfirm] = useState<ConfirmAction>({ open: false, action: null, label: '', description: '' });
 
     const triggerAction = (action: ConfirmAction['action'], label: string, description: string) => {
         setConfirm({ open: true, action, label, description });
@@ -48,7 +47,6 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
         <>
             <Head title={`GR ${goodsReceipt.code}`} />
             <div className="mx-auto max-w-7xl space-y-6 p-4">
-                {/* Header */}
                 <div className="flex items-start justify-between">
                     <div className="space-y-1">
                         <div className="flex items-center gap-3">
@@ -63,64 +61,45 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/goods-receipts"><ArrowLeft className="mr-2 h-4 w-4" />Back</Link>
                         </Button>
-
                         {hasPermission('goods-receipt-edit') && goodsReceipt.status === 'pending' && (
                             <Button variant="outline" size="sm" asChild>
-                                <Link href={`/goods-receipts/${goodsReceipt.id}/edit`}>
-                                    <Edit className="mr-2 h-4 w-4" />Edit
-                                </Link>
+                                <Link href={`/goods-receipts/${goodsReceipt.id}/edit`}><Edit className="mr-2 h-4 w-4" />Edit</Link>
                             </Button>
                         )}
-
-                        {/* Complete — only from pending */}
                         {hasPermission('goods-receipt-complete') && goodsReceipt.status === 'pending' && (
                             <Button size="sm"
-                                onClick={() => triggerAction('complete', 'Complete Goods Receipt', 'This will receive the items and update inventory. This cannot be undone without cancelling.')}>
+                                onClick={() => triggerAction('complete', 'Complete Goods Receipt', 'This will receive the items and update inventory.')}>
                                 <CheckCircle className="mr-2 h-4 w-4" />Complete
                             </Button>
                         )}
-
-                        {/* Cancel — from pending OR completed (completed will reverse inventory) */}
-                        {hasPermission('goods-receipt-cancel') && ['pending', 'completed'].includes(goodsReceipt.status) && (
-                            <Button size="sm" variant="destructive"
-                                onClick={() => triggerAction(
-                                    'cancel',
-                                    'Cancel Goods Receipt',
-                                    goodsReceipt.status === 'completed'
-                                        ? 'This will cancel the goods receipt and REVERSE the inventory that was received. This action cannot be undone.'
-                                        : 'This will cancel the goods receipt.'
-                                )}>
-                                <XCircle className="mr-2 h-4 w-4" />Cancel
-                            </Button>
-                        )}
-
-                        {/* Revert — only from cancelled */}
-                        {hasPermission('goods-receipt-revert') && goodsReceipt.status === 'cancelled' && (
+                        {hasPermission('goods-receipt-revert') && goodsReceipt.status === 'cancelled' && !poIsCancelled && (
                             <Button size="sm" variant="outline"
                                 onClick={() => triggerAction('revert', 'Revert to Pending', 'This will revert the goods receipt back to pending. Inventory will NOT be restored — you must complete again.')}>
-                                <RotateCcw className="mr-2 h-4 w-4" />Revert
+                                <RotateCcw className="mr-2 h-4 w-4" />Revert to Pending
+                            </Button>
+                        )}
+                        {hasPermission('goods-receipt-cancel') && ['pending', 'completed'].includes(goodsReceipt.status) && (
+                            <Button size="sm" variant="destructive"
+                                onClick={() => triggerAction('cancel', 'Cancel Goods Receipt',
+                                    goodsReceipt.status === 'completed'
+                                        ? 'This will cancel the GR and REVERSE the inventory that was received.'
+                                        : 'This will cancel the goods receipt.')}>
+                                <XCircle className="mr-2 h-4 w-4" />Cancel
                             </Button>
                         )}
                     </div>
                 </div>
 
-                {/* Info */}
                 <div className="space-y-4 rounded-lg border p-6">
                     <h3 className="font-semibold">Receipt Information</h3>
                     <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
                             <p className="text-muted-foreground">Purchase Order</p>
-                            <ClickableCode
-                                href={`/purchase-orders/${goodsReceipt.purchase_order?.id}`}
-                                value={goodsReceipt.purchase_order?.code}
-                            />
+                            <ClickableCode href={`/purchase-orders/${goodsReceipt.purchaseOrder?.id}`} value={goodsReceipt.purchaseOrder?.code} />
                         </div>
                         <div>
                             <p className="text-muted-foreground">Vendor</p>
-                            <ClickableCode
-                                href={`/vendors/${goodsReceipt.purchase_order?.vendor?.id}`}
-                                value={goodsReceipt.purchase_order?.vendor?.name}
-                            />
+                            <ClickableCode href={`/vendors/${goodsReceipt.purchaseOrder?.vendor?.id}`} value={goodsReceipt.purchaseOrder?.vendor?.name} />
                         </div>
                         <div>
                             <p className="text-muted-foreground">Location</p>
@@ -134,6 +113,10 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                             <p className="text-muted-foreground">Transaction Date</p>
                             <p>{formatDate(goodsReceipt.transaction_date)}</p>
                         </div>
+                        <div>
+                            <p className="text-muted-foreground">Created By</p>
+                            <p>{goodsReceipt.user?.name}</p>
+                        </div>
                     </div>
                     {goodsReceipt.remarks && (
                         <div>
@@ -143,7 +126,6 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                     )}
                 </div>
 
-                {/* Items */}
                 <div className="space-y-4 rounded-lg border p-6">
                     <h3 className="font-semibold">Items</h3>
                     <div className="overflow-x-auto">
@@ -183,7 +165,6 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                     </div>
                 </div>
 
-                {/* Logs */}
                 {goodsReceipt.logs && goodsReceipt.logs.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Transaction Log</h3>

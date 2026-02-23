@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import AppLayout from '@/layouts/app-layout';
 import type { PurchaseOrderShowData } from '@/types';
 import type { PurchaseOrderStatus } from '@/types/transactions';
@@ -9,7 +10,6 @@ import { usePermissions } from '@/hooks/use-permissions';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Edit, CheckCircle, XCircle, RotateCcw, PackageCheck, Eye } from 'lucide-react';
 import { useState } from 'react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import ClickableCode from '@/components/ui/clickable-code';
 
 const STATUS_BADGE: Record<PurchaseOrderStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
@@ -32,9 +32,7 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
     const { hasPermission } = usePermissions();
     const badge = STATUS_BADGE[purchaseOrder.status];
 
-    const [confirm, setConfirm] = useState<ConfirmAction>({
-        open: false, action: null, label: '', description: '',
-    });
+    const [confirm, setConfirm] = useState<ConfirmAction>({ open: false, action: null, label: '', description: '' });
 
     const triggerAction = (action: ConfirmAction['action'], label: string, description: string) => {
         setConfirm({ open: true, action, label, description });
@@ -50,7 +48,6 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
         <>
             <Head title={`PO ${purchaseOrder.code}`} />
             <div className="mx-auto max-w-7xl space-y-6 p-4">
-                {/* Header */}
                 <div className="flex items-start justify-between">
                     <div className="space-y-1">
                         <div className="flex items-center gap-3">
@@ -65,29 +62,23 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/purchase-orders"><ArrowLeft className="mr-2 h-4 w-4" />Back</Link>
                         </Button>
-
                         {hasPermission('purchase-order-edit') && purchaseOrder.status === 'draft' && (
                             <Button variant="outline" size="sm" asChild>
-                                <Link href={`/purchase-orders/${purchaseOrder.id}/edit`}>
-                                    <Edit className="mr-2 h-4 w-4" />Edit
-                                </Link>
+                                <Link href={`/purchase-orders/${purchaseOrder.id}/edit`}><Edit className="mr-2 h-4 w-4" />Edit</Link>
                             </Button>
                         )}
-
                         {hasPermission('purchase-order-post') && purchaseOrder.status === 'draft' && (
                             <Button size="sm"
                                 onClick={() => triggerAction('post', 'Post Purchase Order', 'This will post the purchase order and lock it from editing.')}>
                                 <CheckCircle className="mr-2 h-4 w-4" />Post
                             </Button>
                         )}
-
-                        {hasPermission('purchase-order-revert') && purchaseOrder.status === 'posted' && (
+                        {hasPermission('purchase-order-revert') && ['posted', 'cancelled'].includes(purchaseOrder.status) && (
                             <Button size="sm" variant="outline"
                                 onClick={() => triggerAction('revert', 'Revert to Draft', 'This will revert the purchase order back to draft status.')}>
                                 <RotateCcw className="mr-2 h-4 w-4" />Revert to Draft
                             </Button>
                         )}
-
                         {hasPermission('goods-receipt-create') && ['posted', 'partially_received'].includes(purchaseOrder.status) && (
                             <Button size="sm" asChild>
                                 <Link href={`/purchase-orders/${purchaseOrder.id}/goods-receipts/create`}>
@@ -95,43 +86,23 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                                 </Link>
                             </Button>
                         )}
-
-                        {/* Cancel */}
-                        {hasPermission('purchase-order-cancel') && !['draft', 'cancelled'].includes(purchaseOrder.status) && (() => {
-                            const hasCompletedGr = purchaseOrder.goodsReceipts?.some((gr) => gr.status === 'completed');
-                            return hasCompletedGr ? (
-                                <Button size="sm" variant="outline" disabled title="Cancel all goods receipts before cancelling this PO">
-                                    <XCircle className="mr-2 h-4 w-4" />Cancel
-                                </Button>
-                            ) : (
-                                <Button size="sm" variant="destructive"
-                                    onClick={() => triggerAction('cancel', 'Cancel Purchase Order', 'This will cancel the purchase order.')}>
-                                    <XCircle className="mr-2 h-4 w-4" />Cancel
-                                </Button>
-                            );
-                        })()}
-
-                        {/* Allow cancel from draft too */}
-                        {hasPermission('purchase-order-cancel') && purchaseOrder.status === 'draft' && (
+                        {hasPermission('purchase-order-cancel') && purchaseOrder.status !== 'cancelled' && (
                             <Button size="sm" variant="destructive"
-                                onClick={() => triggerAction('cancel', 'Cancel Purchase Order', 'This will cancel the purchase order.')}>
+                                onClick={() => triggerAction('cancel', 'Cancel Purchase Order',
+                                    'This will cancel the purchase order and ALL related goods receipts. Completed GRs will have their inventory reversed.')}>
                                 <XCircle className="mr-2 h-4 w-4" />Cancel
                             </Button>
                         )}
                     </div>
                 </div>
 
-                {/* Order Info */}
                 <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Order Information</h3>
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
                                 <p className="text-muted-foreground">Vendor</p>
-                                <ClickableCode
-                                    href={`/vendors/${purchaseOrder.vendor?.id}`}
-                                    value={purchaseOrder.vendor?.name}
-                                />
+                                <ClickableCode href={`/vendors/${purchaseOrder.vendor?.id}`} value={purchaseOrder.vendor?.name} />
                             </div>
                             <div>
                                 <p className="text-muted-foreground">Reference No.</p>
@@ -189,7 +160,6 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                     </div>
                 </div>
 
-                {/* Items */}
                 <div className="space-y-4 rounded-lg border p-6">
                     <h3 className="font-semibold">Items</h3>
                     <div className="overflow-x-auto">
@@ -221,15 +191,11 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                                         <TableCell className="font-mono">{Number(item.qty_received).toFixed(2)}</TableCell>
                                         <TableCell className="font-mono">{formatAmount(Number(item.unit_cost))}</TableCell>
                                         <TableCell className="text-sm text-muted-foreground">
-                                            {item.discount_type
-                                                ? `${item.discount_type === 'percentage' ? `${item.discount_amount}%` : formatAmount(Number(item.discount_amount))}`
-                                                : '-'}
+                                            {item.discount_type ? (item.discount_type === 'percentage' ? `${item.discount_amount}%` : formatAmount(Number(item.discount_amount))) : '-'}
                                         </TableCell>
                                         <TableCell className="font-mono">{formatAmount(Number(item.unit_cost_after_discount))}</TableCell>
                                         <TableCell className="font-mono">{formatAmount(Number(item.net_price))}</TableCell>
-                                        <TableCell className="font-mono text-sm">
-                                            {item.is_vatable ? formatAmount(Number(item.vat_price)) : '-'}
-                                        </TableCell>
+                                        <TableCell className="font-mono text-sm">{item.is_vatable ? formatAmount(Number(item.vat_price)) : '-'}</TableCell>
                                         <TableCell className="font-mono font-medium">{formatAmount(Number(item.gross_price))}</TableCell>
                                         <TableCell className="text-sm text-muted-foreground">{item.remarks || '-'}</TableCell>
                                     </TableRow>
@@ -239,7 +205,6 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                     </div>
                 </div>
 
-                {/* Charges */}
                 {purchaseOrder.charges && purchaseOrder.charges.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Charges</h3>
@@ -256,16 +221,8 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                                 {purchaseOrder.charges.map((charge) => (
                                     <TableRow key={charge.id}>
                                         <TableCell>{charge.name}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={charge.type === 'tax' ? 'default' : 'destructive'}>
-                                                {charge.type}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                            {charge.value_type === 'percentage'
-                                                ? `${charge.value}%`
-                                                : formatAmount(Number(charge.value))}
-                                        </TableCell>
+                                        <TableCell><Badge variant={charge.type === 'tax' ? 'default' : 'destructive'}>{charge.type}</Badge></TableCell>
+                                        <TableCell>{charge.value_type === 'percentage' ? `${charge.value}%` : formatAmount(Number(charge.value))}</TableCell>
                                         <TableCell className="font-mono">{formatAmount(Number(charge.computed_amount))}</TableCell>
                                     </TableRow>
                                 ))}
@@ -274,17 +231,12 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                     </div>
                 )}
 
-                {/* Goods Receipts */}
-                {purchaseOrder.goods_receipts && purchaseOrder.goods_receipts.length > 0 && (
+                {purchaseOrder.goodsReceipts && purchaseOrder.goodsReceipts.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
-                        <div className="flex items-center justify-between">
-                            <h3 className="font-semibold">
-                                Goods Receipts
-                                <span className="ml-2 text-sm font-normal text-muted-foreground">
-                                    ({purchaseOrder.goods_receipts.length})
-                                </span>
-                            </h3>
-                        </div>
+                        <h3 className="font-semibold">
+                            Goods Receipts
+                            <span className="ml-2 text-sm font-normal text-muted-foreground">({purchaseOrder.goodsReceipts.length})</span>
+                        </h3>
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -298,28 +250,21 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {purchaseOrder.goods_receipts.map((gr) => (
+                                {purchaseOrder.goodsReceipts.map((gr) => (
                                     <TableRow key={gr.id}>
-                                        <TableCell>
-                                            <ClickableCode href={`/goods-receipts/${gr.id}`} value={gr.code} />
-                                        </TableCell>
+                                        <TableCell><ClickableCode href={`/goods-receipts/${gr.id}`} value={gr.code} /></TableCell>
                                         <TableCell>{gr.location?.name}</TableCell>
                                         <TableCell>{formatDate(gr.gr_date)}</TableCell>
                                         <TableCell>{formatDate(gr.transaction_date)}</TableCell>
                                         <TableCell>
-                                            <Badge variant={
-                                                gr.status === 'completed' ? 'success' :
-                                                gr.status === 'cancelled' ? 'destructive' : 'secondary'
-                                            }>
+                                            <Badge variant={gr.status === 'completed' ? 'success' : gr.status === 'cancelled' ? 'destructive' : 'secondary'}>
                                                 {gr.status.charAt(0).toUpperCase() + gr.status.slice(1)}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-sm text-muted-foreground">{gr.user?.name}</TableCell>
                                         <TableCell className="text-right">
                                             <Button variant="ghost" size="sm" asChild>
-                                                <Link href={`/goods-receipts/${gr.id}`}>
-                                                    <Eye className="h-4 w-4" />
-                                                </Link>
+                                                <Link href={`/goods-receipts/${gr.id}`}><Eye className="h-4 w-4" /></Link>
                                             </Button>
                                         </TableCell>
                                     </TableRow>
@@ -329,7 +274,6 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                     </div>
                 )}
 
-                {/* Logs */}
                 {purchaseOrder.logs && purchaseOrder.logs.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Transaction Log</h3>

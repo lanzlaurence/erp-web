@@ -217,6 +217,26 @@ class GoodsIssueController extends Controller implements HasMiddleware
             return back()->withErrors(['error' => 'Only pending goods issues can be completed.']);
         }
 
+        // Validate inventory availability before doing anything
+        foreach ($goodsIssue->items as $giItem) {
+            $qtyToIssue = (float) $giItem->qty_to_issue;
+            if ($qtyToIssue <= 0) continue;
+
+            $inventory = Inventory::where('material_id', $giItem->material_id)
+                ->where('location_id', $goodsIssue->location_id)
+                ->first();
+
+            $availableQty = $inventory ? (float) $inventory->quantity : 0;
+
+            if ($availableQty < $qtyToIssue) {
+                return back()->withErrors([
+                    'error' => "Insufficient stock for [{$giItem->material->code}] {$giItem->material->name} "
+                        . "at {$goodsIssue->location->name}. "
+                        . "Available: {$availableQty}, Required: {$qtyToIssue}.",
+                ]);
+            }
+        }
+
         DB::transaction(function () use ($goodsIssue) {
             $so                  = $goodsIssue->salesOrder;
             $affectedMaterialIds = [];

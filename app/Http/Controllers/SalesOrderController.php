@@ -9,6 +9,9 @@ use App\Models\Customer;
 use App\Models\Material;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderItem;
+use App\Models\GoodsIssue;
+use App\Models\Inventory;
+use App\Models\InventoryLog;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
@@ -168,7 +171,16 @@ class SalesOrderController extends Controller implements HasMiddleware
                 ->withErrors(['error' => 'Only draft sales orders can be deleted.']);
         }
 
-        $salesOrder->delete();
+        DB::transaction(function () use ($salesOrder) {
+            // Delete all pending GIs (draft SO can only have pending GIs)
+            foreach ($salesOrder->goodsIssues as $gi) {
+                $gi->items()->delete();
+                $gi->logs()->delete();
+                $gi->delete();
+            }
+
+            $salesOrder->delete();
+        });
 
         return redirect()->route('sales-orders.index')
             ->with('success', 'Sales order deleted successfully.');
@@ -205,6 +217,59 @@ class SalesOrderController extends Controller implements HasMiddleware
 
         DB::transaction(function () use ($salesOrder) {
             $fromStatus = $salesOrder->status;
+
+            // Cancel all non-cancelled GIs
+            foreach ($salesOrder->goodsIssues()->whereNotIn('status', ['cancelled'])->get() as $gi) {
+                $giFromStatus = $gi->status;
+
+                // Restore inventory if completed
+                if ($giFromStatus === 'completed') {
+                    foreach ($gi->items as $giItem) {
+                        $qtyToRestore = (float) $giItem->qty_to_ship;
+                        if ($qtyToRestore <= 0) continue;
+
+                        $inventory = Inventory::where('material_id', $giItem->material_id)
+                            ->where('location_id', $gi->location_id)
+                            ->first();
+
+                        if ($inventory) {
+                            $qtyBefore = (float) $inventory->quantity;
+                            $newQty    = $qtyBefore + $qtyToRestore;
+                            $inventory->update(['quantity' => $newQty]);
+
+                            InventoryLog::create([
+                                'movement_code'   => InventoryLog::generateMovementCode(),
+                                'inventory_id'    => $inventory->id,
+                                'material_id'     => $giItem->material_id,
+                                'location_id'     => $gi->location_id,
+                                'user_id'         => Auth::id(),
+                                'type'            => 'sales_return',
+                                'quantity_before' => $qtyBefore,
+                                'quantity_change' => $qtyToRestore,
+                                'quantity_after'  => $newQty,
+                                'reference_id'    => $gi->id,
+                                'reference_type'  => GoodsIssue::class,
+                                'remarks'         => "GI {$gi->code} cancelled via SO cancellation",
+                            ]);
+                        }
+                    }
+
+                    // Recalculate avg unit price
+                    foreach ($gi->items->pluck('material_id')->unique() as $materialId) {
+                        Material::find($materialId)?->recalculateAvgUnitPrice();
+                    }
+                }
+
+                $gi->update(['status' => 'cancelled']);
+                $gi->logs()->create([
+                    'user_id'     => Auth::id(),
+                    'action'      => 'cancelled',
+                    'from_status' => $giFromStatus,
+                    'to_status'   => 'cancelled',
+                    'remarks'     => "Cancelled via SO {$salesOrder->code} cancellation",
+                ]);
+            }
+
             $salesOrder->update(['status' => 'cancelled']);
             $salesOrder->logs()->create([
                 'user_id'     => Auth::id(),
@@ -216,28 +281,42 @@ class SalesOrderController extends Controller implements HasMiddleware
         });
 
         return redirect()->route('sales-orders.show', $salesOrder->id)
-            ->with('success', 'Sales order cancelled.');
+            ->with('success', 'Sales order and all related goods issues cancelled.');
     }
 
     public function revert(SalesOrder $salesOrder)
     {
-        if (!$salesOrder->canBeReverted()) {
-            return back()->withErrors(['error' => 'Only posted sales orders can be reverted to draft.']);
+        if (!in_array($salesOrder->status, ['posted', 'cancelled'])) {
+            return back()->withErrors(['error' => 'Only posted or cancelled sales orders can be reverted to draft.']);
         }
 
         DB::transaction(function () use ($salesOrder) {
+            $fromStatus = $salesOrder->status;
+
+            // Revert all cancelled GIs back to pending
+            foreach ($salesOrder->goodsIssues()->where('status', 'cancelled')->get() as $gi) {
+                $gi->update(['status' => 'pending']);
+                $gi->logs()->create([
+                    'user_id'     => Auth::id(),
+                    'action'      => 'reverted',
+                    'from_status' => 'cancelled',
+                    'to_status'   => 'pending',
+                    'remarks'     => "Reverted to pending via SO {$salesOrder->code} revert",
+                ]);
+            }
+
             $salesOrder->update(['status' => 'draft']);
             $salesOrder->logs()->create([
                 'user_id'     => Auth::id(),
                 'action'      => 'reverted',
-                'from_status' => 'posted',
+                'from_status' => $fromStatus,
                 'to_status'   => 'draft',
                 'remarks'     => 'Sales order reverted to draft',
             ]);
         });
 
         return redirect()->route('sales-orders.show', $salesOrder->id)
-            ->with('success', 'Sales order reverted to draft.');
+            ->with('success', 'Sales order reverted to draft and all related goods issues reverted to pending.');
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

@@ -29,6 +29,7 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
     const { formatAmount, formatDate, formatDecimal, formatDateTime } = useFormatters();
     const { hasPermission } = usePermissions();
     const badge = STATUS_BADGE[goodsIssue.status];
+    const soIsCancelled = goodsIssue.salesOrder?.status === 'cancelled';
 
     const [confirm, setConfirm] = useState<ConfirmAction>({ open: false, action: null, label: '', description: '' });
 
@@ -46,7 +47,6 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
         <>
             <Head title={`GI ${goodsIssue.code}`} />
             <div className="mx-auto max-w-7xl space-y-6 p-4">
-                {/* Header */}
                 <div className="flex items-start justify-between">
                     <div className="space-y-1">
                         <div className="flex items-center gap-3">
@@ -61,39 +61,35 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/goods-issues"><ArrowLeft className="mr-2 h-4 w-4" />Back</Link>
                         </Button>
-
                         {hasPermission('goods-issue-edit') && goodsIssue.status === 'pending' && (
                             <Button variant="outline" size="sm" asChild>
                                 <Link href={`/goods-issues/${goodsIssue.id}/edit`}><Edit className="mr-2 h-4 w-4" />Edit</Link>
                             </Button>
                         )}
-
                         {hasPermission('goods-issue-complete') && goodsIssue.status === 'pending' && (
-                            <Button size="sm" onClick={() => triggerAction('complete', 'Complete Goods Issue', 'This will complete the GI and deduct stock from inventory.')}>
+                            <Button size="sm"
+                                onClick={() => triggerAction('complete', 'Complete Goods Issue', 'This will complete the GI and deduct stock from inventory.')}>
                                 <CheckCircle className="mr-2 h-4 w-4" />Complete
                             </Button>
                         )}
-
-                        {hasPermission('goods-issue-revert') && goodsIssue.status === 'cancelled' && (
-                            <Button size="sm" variant="outline" onClick={() => triggerAction('revert', 'Revert to Pending', 'This will revert the goods issue back to pending status.')}>
+                        {hasPermission('goods-issue-revert') && goodsIssue.status === 'cancelled' && !soIsCancelled && (
+                            <Button size="sm" variant="outline"
+                                onClick={() => triggerAction('revert', 'Revert to Pending', 'This will revert the goods issue back to pending status.')}>
                                 <RotateCcw className="mr-2 h-4 w-4" />Revert to Pending
                             </Button>
                         )}
-
                         {hasPermission('goods-issue-cancel') && ['pending', 'completed'].includes(goodsIssue.status) && (
                             <Button size="sm" variant="destructive"
                                 onClick={() => triggerAction('cancel', 'Cancel Goods Issue',
                                     goodsIssue.status === 'completed'
                                         ? 'This will cancel the GI and restore inventory stock.'
-                                        : 'This will cancel the goods issue.'
-                                )}>
+                                        : 'This will cancel the goods issue.')}>
                                 <XCircle className="mr-2 h-4 w-4" />Cancel
                             </Button>
                         )}
                     </div>
                 </div>
 
-                {/* Info */}
                 <div className="rounded-lg border p-6">
                     <h3 className="font-semibold mb-4">Issue Information</h3>
                     <div className="grid grid-cols-3 gap-4 text-sm">
@@ -130,7 +126,6 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
                     </div>
                 </div>
 
-                {/* Items */}
                 <div className="space-y-4 rounded-lg border p-6">
                     <h3 className="font-semibold">Items</h3>
                     <div className="overflow-x-auto">
@@ -170,7 +165,6 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
                     </div>
                 </div>
 
-                {/* Logs */}
                 {goodsIssue.logs && goodsIssue.logs.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Transaction Log</h3>

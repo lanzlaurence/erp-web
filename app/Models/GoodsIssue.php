@@ -50,5 +50,9 @@ class GoodsIssue extends Model
     public function canBeDeleted(): bool   { return $this->status === 'pending'; }
     public function canBeCompleted(): bool { return $this->status === 'pending'; }
     public function canBeCancelled(): bool { return in_array($this->status, ['pending', 'completed']); }
-    public function canBeReverted(): bool  { return $this->status === 'cancelled'; }
+    public function canBeReverted(): bool
+    {
+        if ($this->status !== 'cancelled') return false;
+        return $this->salesOrder?->status !== 'cancelled';
+    }
 }

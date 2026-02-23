@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePurchaseOrderRequest;
 use App\Http\Requests\UpdatePurchaseOrderRequest;
 use App\Models\Charge;
-use App\Models\Location;
+use App\Models\Vendor;
 use App\Models\Material;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
-use App\Models\Vendor;
+use App\Models\GoodsReceipt;
+use App\Models\Inventory;
+use App\Models\InventoryLog;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
@@ -169,7 +171,16 @@ class PurchaseOrderController extends Controller implements HasMiddleware
                 ->withErrors(['error' => 'Only draft purchase orders can be deleted.']);
         }
 
-        $purchaseOrder->delete();
+        DB::transaction(function () use ($purchaseOrder) {
+            // Delete all pending GRs (draft PO can only have pending GRs)
+            foreach ($purchaseOrder->goodsReceipts as $gr) {
+                $gr->items()->delete();
+                $gr->logs()->delete();
+                $gr->delete();
+            }
+
+            $purchaseOrder->delete();
+        });
 
         return redirect()->route('purchase-orders.index')
             ->with('success', 'Purchase order deleted successfully.');
@@ -206,6 +217,59 @@ class PurchaseOrderController extends Controller implements HasMiddleware
 
         DB::transaction(function () use ($purchaseOrder) {
             $fromStatus = $purchaseOrder->status;
+
+            // Cancel all non-cancelled GRs
+            foreach ($purchaseOrder->goodsReceipts()->whereNotIn('status', ['cancelled'])->get() as $gr) {
+                $grFromStatus = $gr->status;
+
+                // Reverse inventory if completed
+                if ($grFromStatus === 'completed') {
+                    foreach ($gr->items as $grItem) {
+                        $qtyToReverse = (float) $grItem->qty_to_receive;
+                        if ($qtyToReverse <= 0) continue;
+
+                        $inventory = Inventory::where('material_id', $grItem->material_id)
+                            ->where('location_id', $gr->location_id)
+                            ->first();
+
+                        if ($inventory) {
+                            $qtyBefore = (float) $inventory->quantity;
+                            $newQty    = max(0, $qtyBefore - $qtyToReverse);
+                            $inventory->update(['quantity' => $newQty]);
+
+                            InventoryLog::create([
+                                'movement_code'   => InventoryLog::generateMovementCode(),
+                                'inventory_id'    => $inventory->id,
+                                'material_id'     => $grItem->material_id,
+                                'location_id'     => $gr->location_id,
+                                'user_id'         => Auth::id(),
+                                'type'            => 'purchase_return',
+                                'quantity_before' => $qtyBefore,
+                                'quantity_change' => -$qtyToReverse,
+                                'quantity_after'  => $newQty,
+                                'reference_id'    => $gr->id,
+                                'reference_type'  => GoodsReceipt::class,
+                                'remarks'         => "GR {$gr->code} cancelled via PO cancellation",
+                            ]);
+                        }
+                    }
+
+                    // Recalculate avg unit cost
+                    foreach ($gr->items->pluck('material_id')->unique() as $materialId) {
+                        Material::find($materialId)?->recalculateAvgUnitCost();
+                    }
+                }
+
+                $gr->update(['status' => 'cancelled']);
+                $gr->logs()->create([
+                    'user_id'     => Auth::id(),
+                    'action'      => 'cancelled',
+                    'from_status' => $grFromStatus,
+                    'to_status'   => 'cancelled',
+                    'remarks'     => "Cancelled via PO {$purchaseOrder->code} cancellation",
+                ]);
+            }
+
             $purchaseOrder->update(['status' => 'cancelled']);
             $purchaseOrder->logs()->create([
                 'user_id'     => Auth::id(),
@@ -217,29 +281,42 @@ class PurchaseOrderController extends Controller implements HasMiddleware
         });
 
         return redirect()->route('purchase-orders.show', $purchaseOrder->id)
-            ->with('success', 'Purchase order cancelled.');
+            ->with('success', 'Purchase order and all related goods receipts cancelled.');
     }
 
     public function revert(PurchaseOrder $purchaseOrder)
     {
-        // Only allow revert from posted → draft
-        if ($purchaseOrder->status !== 'posted') {
-            return back()->withErrors(['error' => 'Only posted purchase orders can be reverted to draft.']);
+        if (!in_array($purchaseOrder->status, ['posted', 'cancelled'])) {
+            return back()->withErrors(['error' => 'Only posted or cancelled purchase orders can be reverted to draft.']);
         }
 
         DB::transaction(function () use ($purchaseOrder) {
+            $fromStatus = $purchaseOrder->status;
+
+            // Revert all cancelled GRs back to pending
+            foreach ($purchaseOrder->goodsReceipts()->where('status', 'cancelled')->get() as $gr) {
+                $gr->update(['status' => 'pending']);
+                $gr->logs()->create([
+                    'user_id'     => Auth::id(),
+                    'action'      => 'reverted',
+                    'from_status' => 'cancelled',
+                    'to_status'   => 'pending',
+                    'remarks'     => "Reverted to pending via PO {$purchaseOrder->code} revert",
+                ]);
+            }
+
             $purchaseOrder->update(['status' => 'draft']);
             $purchaseOrder->logs()->create([
                 'user_id'     => Auth::id(),
                 'action'      => 'reverted',
-                'from_status' => 'posted',
+                'from_status' => $fromStatus,
                 'to_status'   => 'draft',
                 'remarks'     => 'Purchase order reverted to draft',
             ]);
         });
 
         return redirect()->route('purchase-orders.show', $purchaseOrder->id)
-            ->with('success', 'Purchase order reverted to draft.');
+            ->with('success', 'Purchase order reverted to draft and all related goods receipts reverted to pending.');
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

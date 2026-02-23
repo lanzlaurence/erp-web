@@ -70,12 +70,6 @@ class PurchaseOrder extends Model
     // But if any completed GR exists, user must cancel those first
     public function canBeCancelled(): bool
     {
-        if ($this->status === 'cancelled') return false;
-
-        $hasCompletedGr = $this->goodsReceipts()
-            ->where('status', 'completed')
-            ->exists();
-
-        return !$hasCompletedGr;
+        return $this->status !== 'cancelled';
     }
 }

@@ -67,7 +67,6 @@ class SalesOrder extends Model
 
     public function canBeCancelled(): bool
     {
-        if ($this->status === 'cancelled') return false;
-        return !$this->goodsIssues()->where('status', 'completed')->exists();
+        return $this->status !== 'cancelled';
     }
 }
