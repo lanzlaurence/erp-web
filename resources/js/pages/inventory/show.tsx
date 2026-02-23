@@ -26,7 +26,7 @@ export default function Show({ inventory, logs }: InventoryShowData) {
     return (
         <>
             <Head title="View Inventory" />
-            <div className="mx-auto max-w-4xl space-y-6 p-4">
+            <div className="space-y-6 p-4">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold">{inventory.material?.name}</h1>
