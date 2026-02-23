@@ -31,9 +31,11 @@ import { ChevronDown, Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import React from 'react';
+import { useFormatters } from '@/hooks/use-formatters';
 
 export default function Index({ roles }: RoleData) {
     const { hasPermission } = usePermissions();
+    const { formatDate } = useFormatters();
     const [expandedRoles, setExpandedRoles] = useState<number[]>([]);
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; name: string }>({
         open: false,
@@ -93,6 +95,8 @@ export default function Index({ roles }: RoleData) {
                             <TableRow>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Permissions</TableHead>
+                                <TableHead>Created At</TableHead>
+                                <TableHead>Updated At</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -123,6 +127,8 @@ export default function Index({ roles }: RoleData) {
                                                     </CollapsibleTrigger>
                                                 </Collapsible>
                                             </TableCell>
+                                            <TableCell className="text-sm text-muted-foreground">{formatDate(role.created_at)}</TableCell>
+                                            <TableCell className="text-sm text-muted-foreground">{formatDate(role.updated_at)}</TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
                                                     {isProtected(role) ? (

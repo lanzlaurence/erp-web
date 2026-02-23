@@ -25,9 +25,11 @@ import { Link, router } from '@inertiajs/react';
 import { Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
+import { useFormatters } from '@/hooks/use-formatters';
 
 export default function Index({ users }: UserData) {
     const { hasPermission } = usePermissions();
+    const { formatDate } = useFormatters();
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; name: string }>({
         open: false,
         id: 0,
@@ -70,6 +72,8 @@ export default function Index({ users }: UserData) {
                                 <TableHead>Email</TableHead>
                                 <TableHead>Roles</TableHead>
                                 <TableHead>Status</TableHead>
+                                <TableHead>Created At</TableHead>
+                                <TableHead>Updated At</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -98,6 +102,8 @@ export default function Index({ users }: UserData) {
                                             )}
                                         </div>
                                     </TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{formatDate(user.created_at)}</TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{formatDate(user.updated_at)}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             {isProtected(user) ? (

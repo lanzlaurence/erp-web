@@ -24,9 +24,11 @@ import { Link, router } from '@inertiajs/react';
 import { Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
+import { useFormatters } from '@/hooks/use-formatters';
 
 export default function Index({ brands }: BrandData) {
     const { hasPermission } = usePermissions();
+    const { formatDate } = useFormatters();
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; name: string }>({
         open: false,
         id: 0,
@@ -65,6 +67,8 @@ export default function Index({ brands }: BrandData) {
                             <TableRow>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Description</TableHead>
+                                <TableHead>Created At</TableHead>
+                                <TableHead>Updated At</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -75,6 +79,8 @@ export default function Index({ brands }: BrandData) {
                                     <TableCell className="text-muted-foreground">
                                         {brand.description || '-'}
                                     </TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{formatDate(brand.created_at)}</TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{formatDate(brand.updated_at)}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             {hasPermission('brand-edit') && (

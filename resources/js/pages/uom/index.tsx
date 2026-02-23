@@ -24,9 +24,11 @@ import { Link, router } from '@inertiajs/react';
 import { Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
+import { useFormatters } from '@/hooks/use-formatters';
 
 export default function Index({ uoms }: UomData) {
     const { hasPermission } = usePermissions();
+    const { formatDate } = useFormatters();
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; name: string }>({
         open: false,
         id: 0,
@@ -65,6 +67,8 @@ export default function Index({ uoms }: UomData) {
                             <TableRow>
                                 <TableHead>Acronym</TableHead>
                                 <TableHead>Description</TableHead>
+                                <TableHead>Created At</TableHead>
+                                <TableHead>Updated At</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -75,6 +79,8 @@ export default function Index({ uoms }: UomData) {
                                     <TableCell className="text-muted-foreground">
                                         {uom.description || '-'}
                                     </TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{formatDate(uom.created_at)}</TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{formatDate(uom.updated_at)}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             {hasPermission('uom-edit') && (

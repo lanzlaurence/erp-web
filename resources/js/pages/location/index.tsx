@@ -24,9 +24,11 @@ import { Link, router } from '@inertiajs/react';
 import { Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
+import { useFormatters } from '@/hooks/use-formatters';
 
 export default function Index({ locations }: LocationData) {
     const { hasPermission } = usePermissions();
+    const { formatDate } = useFormatters();
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; code: string; name: string }>({
         open: false,
         id: 0,
@@ -67,6 +69,8 @@ export default function Index({ locations }: LocationData) {
                                 <TableHead>Code</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Description</TableHead>
+                                <TableHead>Created At</TableHead>
+                                <TableHead>Updated At</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -78,6 +82,8 @@ export default function Index({ locations }: LocationData) {
                                     <TableCell className="text-muted-foreground">
                                         {location.description || '-'}
                                     </TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{formatDate(location.created_at)}</TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{formatDate(location.updated_at)}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             {hasPermission('location-edit') && (

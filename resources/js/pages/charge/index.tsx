@@ -29,6 +29,7 @@ import { Head } from '@inertiajs/react';
 
 export default function Index({ charges }: ChargeData) {
     const { hasPermission } = usePermissions();
+    const { formatDate } = useFormatters();
     const { formatAmount, formatDecimal } = useFormatters();
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; name: string }>({
         open: false,
@@ -87,6 +88,8 @@ export default function Index({ charges }: ChargeData) {
                                 <TableHead>Value Type</TableHead>
                                 <TableHead>Value</TableHead>
                                 <TableHead>Status</TableHead>
+                                <TableHead>Created At</TableHead>
+                                <TableHead>Updated At</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -105,6 +108,8 @@ export default function Index({ charges }: ChargeData) {
                                             {charge.status}
                                         </Badge>
                                     </TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{formatDate(charge.created_at)}</TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{formatDate(charge.updated_at)}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             {hasPermission('charge-edit') && (
