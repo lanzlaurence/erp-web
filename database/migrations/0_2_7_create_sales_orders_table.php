@@ -19,8 +19,8 @@ return new class extends Migration
             $table->enum('status', [
                 'draft',
                 'posted',
-                'partially_issued',
-                'fully_issued',
+                'partially_shipped',
+                'fully_shipped',
                 'cancelled',
             ])->default('draft');
             $table->date('order_date');

@@ -134,8 +134,8 @@ export type GoodsReceipt = {
 export type SalesOrderStatus =
     | 'draft'
     | 'posted'
-    | 'partially_issued'
-    | 'fully_issued'
+    | 'partially_shipped'
+    | 'fully_shipped'
     | 'cancelled';
 
 export type SalesOrderItem = {

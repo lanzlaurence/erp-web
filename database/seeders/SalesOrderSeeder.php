@@ -31,7 +31,7 @@ class SalesOrderSeeder extends Seeder
                 'order_date'    => '2026-01-15',
                 'delivery_date' => '2026-01-25',
                 'reference_no'  => 'SREF-2026-001',
-                'status'        => 'fully_issued',
+                'status'        => 'fully_shipped',
                 'remarks'       => 'First sales order',
                 'items' => [
                     ['code' => '300001', 'qty' => 20, 'unit_price' => 320.00, 'discount_type' => null,         'discount_amount' => 0, 'is_vatable' => true,  'vat_type' => 'exclusive', 'vat_rate' => 12],
@@ -57,7 +57,7 @@ class SalesOrderSeeder extends Seeder
                 'order_date'    => '2026-01-22',
                 'delivery_date' => '2026-02-05',
                 'reference_no'  => 'SREF-2026-002',
-                'status'        => 'partially_issued',
+                'status'        => 'partially_shipped',
                 'remarks'       => 'Partial delivery',
                 'items' => [
                     ['code' => '300003', 'qty' => 15, 'unit_price' => 800.00,  'discount_type' => 'fixed', 'discount_amount' => 30, 'is_vatable' => true, 'vat_type' => 'exclusive', 'vat_rate' => 12],

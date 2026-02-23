@@ -27,8 +27,8 @@ type Props = {
 const STATUS_BADGE: Record<SalesOrderStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
     draft:            { label: 'Draft',          variant: 'secondary' },
     posted:           { label: 'Posted',         variant: 'default' },
-    partially_issued: { label: 'Partial Issued', variant: 'outline' },
-    fully_issued:     { label: 'Fully Issued',   variant: 'success' },
+    partially_shipped: { label: 'Partial Shipped', variant: 'outline' },
+    fully_shipped:     { label: 'Fully Shipped',   variant: 'success' },
     cancelled:        { label: 'Cancelled',      variant: 'destructive' },
 };
 
@@ -109,8 +109,8 @@ export default function SalesOrderReport({ salesOrders, customers, filters }: Pr
                                 <SelectContent>
                                     <SelectItem value="all">All</SelectItem>
                                     <SelectItem value="posted">Posted</SelectItem>
-                                    <SelectItem value="partially_issued">Partial Issued</SelectItem>
-                                    <SelectItem value="fully_issued">Fully Issued</SelectItem>
+                                    <SelectItem value="partially_shipped">Partial Shipped</SelectItem>
+                                    <SelectItem value="fully_shipped">Fully Shipped</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

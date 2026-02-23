@@ -15,8 +15,8 @@ import ClickableCode from '@/components/ui/clickable-code';
 const STATUS_BADGE: Record<SalesOrderStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
     draft:            { label: 'Draft',          variant: 'secondary' },
     posted:           { label: 'Posted',         variant: 'default' },
-    partially_issued: { label: 'Partial Issued', variant: 'outline' },
-    fully_issued:     { label: 'Fully Issued',   variant: 'success' },
+    partially_shipped: { label: 'Partial Shipped', variant: 'outline' },
+    fully_shipped:     { label: 'Fully Shipped',   variant: 'success' },
     cancelled:        { label: 'Cancelled',      variant: 'destructive' },
 };
 
@@ -82,7 +82,7 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                             </Button>
                         )}
 
-                        {hasPermission('goods-issue-create') && ['posted', 'partially_issued'].includes(salesOrder.status) && (
+                        {hasPermission('goods-issue-create') && ['posted', 'partially_shipped'].includes(salesOrder.status) && (
                             <Button size="sm" asChild>
                                 <Link href={`/sales-orders/${salesOrder.id}/goods-issues/create`}>
                                     <PackageCheck className="mr-2 h-4 w-4" />Create GI

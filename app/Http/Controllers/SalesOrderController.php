@@ -376,9 +376,9 @@ class SalesOrderController extends Controller implements HasMiddleware
         if ($so->status === 'cancelled') return;
 
         if ($allFull) {
-            $so->update(['status' => 'fully_issued']);
+            $so->update(['status' => 'fully_shipped']);
         } elseif ($anyIssued) {
-            $so->update(['status' => 'partially_issued']);
+            $so->update(['status' => 'partially_shipped']);
         } else {
             $so->update(['status' => 'posted']);
         }

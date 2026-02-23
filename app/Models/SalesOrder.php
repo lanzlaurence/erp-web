@@ -63,7 +63,7 @@ class SalesOrder extends Model
     public function canBeEdited(): bool   { return $this->status === 'draft'; }
     public function canBePosted(): bool   { return $this->status === 'draft'; }
     public function canBeReverted(): bool { return $this->status === 'posted'; }
-    public function canCreateGi(): bool   { return in_array($this->status, ['posted', 'partially_issued']); }
+    public function canCreateGi(): bool   { return in_array($this->status, ['posted', 'partially_shipped']); }
 
     public function canBeCancelled(): bool
     {
