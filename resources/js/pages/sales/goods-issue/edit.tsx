@@ -22,8 +22,8 @@ type ItemRow = {
     sales_order_item_id: string;
     material_id: string;
     qty_ordered: number;
-    qty_issued: number;
-    qty_to_issue: string;
+    qty_shipped: number;
+    qty_to_ship: string;
     qty_remaining: number;
     unit_price: number;
     serial_number: string;
@@ -43,8 +43,8 @@ export default function Edit({ goodsIssue, locations }: Props) {
             sales_order_item_id: String(i.sales_order_item_id),
             material_id:         String(i.material_id),
             qty_ordered:         Number(i.qty_ordered),
-            qty_issued:          Number(i.qty_issued),
-            qty_to_issue:        String(i.qty_to_issue),
+            qty_shipped:          Number(i.qty_shipped),
+            qty_to_ship:        String(i.qty_to_ship),
             qty_remaining:       Number(i.qty_remaining),
             unit_price:          Number(i.unit_price),
             serial_number:       i.serial_number ?? '',
@@ -69,10 +69,10 @@ export default function Edit({ goodsIssue, locations }: Props) {
         const updated = [...data.items];
         const item    = { ...updated[index], [field]: value };
 
-        if (field === 'qty_to_issue') {
-            const max        = item.qty_ordered - item.qty_issued;
+        if (field === 'qty_to_ship') {
+            const max        = item.qty_ordered - item.qty_shipped;
             const qtyToIssue = Math.min(Math.max(parseFloat(value) || 0, 0), max);
-            item.qty_to_issue  = String(qtyToIssue);
+            item.qty_to_ship  = String(qtyToIssue);
             item.qty_remaining = max - qtyToIssue;
         }
 
@@ -143,8 +143,8 @@ export default function Edit({ goodsIssue, locations }: Props) {
                                     <TableRow>
                                         <TableHead>Material</TableHead>
                                         <TableHead>Qty Ordered</TableHead>
-                                        <TableHead>Qty Issued</TableHead>
-                                        <TableHead className="w-32">Qty to Issue</TableHead>
+                                        <TableHead>Qty Shipped</TableHead>
+                                        <TableHead className="w-32">Qty to Ship</TableHead>
                                         <TableHead>Qty Remaining</TableHead>
                                         <TableHead>Unit Price</TableHead>
                                         <TableHead>Serial No.</TableHead>
@@ -160,11 +160,11 @@ export default function Edit({ goodsIssue, locations }: Props) {
                                                 <p className="text-xs text-muted-foreground">{goodsIssue.items?.[index]?.material?.code}</p>
                                             </TableCell>
                                             <TableCell className="font-mono">{formatDecimal(item.qty_ordered)}</TableCell>
-                                            <TableCell className="font-mono">{formatDecimal(item.qty_issued)}</TableCell>
+                                            <TableCell className="font-mono">{formatDecimal(item.qty_shipped)}</TableCell>
                                             <TableCell>
                                                 <InputAmount
-                                                    value={item.qty_to_issue}
-                                                    onValueChange={(val) => updateItem(index, 'qty_to_issue', String(val ?? 0))}
+                                                    value={item.qty_to_ship}
+                                                    onValueChange={(val) => updateItem(index, 'qty_to_ship', String(val ?? 0))}
                                                 />
                                             </TableCell>
                                             <TableCell className="font-mono text-muted-foreground">{formatDecimal(item.qty_remaining)}</TableCell>

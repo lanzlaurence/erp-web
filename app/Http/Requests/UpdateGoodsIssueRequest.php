@@ -18,7 +18,7 @@ class UpdateGoodsIssueRequest extends FormRequest
             'remarks'                     => ['nullable', 'string'],
             'items'                       => ['required', 'array', 'min:1'],
             'items.*.sales_order_item_id' => ['required', 'exists:sales_order_items,id'],
-            'items.*.qty_to_issue'        => ['required', 'numeric', 'min:0.000001', $this->qtyRule()],
+            'items.*.qty_to_ship'        => ['required', 'numeric', 'min:0.000001', $this->qtyRule()],
             'items.*.serial_number'       => ['nullable', 'string'],
             'items.*.batch_number'        => ['nullable', 'string'],
             'items.*.remarks'             => ['nullable', 'string'],
@@ -38,7 +38,7 @@ class UpdateGoodsIssueRequest extends FormRequest
             $soItem = SalesOrderItem::find($soItemId);
             if (!$soItem) return;
 
-            $qtyRemaining = (float) $soItem->qty_ordered - (float) $soItem->qty_issued;
+            $qtyRemaining = (float) $soItem->qty_ordered - (float) $soItem->qty_shipped;
 
             if ((float) $value > $qtyRemaining) {
                 $fail("Qty to issue cannot exceed remaining quantity of {$qtyRemaining}.");

@@ -10,7 +10,7 @@ class SalesOrderItem extends Model
 {
     protected $fillable = [
         'sales_order_id', 'material_id', 'line_number',
-        'qty_ordered', 'qty_issued',
+        'qty_ordered', 'qty_shipped',
         'unit_price', 'discount_type', 'discount_amount',
         'unit_price_after_discount', 'net_price',
         'is_vatable', 'vat_type', 'vat_rate', 'vat_price',
@@ -19,7 +19,7 @@ class SalesOrderItem extends Model
 
     protected $casts = [
         'qty_ordered'               => 'decimal:6',
-        'qty_issued'                => 'decimal:6',
+        'qty_shipped'                => 'decimal:6',
         'unit_price'                => 'decimal:2',
         'discount_amount'           => 'decimal:2',
         'unit_price_after_discount' => 'decimal:2',
@@ -36,6 +36,6 @@ class SalesOrderItem extends Model
 
     public function getQtyRemainingAttribute(): float
     {
-        return (float) $this->qty_ordered - (float) $this->qty_issued;
+        return (float) $this->qty_ordered - (float) $this->qty_shipped;
     }
 }

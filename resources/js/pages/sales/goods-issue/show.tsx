@@ -139,8 +139,8 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
                                 <TableRow>
                                     <TableHead>Material</TableHead>
                                     <TableHead>Qty Ordered</TableHead>
-                                    <TableHead>Qty Issued (SO)</TableHead>
-                                    <TableHead>Qty to Issue</TableHead>
+                                    <TableHead>Qty Shipped (SO)</TableHead>
+                                    <TableHead>Qty to Ship</TableHead>
                                     <TableHead>Qty Remaining</TableHead>
                                     <TableHead>Unit Price</TableHead>
                                     <TableHead>Serial No.</TableHead>
@@ -156,8 +156,8 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
                                             <p className="text-xs text-muted-foreground">{item.material?.code}</p>
                                         </TableCell>
                                         <TableCell className="font-mono">{formatDecimal(Number(item.qty_ordered))}</TableCell>
-                                        <TableCell className="font-mono">{formatDecimal(Number(item.qty_issued))}</TableCell>
-                                        <TableCell className="font-mono font-medium">{formatDecimal(Number(item.qty_to_issue))}</TableCell>
+                                        <TableCell className="font-mono">{formatDecimal(Number(item.qty_shipped))}</TableCell>
+                                        <TableCell className="font-mono font-medium">{formatDecimal(Number(item.qty_to_ship))}</TableCell>
                                         <TableCell className="font-mono text-muted-foreground">{formatDecimal(Number(item.qty_remaining))}</TableCell>
                                         <TableCell className="font-mono">{formatAmount(Number(item.unit_price))}</TableCell>
                                         <TableCell>{item.serial_number || '-'}</TableCell>

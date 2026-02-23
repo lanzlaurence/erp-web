@@ -278,7 +278,7 @@ class SalesOrderController extends Controller implements HasMiddleware
                 'material_id'               => $item['material_id'],
                 'line_number'               => $index + 1,
                 'qty_ordered'               => $qty,
-                'qty_issued'                => 0,
+                'qty_shipped'                => 0,
                 'unit_price'                => $unitPrice,
                 'discount_type'             => $discountType,
                 'discount_amount'           => $discountAmt,
@@ -363,15 +363,15 @@ class SalesOrderController extends Controller implements HasMiddleware
                     ->where('status', 'completed');
                 })
                 ->where('sales_order_item_id', $soItem->id)
-                ->sum('qty_to_issue');
+                ->sum('qty_to_ship');
 
-            $soItem->update(['qty_issued' => $totalIssued]);
+            $soItem->update(['qty_shipped' => $totalIssued]);
         }
 
         $so->refresh();
 
-        $allFull     = $so->items->every(fn($i) => (float)$i->qty_issued >= (float)$i->qty_ordered);
-        $anyIssued   = $so->items->some(fn($i)  => (float)$i->qty_issued > 0);
+        $allFull     = $so->items->every(fn($i) => (float)$i->qty_shipped >= (float)$i->qty_ordered);
+        $anyIssued   = $so->items->some(fn($i)  => (float)$i->qty_shipped > 0);
 
         if ($so->status === 'cancelled') return;
 

@@ -144,7 +144,7 @@ export type SalesOrderItem = {
     material_id: number;
     line_number: number;
     qty_ordered: number | string;
-    qty_issued: number | string;
+    qty_shipped: number | string;
     unit_price: number | string;
     discount_type: DiscountType | null;
     discount_amount: number | string;
@@ -219,8 +219,8 @@ export type GoodsIssueItem = {
     sales_order_item_id: number;
     material_id: number;
     qty_ordered: number | string;
-    qty_issued: number | string;
-    qty_to_issue: number | string;
+    qty_shipped: number | string;
+    qty_to_ship: number | string;
     qty_remaining: number | string;
     unit_price: number | string;
     serial_number: string | null;

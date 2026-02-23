@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('material_id')->constrained()->cascadeOnDelete();
             $table->integer('line_number');
             $table->decimal('qty_ordered',               15, 6)->default(0);
-            $table->decimal('qty_issued',                15, 6)->default(0);
+            $table->decimal('qty_shipped',                15, 6)->default(0);
             $table->decimal('unit_price',                15, 2)->default(0);
             $table->enum('discount_type', ['fixed', 'percentage'])->nullable();
             $table->decimal('discount_amount',           15, 2)->default(0);

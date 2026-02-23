@@ -46,8 +46,8 @@ class SalesOrderSeeder extends Seeder
                         'status'           => 'completed',
                         'remarks'          => 'Full delivery issued',
                         'items' => [
-                            ['code' => '300001', 'qty_to_issue' => 20],
-                            ['code' => '300002', 'qty_to_issue' => 50],
+                            ['code' => '300001', 'qty_to_ship' => 20],
+                            ['code' => '300002', 'qty_to_ship' => 50],
                         ],
                     ],
                 ],
@@ -72,8 +72,8 @@ class SalesOrderSeeder extends Seeder
                         'status'           => 'completed',
                         'remarks'          => 'First partial issue',
                         'items' => [
-                            ['code' => '300003', 'qty_to_issue' => 8],
-                            ['code' => '300005', 'qty_to_issue' => 15],
+                            ['code' => '300003', 'qty_to_ship' => 8],
+                            ['code' => '300005', 'qty_to_ship' => 15],
                         ],
                     ],
                     [
@@ -83,8 +83,8 @@ class SalesOrderSeeder extends Seeder
                         'status'           => 'pending',
                         'remarks'          => 'Remaining pending',
                         'items' => [
-                            ['code' => '300003', 'qty_to_issue' => 7],
-                            ['code' => '300005', 'qty_to_issue' => 15],
+                            ['code' => '300003', 'qty_to_ship' => 7],
+                            ['code' => '300005', 'qty_to_ship' => 15],
                         ],
                     ],
                 ],
@@ -182,7 +182,7 @@ class SalesOrderSeeder extends Seeder
                         'material_id'               => $material->id,
                         'line_number'               => $index + 1,
                         'qty_ordered'               => $qty,
-                        'qty_issued'                => 0,
+                        'qty_shipped'                => 0,
                         'unit_price'                => $unitPrice,
                         'discount_type'             => $discType,
                         'discount_amount'           => $discAmt,
@@ -294,8 +294,8 @@ class SalesOrderSeeder extends Seeder
                         $soItem = $so->items->where('material_id', $material->id)->first();
                         if (!$soItem) continue;
 
-                        $qtyToIssue = $giItemData['qty_to_issue'];
-                        $qtyIssued  = (float) $soItem->qty_issued;
+                        $qtyToIssue = $giItemData['qty_to_ship'];
+                        $qtyIssued  = (float) $soItem->qty_shipped;
                         $qtyOrdered = (float) $soItem->qty_ordered;
 
                         GoodsIssueItem::create([
@@ -303,21 +303,21 @@ class SalesOrderSeeder extends Seeder
                             'sales_order_item_id' => $soItem->id,
                             'material_id'         => $material->id,
                             'qty_ordered'         => $qtyOrdered,
-                            'qty_issued'          => $qtyIssued,
-                            'qty_to_issue'        => $qtyToIssue,
+                            'qty_shipped'          => $qtyIssued,
+                            'qty_to_ship'        => $qtyToIssue,
                             'qty_remaining'       => $qtyOrdered - $qtyIssued - $qtyToIssue,
                             'unit_price'          => $soItem->unit_price_after_discount,
                         ]);
 
                         if ($giData['status'] === 'completed') {
-                            $soItem->update(['qty_issued' => $qtyIssued + $qtyToIssue]);
+                            $soItem->update(['qty_shipped' => $qtyIssued + $qtyToIssue]);
                             $soItem->refresh();
                         }
                     }
 
                     if ($giData['status'] === 'completed') {
                         foreach ($gi->items as $giItem) {
-                            $qtyToIssue = (float) $giItem->qty_to_issue;
+                            $qtyToIssue = (float) $giItem->qty_to_ship;
                             if ($qtyToIssue <= 0) continue;
 
                             $inventory = Inventory::where('material_id', $giItem->material_id)

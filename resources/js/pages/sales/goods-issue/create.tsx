@@ -24,8 +24,8 @@ type ItemRow = {
     sales_order_item_id: string;
     material_id: string;
     qty_ordered: number;
-    qty_issued: number;
-    qty_to_issue: string;
+    qty_shipped: number;
+    qty_to_ship: string;
     qty_remaining: number;
     unit_price: number;
     serial_number: string;
@@ -40,14 +40,14 @@ export default function Create({ salesOrder, locations }: Props) {
     });
 
     const initialItems: ItemRow[] = (salesOrder.items ?? [])
-        .filter((i) => Number(i.qty_ordered) > Number(i.qty_issued))
+        .filter((i) => Number(i.qty_ordered) > Number(i.qty_shipped))
         .map((i) => ({
             sales_order_item_id: String(i.id),
             material_id:         String(i.material_id),
             qty_ordered:         Number(i.qty_ordered),
-            qty_issued:          Number(i.qty_issued),
-            qty_to_issue:        String(Number(i.qty_ordered) - Number(i.qty_issued)),
-            qty_remaining:       Number(i.qty_ordered) - Number(i.qty_issued),
+            qty_shipped:          Number(i.qty_shipped),
+            qty_to_ship:        String(Number(i.qty_ordered) - Number(i.qty_shipped)),
+            qty_remaining:       Number(i.qty_ordered) - Number(i.qty_shipped),
             unit_price:          Number(i.unit_price_after_discount),
             serial_number:       '',
             batch_number:        '',
@@ -79,10 +79,10 @@ export default function Create({ salesOrder, locations }: Props) {
         const updated = [...data.items];
         const item    = { ...updated[index], [field]: value };
 
-        if (field === 'qty_to_issue') {
-            const max        = item.qty_ordered - item.qty_issued;
+        if (field === 'qty_to_ship') {
+            const max        = item.qty_ordered - item.qty_shipped;
             const qtyToIssue = Math.min(Math.max(parseFloat(value) || 0, 0), max);
-            item.qty_to_issue  = String(qtyToIssue);
+            item.qty_to_ship  = String(qtyToIssue);
             item.qty_remaining = max - qtyToIssue;
         }
 
@@ -92,14 +92,14 @@ export default function Create({ salesOrder, locations }: Props) {
 
     const splitSerialLines = (index: number) => {
         const item = data.items[index];
-        const qty  = Math.floor(parseFloat(item.qty_to_issue) || 0);
+        const qty  = Math.floor(parseFloat(item.qty_to_ship) || 0);
         if (qty <= 1) return;
 
         const batchNumber = item.batch_number;
         const splitItems  = Array.from({ length: qty }, () => ({
             ...item,
-            qty_to_issue:  '1',
-            qty_remaining: item.qty_ordered - item.qty_issued - 1,
+            qty_to_ship:  '1',
+            qty_remaining: item.qty_ordered - item.qty_shipped - 1,
             serial_number: '',
             batch_number:  batchNumber,
         }));
@@ -116,12 +116,12 @@ export default function Create({ salesOrder, locations }: Props) {
         const matchingRows = data.items.filter((i) => i.sales_order_item_id === soItemId);
         if (matchingRows.length <= 1) return;
 
-        const totalQty = matchingRows.reduce((sum, i) => sum + parseFloat(i.qty_to_issue || '0'), 0);
-        const max      = item.qty_ordered - item.qty_issued;
+        const totalQty = matchingRows.reduce((sum, i) => sum + parseFloat(i.qty_to_ship || '0'), 0);
+        const max      = item.qty_ordered - item.qty_shipped;
 
         const merged: typeof item = {
             ...item,
-            qty_to_issue:  String(totalQty),
+            qty_to_ship:  String(totalQty),
             qty_remaining: max - totalQty,
             serial_number: '',
             batch_number:  matchingRows[0].batch_number,
@@ -188,8 +188,8 @@ export default function Create({ salesOrder, locations }: Props) {
                                         <TableHead>Material</TableHead>
                                         <TableHead>Info</TableHead>
                                         <TableHead>Qty Ordered</TableHead>
-                                        <TableHead>Qty Issued</TableHead>
-                                        <TableHead className="w-32 min-w-0">Qty to Issue</TableHead>
+                                        <TableHead>Qty Shipped</TableHead>
+                                        <TableHead className="w-32 min-w-0">Qty to Ship</TableHead>
                                         <TableHead>Qty Remaining</TableHead>
                                         <TableHead>Unit Price</TableHead>
                                         <TableHead>Serial No.</TableHead>
@@ -228,11 +228,11 @@ export default function Create({ salesOrder, locations }: Props) {
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="font-mono">{formatDecimal(item.qty_ordered)}</TableCell>
-                                                <TableCell className="font-mono">{formatDecimal(item.qty_issued)}</TableCell>
+                                                <TableCell className="font-mono">{formatDecimal(item.qty_shipped)}</TableCell>
                                                 <TableCell>
                                                     <InputAmount
-                                                        value={item.qty_to_issue}
-                                                        onValueChange={(val) => updateItem(index, 'qty_to_issue', String(val ?? 0))}
+                                                        value={item.qty_to_ship}
+                                                        onValueChange={(val) => updateItem(index, 'qty_to_ship', String(val ?? 0))}
                                                     />
                                                 </TableCell>
                                                 <TableCell className="font-mono text-muted-foreground">{formatDecimal(item.qty_remaining)}</TableCell>
@@ -245,7 +245,7 @@ export default function Create({ salesOrder, locations }: Props) {
                                                             onChange={(e) => updateItem(index, 'serial_number', e.target.value)}
                                                             placeholder="Optional"
                                                         />
-                                                        {!isSplit && parseFloat(item.qty_to_issue) > 1 && (
+                                                        {!isSplit && parseFloat(item.qty_to_ship) > 1 && (
                                                             <Button
                                                                 type="button"
                                                                 size="sm"
@@ -323,8 +323,8 @@ export default function Create({ salesOrder, locations }: Props) {
                                     <div><p className="text-muted-foreground">Code</p><p className="font-medium">{i.material?.code}</p></div>
                                     <div><p className="text-muted-foreground">Name</p><p className="font-medium">{i.material?.name}</p></div>
                                     <div><p className="text-muted-foreground">Qty Ordered</p><p className="font-mono">{formatDecimal(Number(i.qty_ordered))}</p></div>
-                                    <div><p className="text-muted-foreground">Qty Issued</p><p className="font-mono">{formatDecimal(Number(i.qty_issued))}</p></div>
-                                    <div><p className="text-muted-foreground">Qty Remaining</p><p className="font-mono">{formatDecimal(Number(i.qty_ordered) - Number(i.qty_issued))}</p></div>
+                                    <div><p className="text-muted-foreground">Qty Shipped</p><p className="font-mono">{formatDecimal(Number(i.qty_shipped))}</p></div>
+                                    <div><p className="text-muted-foreground">Qty Remaining</p><p className="font-mono">{formatDecimal(Number(i.qty_ordered) - Number(i.qty_shipped))}</p></div>
                                     <div><p className="text-muted-foreground">Unit Price</p><p className="font-mono">{formatAmount(Number(i.unit_price_after_discount))}</p></div>
                                 </div>
                             </div>

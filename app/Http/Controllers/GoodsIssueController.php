@@ -81,16 +81,16 @@ class GoodsIssueController extends Controller implements HasMiddleware
 
             foreach ($request->items as $item) {
                 $soItem     = SalesOrderItem::findOrFail($item['sales_order_item_id']);
-                $qtyIssued  = (float) $soItem->qty_issued;
+                $qtyIssued  = (float) $soItem->qty_shipped;
                 $qtyOrdered = (float) $soItem->qty_ordered;
 
                 $gi->items()->create([
                     'sales_order_item_id' => $soItem->id,
                     'material_id'         => $soItem->material_id,
                     'qty_ordered'         => $qtyOrdered,
-                    'qty_issued'          => $qtyIssued,
-                    'qty_to_issue'        => (float) $item['qty_to_issue'],
-                    'qty_remaining'       => $qtyOrdered - $qtyIssued - (float) $item['qty_to_issue'],
+                    'qty_shipped'          => $qtyIssued,
+                    'qty_to_ship'        => (float) $item['qty_to_ship'],
+                    'qty_remaining'       => $qtyOrdered - $qtyIssued - (float) $item['qty_to_ship'],
                     'unit_price'          => $soItem->unit_price_after_discount,
                     'serial_number'       => $item['serial_number'] ?? null,
                     'batch_number'        => $item['batch_number'] ?? null,
@@ -172,7 +172,7 @@ class GoodsIssueController extends Controller implements HasMiddleware
                 $goodsIssue->items()
                     ->where('sales_order_item_id', $item['sales_order_item_id'])
                     ->update([
-                        'qty_to_issue'  => $item['qty_to_issue'],
+                        'qty_to_ship'  => $item['qty_to_ship'],
                         'serial_number' => $item['serial_number'] ?? null,
                         'batch_number'  => $item['batch_number'] ?? null,
                         'remarks'       => $item['remarks'] ?? null,
@@ -222,13 +222,13 @@ class GoodsIssueController extends Controller implements HasMiddleware
             $affectedMaterialIds = [];
 
             foreach ($goodsIssue->items as $giItem) {
-                $qtyToIssue = (float) $giItem->qty_to_issue;
+                $qtyToIssue = (float) $giItem->qty_to_ship;
                 if ($qtyToIssue <= 0) continue;
 
-                // Update SO item qty_issued
+                // Update SO item qty_shipped
                 $soItem        = $giItem->salesOrderItem;
-                $newQtyIssued  = (float) $soItem->qty_issued + $qtyToIssue;
-                $soItem->update(['qty_issued' => $newQtyIssued]);
+                $newQtyIssued  = (float) $soItem->qty_shipped + $qtyToIssue;
+                $soItem->update(['qty_shipped' => $newQtyIssued]);
 
                 // Deduct inventory
                 $inventory = Inventory::where('material_id', $giItem->material_id)
@@ -300,14 +300,14 @@ class GoodsIssueController extends Controller implements HasMiddleware
             $fromStatus          = $goodsIssue->status;
             $so                  = $goodsIssue->salesOrder;
             $affectedMaterialIds = $goodsIssue->items
-                ->where('qty_to_issue', '>', 0)
+                ->where('qty_to_ship', '>', 0)
                 ->pluck('material_id')
                 ->unique()
                 ->toArray();
 
             if ($fromStatus === 'completed') {
                 foreach ($goodsIssue->items as $giItem) {
-                    $qtyToRestore = (float) $giItem->qty_to_issue;
+                    $qtyToRestore = (float) $giItem->qty_to_ship;
                     if ($qtyToRestore <= 0) continue;
 
                     $inventory = Inventory::where('material_id', $giItem->material_id)
@@ -395,15 +395,15 @@ class GoodsIssueController extends Controller implements HasMiddleware
                     ->where('status', 'completed');
                 })
                 ->where('sales_order_item_id', $soItem->id)
-                ->sum('qty_to_issue');
+                ->sum('qty_to_ship');
 
-            $soItem->update(['qty_issued' => $totalIssued]);
+            $soItem->update(['qty_shipped' => $totalIssued]);
         }
 
         $so->refresh();
 
-        $allFull   = $so->items->every(fn($i) => (float)$i->qty_issued >= (float)$i->qty_ordered);
-        $anyIssued = $so->items->some(fn($i)  => (float)$i->qty_issued > 0);
+        $allFull   = $so->items->every(fn($i) => (float)$i->qty_shipped >= (float)$i->qty_ordered);
+        $anyIssued = $so->items->some(fn($i)  => (float)$i->qty_shipped > 0);
 
         if ($so->status === 'cancelled') return;
 

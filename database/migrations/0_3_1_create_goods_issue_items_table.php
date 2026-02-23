@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('sales_order_item_id')->constrained()->cascadeOnDelete();
             $table->foreignId('material_id')->constrained()->cascadeOnDelete();
             $table->decimal('qty_ordered',   15, 6)->default(0);
-            $table->decimal('qty_issued',    15, 6)->default(0);
-            $table->decimal('qty_to_issue',  15, 6)->default(0);
+            $table->decimal('qty_shipped',    15, 6)->default(0);
+            $table->decimal('qty_to_ship',  15, 6)->default(0);
             $table->decimal('qty_remaining', 15, 6)->default(0);
             $table->decimal('unit_price',    15, 2)->default(0);
             $table->string('serial_number')->nullable();

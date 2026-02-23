@@ -186,7 +186,7 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                                     <TableHead>#</TableHead>
                                     <TableHead>Material</TableHead>
                                     <TableHead>Qty Ordered</TableHead>
-                                    <TableHead>Qty Issued</TableHead>
+                                    <TableHead>Qty Shipped</TableHead>
                                     <TableHead>Unit Price</TableHead>
                                     <TableHead>Discount</TableHead>
                                     <TableHead>After Disc.</TableHead>
@@ -205,7 +205,7 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                                             <p className="text-xs text-muted-foreground">{item.material?.code}</p>
                                         </TableCell>
                                         <TableCell className="font-mono">{Number(item.qty_ordered).toFixed(2)}</TableCell>
-                                        <TableCell className="font-mono">{Number(item.qty_issued).toFixed(2)}</TableCell>
+                                        <TableCell className="font-mono">{Number(item.qty_shipped).toFixed(2)}</TableCell>
                                         <TableCell className="font-mono">{formatAmount(Number(item.unit_price))}</TableCell>
                                         <TableCell className="text-sm text-muted-foreground">
                                             {item.discount_type ? `${item.discount_type === 'percentage' ? `${item.discount_amount}%` : formatAmount(Number(item.discount_amount))}` : '-'}

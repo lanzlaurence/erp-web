@@ -157,7 +157,7 @@ export default function SalesOrderReport({ salesOrders, customers, filters }: Pr
                                 <TableHead>Material</TableHead>
                                 <TableHead>UOM</TableHead>
                                 <TableHead className="text-right">Qty Ordered</TableHead>
-                                <TableHead className="text-right">Qty Issued</TableHead>
+                                <TableHead className="text-right">Qty Shipped</TableHead>
                                 <TableHead className="text-right">Qty Remaining</TableHead>
                                 <TableHead className="text-right">Unit Price</TableHead>
                                 <TableHead>Disc.</TableHead>
@@ -176,7 +176,7 @@ export default function SalesOrderReport({ salesOrders, customers, filters }: Pr
                             ) : rows.map(({ so, item }, i) => {
                                 const isFirstItem = (so.items?.indexOf(item) ?? 0) === 0;
                                 const badge       = STATUS_BADGE[so.status];
-                                const qtyRemaining = Number(item.qty_ordered) - Number(item.qty_issued);
+                                const qtyRemaining = Number(item.qty_ordered) - Number(item.qty_shipped);
 
                                 return (
                                     <TableRow key={`${so.id}-${item.id}`} className={i % 2 === 0 ? '' : 'bg-muted/20'}>
@@ -214,7 +214,7 @@ export default function SalesOrderReport({ salesOrders, customers, filters }: Pr
                                             {formatDecimal(Number(item.qty_ordered))}
                                         </TableCell>
                                         <TableCell className="font-mono text-right">
-                                            {formatDecimal(Number(item.qty_issued))}
+                                            {formatDecimal(Number(item.qty_shipped))}
                                         </TableCell>
                                         <TableCell className={`font-mono text-right ${qtyRemaining > 0 ? 'text-amber-600' : 'text-green-600'}`}>
                                             {formatDecimal(qtyRemaining)}

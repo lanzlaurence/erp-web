@@ -101,8 +101,8 @@ class Material extends Model
 
         if ($giItems->isEmpty()) return;
 
-        $totalQty   = $giItems->sum(fn($i) => (float) $i->qty_to_issue);
-        $totalValue = $giItems->sum(fn($i) => (float) $i->qty_to_issue * (float) $i->unit_price);
+        $totalQty   = $giItems->sum(fn($i) => (float) $i->qty_to_ship);
+        $totalValue = $giItems->sum(fn($i) => (float) $i->qty_to_ship * (float) $i->unit_price);
 
         if ($totalQty <= 0) return;
 
