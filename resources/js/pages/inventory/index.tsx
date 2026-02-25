@@ -11,7 +11,7 @@ import { useState } from 'react';
 
 export default function Index({ inventories }: InventoryData) {
     const { hasPermission } = usePermissions();
-    const { formatDecimal } = useFormatters();
+    const { formatDecimal, formatAmount } = useFormatters();
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; name: string }>({
         open: false, id: 0, name: '',
     });
@@ -45,13 +45,15 @@ export default function Index({ inventories }: InventoryData) {
                                 <TableHead>Material</TableHead>
                                 <TableHead>Location</TableHead>
                                 <TableHead>Quantity</TableHead>
+                                <TableHead>Avg Unit Cost</TableHead>
+                                <TableHead>Avg Unit Price</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {inventories.data.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
+                                    <TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">
                                         No inventory records available.
                                     </TableCell>
                                 </TableRow>
@@ -67,6 +69,8 @@ export default function Index({ inventories }: InventoryData) {
                                         </TableCell>
                                         <TableCell>{inventory.location?.name}</TableCell>
                                         <TableCell className="font-mono">{formatDecimal(Number(inventory.quantity))}</TableCell>
+                                        <TableCell>{formatAmount(Number(inventory.material?.avg_unit_cost))}</TableCell>
+                                        <TableCell>{formatAmount(Number(inventory.material?.avg_unit_price))}</TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
                                                 {hasPermission('inventory-view') && (
@@ -106,6 +110,28 @@ export default function Index({ inventories }: InventoryData) {
                         </TableBody>
                     </Table>
                 </div>
+
+                {/* Pagination */}
+                {inventories.last_page > 1 && (
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <p>Showing {inventories.from}–{inventories.to} of {inventories.total} records</p>
+                        <div className="flex gap-1">
+                            {inventories.links.map((link, i) => (
+                                link.url ? (
+                                    <Link key={i} href={link.url}
+                                        className={`px-3 py-1 rounded border text-sm ${link.active ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-accent'}`}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                ) : (
+                                    <span key={i}
+                                        className="px-3 py-1 rounded border border-border text-muted-foreground opacity-50 text-sm"
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                )
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
             <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ ...deleteDialog, open })}>

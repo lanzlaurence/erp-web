@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import type { InventoryLogData } from '@/types';
 import { useFormatters } from '@/hooks/use-formatters';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import ClickableCode from '@/components/ui/clickable-code';
 
 const LOG_TYPE_BADGE: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
@@ -51,7 +51,7 @@ export default function Inventory({ logs }: InventoryLogData) {
                         <TableBody>
                             {logs.data.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={10} className="py-8 text-center text-sm text-muted-foreground">
+                                    <TableCell colSpan={12} className="py-8 text-center text-sm text-muted-foreground">
                                         No inventory log records available.
                                     </TableCell>
                                 </TableRow>
@@ -101,6 +101,28 @@ export default function Inventory({ logs }: InventoryLogData) {
                         </TableBody>
                     </Table>
                 </div>
+
+                {/* Pagination */}
+                {logs.last_page > 1 && (
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <p>Showing {logs.from}–{logs.to} of {logs.total} logs</p>
+                        <div className="flex gap-1">
+                            {logs.links.map((link, i) => (
+                                link.url ? (
+                                    <Link key={i} href={link.url}
+                                        className={`px-3 py-1 rounded border text-sm ${link.active ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-accent'}`}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                ) : (
+                                    <span key={i}
+                                        className="px-3 py-1 rounded border border-border text-muted-foreground opacity-50 text-sm"
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                )
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </>
     );
