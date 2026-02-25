@@ -100,6 +100,7 @@ class PermissionRoleUserSeeder extends Seeder
             'activity-inventory-log',
             'analytics-purchase-order-report',
             'analytics-sales-order-report',
+            'analytics-inventory-report',
         ];
 
         foreach ($permissions as $permission) {

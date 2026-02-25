@@ -64,6 +64,7 @@ export function AppSidebar() {
             items: [
                 { title: 'Purchase Order Report', href: '/analytics/purchase-order-reports',  icon: ShoppingCart,  permission: 'analytics-purchase-order-report' },
                 { title: 'Sales Order Report', href: '/analytics/sales-order-reports', icon: ShoppingBag, permission: 'analytics-sales-order-report' },
+                { title: 'Inventory Report', href: '/analytics/inventory-report', icon: Package, permission: 'analytics-inventory-report' },
             ],
         },
         {

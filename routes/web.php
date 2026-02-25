@@ -78,7 +78,8 @@ Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(fun
 
     Route::prefix('analytics')->name('analytics.')->group(function () {
         Route::get('purchase-order-reports', [App\Http\Controllers\AnalyticsController::class, 'purchaseOrderReports'])->name('purchase-orders');
-        Route::get('sales-order-reports', [App\Http\Controllers\AnalyticsController::class, 'salesOrderReports'])->name('sales-orders');
+        Route::get('sales-order-reports',    [App\Http\Controllers\AnalyticsController::class, 'salesOrderReports'])->name('sales-orders');
+        Route::get('inventory-report',       [App\Http\Controllers\AnalyticsController::class, 'inventoryReport'])->name('inventory');
     });
 
     Route::prefix('activity')->name('activity.')->group(function () {

@@ -6,6 +6,9 @@ use App\Models\PurchaseOrder;
 use App\Models\Vendor;
 use App\Models\SalesOrder;
 use App\Models\Customer;
+use App\Models\Inventory;
+use App\Models\Location;
+use App\Models\Material;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Routing\Controllers\Middleware;
@@ -16,7 +19,8 @@ class AnalyticsController extends Controller
     {
         return [
             new Middleware('permission:analytics-purchase-order-report', only: ['purchaseOrderReports']),
-            new Middleware('permission:analytics-sales-order-report', only: ['salesOrderReports']),
+            new Middleware('permission:analytics-sales-order-report',    only: ['salesOrderReports']),
+            new Middleware('permission:analytics-inventory-report',      only: ['inventoryReport']),
         ];
     }
 
@@ -61,6 +65,54 @@ class AnalyticsController extends Controller
             'salesOrders' => $salesOrders,
             'customers'   => Customer::where('status', 'active')->get(['id', 'code', 'name']),
             'filters'     => $request->only(['customer_id', 'status', 'date_from', 'date_to']),
+        ]);
+    }
+
+    public function inventoryReport(Request $request)
+    {
+        $query = Inventory::with(['material.brand', 'material.category', 'material.uom', 'location'])
+            ->when($request->location_id,  fn($q) => $q->where('location_id', $request->location_id))
+            ->when($request->category_id,  fn($q) => $q->whereHas('material', fn($m) => $m->where('category_id', $request->category_id)))
+            ->when($request->material_search, fn($q) => $q->whereHas('material', fn($m) =>
+                $m->where('name', 'like', '%' . $request->material_search . '%')
+                ->orWhere('code', 'like', '%' . $request->material_search . '%')
+            ))
+            ->when($request->stock_filter === 'low',      fn($q) => $q->whereHas('material', fn($m) => $m->whereColumn('inventories.quantity', '<=', 'materials.reorder_level')->where('materials.reorder_level', '>', 0)))
+            ->when($request->stock_filter === 'zero',     fn($q) => $q->where('quantity', '<=', 0))
+            ->when($request->stock_filter === 'positive', fn($q) => $q->where('quantity', '>', 0))
+            ->latest('id');
+
+        $inventories = $query->paginate(50)->withQueryString();
+
+        // Summary totals (across all pages / filtered set — re-query without paginate)
+        $summaryQuery = Inventory::with('material')
+            ->when($request->location_id,  fn($q) => $q->where('location_id', $request->location_id))
+            ->when($request->category_id,  fn($q) => $q->whereHas('material', fn($m) => $m->where('category_id', $request->category_id)))
+            ->when($request->material_search, fn($q) => $q->whereHas('material', fn($m) =>
+                $m->where('name', 'like', '%' . $request->material_search . '%')
+                ->orWhere('code', 'like', '%' . $request->material_search . '%')
+            ))
+            ->when($request->stock_filter === 'low',      fn($q) => $q->whereHas('material', fn($m) => $m->whereColumn('inventories.quantity', '<=', 'materials.reorder_level')->where('materials.reorder_level', '>', 0)))
+            ->when($request->stock_filter === 'zero',     fn($q) => $q->where('quantity', '<=', 0))
+            ->when($request->stock_filter === 'positive', fn($q) => $q->where('quantity', '>', 0))
+            ->get(['quantity', 'material_id']);
+
+        $totalCostValue  = $summaryQuery->sum(fn($i) => (float) $i->quantity * (float) ($i->material?->avg_unit_cost ?? 0));
+        $totalPriceValue = $summaryQuery->sum(fn($i) => (float) $i->quantity * (float) ($i->material?->avg_unit_price ?? 0));
+        $totalSkus       = $summaryQuery->count();
+        $zeroStockCount  = $summaryQuery->filter(fn($i) => (float) $i->quantity <= 0)->count();
+
+        return Inertia::render('analytics/inventory-report', [
+            'inventories'     => $inventories,
+            'locations'       => \App\Models\Location::orderBy('name')->get(['id', 'name']),
+            'categories'      => \App\Models\Category::orderBy('name')->get(['id', 'name']),
+            'filters'         => $request->only(['location_id', 'category_id', 'material_search', 'stock_filter']),
+            'summary' => [
+                'total_skus'        => $totalSkus,
+                'zero_stock_count'  => $zeroStockCount,
+                'total_cost_value'  => round($totalCostValue, 2),
+                'total_price_value' => round($totalPriceValue, 2),
+            ],
         ]);
     }
 }
