@@ -41,6 +41,8 @@ export default function Edit({ material, brands, categories, uoms }: Props) {
         reorder_level: material.reorder_level.toString(),
         unit_cost: material.unit_cost.toString(),
         unit_price: material.unit_price.toString(),
+        avg_unit_cost: material.avg_unit_cost.toString(),
+        avg_unit_price: material.avg_unit_price.toString(),
         status: material.status,
         track_serial_number: material.track_serial_number,
         track_batch_number: material.track_batch_number,

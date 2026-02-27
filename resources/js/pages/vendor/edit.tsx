@@ -10,12 +10,11 @@ import {
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import type { Vendor } from '@/types';
-import { useForm } from '@inertiajs/react';
+import { useForm, router, Head } from '@inertiajs/react';
 import { FormEvent, useState, useEffect } from 'react';
 import ReactSelect from 'react-select';
 import { Plus, X } from 'lucide-react';
 import { useAddressData, type SelectOption } from '@/hooks/use-address-data';
-import { Head } from '@inertiajs/react';
 import InputAmount from '@/components/ui/input-amount';
 import { useFormatters } from '@/hooks/use-formatters';
 import InputPhone from '@/components/ui/input-phone';
@@ -85,8 +84,10 @@ export default function Edit({ vendor }: Props) {
         const validContacts = contactPersons.filter(
             (c) => c.name && c.email && c.phone
         );
-        setData('contact_persons', validContacts);
-        put(`/vendors/${vendor.id}`);
+        router.put(`/vendors/${vendor.id}`, {
+            ...data,
+            contact_persons: validContacts,
+        });
     };
 
     const handleCountryChange = (option: SelectOption | null) => {

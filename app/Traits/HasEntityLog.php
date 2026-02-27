@@ -21,8 +21,24 @@ trait HasEntityLog
         $changes = [];
         foreach ($newValues as $field => $newValue) {
             $oldValue = $oldValues[$field] ?? null;
-            $old = is_array($oldValue) ? json_encode($oldValue) : (string) ($oldValue ?? '');
-            $new = is_array($newValue) ? json_encode($newValue) : (string) ($newValue ?? '');
+
+            if (is_array($oldValue)) {
+                $old = json_encode($oldValue);
+            } else {
+                $old = trim((string) ($oldValue ?? ''));
+            }
+
+            if (is_array($newValue)) {
+                $new = json_encode($newValue);
+            } else {
+                $new = trim((string) ($newValue ?? ''));
+            }
+
+            if (is_numeric($old) && is_numeric($new)) {
+                $old = (string) (float) $old;
+                $new = (string) (float) $new;
+            }
+
             if ($old !== $new) {
                 $changes[] = [
                     'field' => $field,
@@ -32,12 +48,11 @@ trait HasEntityLog
             }
         }
 
-        if (empty($changes)) return;
-
+        // Always log the update even if no field changes detected
         $this->logs()->create([
             'user_id' => Auth::id(),
             'action' => 'updated',
-            'changes' => $changes,
+            'changes' => empty($changes) ? null : $changes,
             'remarks' => $remarks,
         ]);
     }
