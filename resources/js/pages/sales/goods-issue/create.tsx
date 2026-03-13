@@ -18,6 +18,7 @@ import DatePicker from '@/components/ui/date-picker';
 type Props = {
     salesOrder: SalesOrder;
     locations: Location[];
+    inventoryMap: Record<string, Record<string, number>>; // material_id -> location_id -> qty
 };
 
 type ItemRow = {
@@ -33,7 +34,7 @@ type ItemRow = {
     remarks: string;
 };
 
-export default function Create({ salesOrder, locations }: Props) {
+export default function Create({ salesOrder, locations, inventoryMap }: Props) {
     const { formatAmount, formatDecimal } = useFormatters();
     const [materialModal, setMaterialModal] = useState<{ open: boolean; item: SalesOrderItem | null }>({
         open: false, item: null,
@@ -74,6 +75,12 @@ export default function Create({ salesOrder, locations }: Props) {
     };
 
     const locationOptions = locations.map((l) => ({ value: String(l.id), label: `${l.code} — ${l.name}` }));
+
+    // Helper to get available inventory for an item at selected location
+    const getAvailable = (materialId: string) => {
+        if (!data.location_id) return null;
+        return inventoryMap[materialId]?.[data.location_id] ?? 0;
+    };
 
     const updateItem = (index: number, field: string, value: string) => {
         const updated = [...data.items];
@@ -230,11 +237,27 @@ export default function Create({ salesOrder, locations }: Props) {
                                                 <TableCell className="font-mono">{formatDecimal(item.qty_ordered)}</TableCell>
                                                 <TableCell className="font-mono">{formatDecimal(item.qty_shipped)}</TableCell>
                                                 <TableCell>
-                                                    <InputAmount
-                                                        value={item.qty_to_ship}
-                                                        max={item.qty_ordered - item.qty_shipped}
-                                                        onValueChange={(val) => updateItem(index, 'qty_to_ship', String(val ?? 0))}
-                                                    />
+                                                    {(() => {
+                                                        const available = getAvailable(item.material_id);
+                                                        const remaining = item.qty_ordered - item.qty_shipped;
+                                                        const effectiveMax = available !== null ? Math.min(remaining, available) : remaining;
+                                                        const isInsufficient = available !== null && available < parseFloat(item.qty_to_ship || '0');
+
+                                                        return (
+                                                            <div className="flex flex-col gap-1">
+                                                                <InputAmount
+                                                                    value={item.qty_to_ship}
+                                                                    max={effectiveMax}
+                                                                    onValueChange={(val) => updateItem(index, 'qty_to_ship', String(val ?? 0))}
+                                                                />
+                                                                {data.location_id && available !== null && (
+                                                                    <span className={`text-xs ${isInsufficient ? 'text-red-500' : 'text-muted-foreground'}`}>
+                                                                        Available: {formatDecimal(available)}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })()}
                                                 </TableCell>
                                                 <TableCell className="font-mono text-muted-foreground">{formatDecimal(item.qty_remaining)}</TableCell>
                                                 <TableCell className="font-mono">{formatAmount(item.unit_price)}</TableCell>

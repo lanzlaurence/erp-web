@@ -58,9 +58,31 @@ class GoodsIssueController extends Controller implements HasMiddleware
             'items.material.uom',
         ]);
 
+        $locations = Location::all(['id', 'code', 'name']);
+
+        // Build inventory map: material_id -> location_id -> quantity
+        $materialIds = $salesOrder->items->pluck('material_id')->unique();
+        $inventoryMap = \App\Models\Inventory::whereIn('material_id', $materialIds)
+            ->get()
+            ->groupBy('material_id')
+            ->map(function ($rows) {
+                return $rows->keyBy('location_id')->map(function ($inv) {
+                    $reserved = \App\Models\GoodsIssueItem::query()
+                        ->where('material_id', $inv->material_id)
+                        ->whereHas('goodsIssue', fn($q) => $q
+                            ->where('status', 'pending')
+                            ->where('location_id', $inv->location_id)
+                        )
+                        ->sum('qty_to_ship');
+
+                    return max(0, (float) $inv->quantity - (float) $reserved);
+                });
+            });
+
         return Inertia::render('sales/goods-issue/create', [
-            'salesOrder' => $salesOrder,
-            'locations'  => Location::all(['id', 'code', 'name']),
+            'salesOrder'   => $salesOrder,
+            'locations'    => $locations,
+            'inventoryMap' => $inventoryMap,
         ]);
     }
 
