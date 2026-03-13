@@ -43,31 +43,30 @@ export default function Create({ purchaseOrder, locations }: Props) {
         .filter((i) => Number(i.qty_ordered) > Number(i.qty_received))
         .map((i) => ({
             purchase_order_item_id: String(i.id),
-            material_id:            String(i.material_id),
-            qty_ordered:            Number(i.qty_ordered),
-            qty_received:           Number(i.qty_received),
-            qty_to_receive:         String(Number(i.qty_ordered) - Number(i.qty_received)),
-            qty_remaining:          Number(i.qty_ordered) - Number(i.qty_received),
-            unit_cost:              Number(i.unit_cost_after_discount),
-            serial_number:          '',
-            batch_number:           '',
-            remarks:                '',
+            material_id:  String(i.material_id),
+            qty_ordered: Number(i.qty_ordered),
+            qty_received: Number(i.qty_received),
+            qty_to_receive: String(Number(i.qty_ordered) - Number(i.qty_received)),
+            qty_remaining: Number(i.qty_ordered) - Number(i.qty_received),
+            unit_cost: Number(i.unit_cost_after_discount),
+            serial_number: '',
+            batch_number: '',
+            remarks: '',
         }));
 
     const { data, setData, post, processing, errors } = useForm({
         purchase_order_id: String(purchaseOrder.id),
-        location_id:    '',
-        gr_date:           new Date().toISOString().split('T')[0],
-        transaction_date:  new Date().toISOString().split('T')[0],
-        remarks:           '',
-        items:             initialItems,
+        location_id: '',
+        gr_date: new Date().toISOString().split('T')[0],
+        transaction_date: new Date().toISOString().split('T')[0],
+        remarks: '',
+        items: initialItems,
     });
 
     const selectClass = {
         control: () => 'border border-input bg-background text-sm rounded-md px-1 py-0.5 min-h-9',
         menu: () => 'bg-popover border border-border rounded-md shadow-md text-sm mt-1',
-        option: ({ isFocused, isSelected }: { isFocused: boolean; isSelected: boolean }) =>
-            `px-3 py-2 cursor-pointer ${isSelected ? 'bg-primary text-primary-foreground' : isFocused ? 'bg-accent text-accent-foreground' : ''}`,
+        option: ({ isFocused, isSelected }: { isFocused: boolean; isSelected: boolean }) => `px-3 py-2 cursor-pointer ${isSelected ? 'bg-primary text-primary-foreground' : isFocused ? 'bg-accent text-accent-foreground' : ''}`,
         singleValue: () => 'text-foreground',
         input: () => 'text-foreground',
         placeholder: () => 'text-muted-foreground',
@@ -78,13 +77,13 @@ export default function Create({ purchaseOrder, locations }: Props) {
     // When material tracks serial number, auto-split into qty=1 rows
     const updateItem = (index: number, field: string, value: string) => {
         const updated = [...data.items];
-        const item    = { ...updated[index], [field]: value };
+        const item = { ...updated[index], [field]: value };
 
         if (field === 'qty_to_receive') {
-            const max          = item.qty_ordered - item.qty_received;
+            const max = item.qty_ordered - item.qty_received;
             const qtyToReceive = Math.min(Math.max(parseFloat(value) || 0, 0), max);
             item.qty_to_receive = String(qtyToReceive);
-            item.qty_remaining  = max - qtyToReceive;
+            item.qty_remaining = max - qtyToReceive;
         }
 
         updated[index] = item;
