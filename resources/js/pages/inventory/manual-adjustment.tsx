@@ -116,7 +116,7 @@ export default function ManualAdjustment({ materials, locations, inventories }: 
                     {/* Card 1 — Action + Date + Location */}
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Transaction Information</h3>
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className={`grid gap-4 ${isTransfer ? 'grid-cols-4' : 'grid-cols-3'}`}>
                             <div className="space-y-2">
                                 <Label>Action</Label>
                                 <ReactSelect
