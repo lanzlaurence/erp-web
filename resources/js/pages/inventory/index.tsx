@@ -27,14 +27,14 @@ export default function Index({ inventories }: InventoryData) {
             <div className="space-y-4 p-4">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Inventory</h1>
-                    {hasPermission('inventory-create') && (
+                    {/* {hasPermission('inventory-create') && (
                         <Button asChild size="sm">
                             <Link href="/inventories/create">
                                 <Plus className="mr-2 h-4 w-4" />
                                 Add Stock
                             </Link>
                         </Button>
-                    )}
+                    )} */}
                 </div>
 
                 <div className="rounded-md border">
@@ -45,8 +45,8 @@ export default function Index({ inventories }: InventoryData) {
                                 <TableHead>Material</TableHead>
                                 <TableHead>Location</TableHead>
                                 <TableHead>Quantity</TableHead>
-                                <TableHead>Avg Unit Cost</TableHead>
-                                <TableHead>Avg Unit Price</TableHead>
+                                {/* <TableHead>Avg Unit Cost</TableHead>
+                                <TableHead>Avg Unit Price</TableHead> */}
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -69,37 +69,39 @@ export default function Index({ inventories }: InventoryData) {
                                         </TableCell>
                                         <TableCell>{inventory.location?.name}</TableCell>
                                         <TableCell className="font-mono">{formatDecimal(Number(inventory.quantity))}</TableCell>
-                                        <TableCell>{formatAmount(Number(inventory.material?.avg_unit_cost))}</TableCell>
-                                        <TableCell>{formatAmount(Number(inventory.material?.avg_unit_price))}</TableCell>
+                                        {/* <TableCell>{formatAmount(Number(inventory.material?.avg_unit_cost))}</TableCell>
+                                        <TableCell>{formatAmount(Number(inventory.material?.avg_unit_price))}</TableCell> */}
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
                                                 {hasPermission('inventory-view') && (
                                                     <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/inventories/${inventory.id}`}>
+                                                        <Link href={`/inventories/${inventory.id}`} className="flex flex-col items-center gap-0.5 h-auto py-1">
                                                             <Eye className="h-4 w-4" />
+                                                            <span className="text-[10px] leading-none">View</span>
                                                         </Link>
                                                     </Button>
                                                 )}
-                                                {hasPermission('inventory-adjust') && (
+                                                {/* {hasPermission('inventory-adjust') && (
                                                     <Button variant="ghost" size="sm" asChild>
                                                         <Link href={`/inventories/${inventory.id}/adjust`} className="flex flex-col items-center gap-0.5 h-auto py-1">
                                                             <Edit className="h-4 w-4" />
                                                             <span className="text-[10px] leading-none">Adjust</span>
                                                         </Link>
                                                     </Button>
-                                                )}
-                                                {hasPermission('inventory-transfer') && (
+                                                )} */}
+                                                {/* {hasPermission('inventory-transfer') && (
                                                     <Button variant="ghost" size="sm" asChild>
                                                         <Link href={`/inventories/${inventory.id}/transfer`} className="flex flex-col items-center gap-0.5 h-auto py-1">
                                                             <ArrowLeftRight className="h-4 w-4" />
                                                             <span className="text-[10px] leading-none">Transfer</span>
                                                         </Link>
                                                     </Button>
-                                                )}
+                                                )} */}
                                                 {hasPermission('inventory-delete') && (
-                                                    <Button variant="ghost" size="sm"
+                                                    <Button variant="ghost" size="sm" className="flex flex-col items-center gap-0.5 h-auto py-1"
                                                         onClick={() => setDeleteDialog({ open: true, id: inventory.id, name: inventory.material?.name ?? '' })}>
                                                         <Trash2 className="h-4 w-4 text-red-600" />
+                                                        <span className="text-[10px] leading-none text-red-600">Delete</span>
                                                     </Button>
                                                 )}
                                             </div>

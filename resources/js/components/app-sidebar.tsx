@@ -57,16 +57,16 @@ export function AppSidebar() {
             href: '/dashboard',
             icon: LayoutGrid,
         },
-        // {
-        //     title: 'Analytics',
-        //     href: '#',
-        //     icon: BarChart2,
-        //     items: [
-        //         { title: 'Purchase Order Report', href: '/analytics/purchase-order-reports',  icon: ShoppingCart,  permission: 'analytics-purchase-order-report' },
-        //         { title: 'Sales Order Report', href: '/analytics/sales-order-reports', icon: ShoppingBag, permission: 'analytics-sales-order-report' },
-        //         { title: 'Inventory Report', href: '/analytics/inventory-report', icon: Package, permission: 'analytics-inventory-report' },
-        //     ],
-        // },
+        {
+            title: 'Analytics',
+            href: '#',
+            icon: BarChart2,
+            items: [
+                { title: 'PO Report', href: '/analytics/purchase-order-reports',  icon: ShoppingCart,  permission: 'analytics-purchase-order-report' },
+                { title: 'SO Report', href: '/analytics/sales-order-reports', icon: ShoppingBag, permission: 'analytics-sales-order-report' },
+                { title: 'Inv. Report', href: '/analytics/inventory-report', icon: Package, permission: 'analytics-inventory-report' },
+            ],
+        },
         {
             title: 'Transaction',
             href: '#',
@@ -84,6 +84,7 @@ export function AppSidebar() {
                 { title: 'Goods Receipts', href: '/goods-receipts', icon: PackageCheck, permission: 'goods-receipt-view' },
                 { title: 'Sales Orders', href: '/sales-orders', icon: ShoppingBag, permission: 'sales-order-view' },
                 { title: 'Goods Issues', href: '/goods-issues', icon: Truck, permission: 'goods-issue-view' },
+                { title: 'Manual Adjustment', href: '/inventories/manual-adjustment', icon: SlidersHorizontal, permission: 'inventory-adjust' },
                 { title: 'Inventory', href: '/inventories', icon: Warehouse, permission: 'inventory-view' },
             ],
         },
