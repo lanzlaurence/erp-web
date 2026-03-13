@@ -8,6 +8,7 @@ interface InputAmountProps {
     placeholder?: string;
     className?: string;
     disabled?: boolean;
+    max?: number;
 }
 
 export default function InputAmount({
@@ -16,6 +17,7 @@ export default function InputAmount({
     placeholder,
     className,
     disabled = false,
+    max,
 }: InputAmountProps) {
     const { getDecimalPlaces } = useFormatters();
     const decimalScale = getDecimalPlaces();
@@ -31,7 +33,10 @@ export default function InputAmount({
             allowNegative={false}
             isAllowed={(values) => {
                 const { floatValue } = values;
-                return floatValue === undefined || floatValue < 1e15;
+                if (floatValue === undefined) return true;
+                if (floatValue >= 1e15) return false;
+                if (max !== undefined && floatValue > max) return false;
+                return true;
             }}
             placeholder={placeholder ?? '0.' + '0'.repeat(decimalScale)}
             disabled={disabled}

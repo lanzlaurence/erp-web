@@ -13,7 +13,7 @@ class StoreGoodsReceiptRequest extends FormRequest
     {
         return [
             'purchase_order_id'              => ['required', 'exists:purchase_orders,id'],
-            'location_id'                 => ['required', 'exists:locations,id'],
+            'location_id'                    => ['required', 'exists:locations,id'],
             'gr_date'                        => ['required', 'date'],
             'transaction_date'               => ['required', 'date'],
             'remarks'                        => ['nullable', 'string'],
@@ -30,7 +30,7 @@ class StoreGoodsReceiptRequest extends FormRequest
     {
         return function ($attribute, $value, $fail) {
             preg_match('/items\.(\d+)\./', $attribute, $matches);
-            $index    = $matches[1] ?? null;
+            $index = $matches[1] ?? null;
             if ($index === null) return;
 
             $poItemId = $this->input("items.{$index}.purchase_order_item_id");
@@ -39,7 +39,15 @@ class StoreGoodsReceiptRequest extends FormRequest
             $poItem = PurchaseOrderItem::find($poItemId);
             if (!$poItem) return;
 
-            $qtyRemaining = (float) $poItem->qty_ordered - (float) $poItem->qty_received;
+            // Also account for other pending GRs not yet completed
+            $otherPendingQty = \App\Models\GoodsReceiptItem::query()
+                ->where('purchase_order_item_id', $poItemId)
+                ->whereHas('goodsReceipt', fn($q) => $q->where('status', 'pending'))
+                ->sum('qty_to_receive');
+
+            $qtyRemaining = (float) $poItem->qty_ordered
+                - (float) $poItem->qty_received
+                - (float) $otherPendingQty;
 
             if ((float) $value > $qtyRemaining) {
                 $fail("Qty to receive cannot exceed remaining quantity of {$qtyRemaining}.");

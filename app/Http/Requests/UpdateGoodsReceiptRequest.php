@@ -29,7 +29,7 @@ class UpdateGoodsReceiptRequest extends FormRequest
     {
         return function ($attribute, $value, $fail) {
             preg_match('/items\.(\d+)\./', $attribute, $matches);
-            $index    = $matches[1] ?? null;
+            $index = $matches[1] ?? null;
             if ($index === null) return;
 
             $poItemId = $this->input("items.{$index}.purchase_order_item_id");
@@ -38,10 +38,20 @@ class UpdateGoodsReceiptRequest extends FormRequest
             $poItem = PurchaseOrderItem::find($poItemId);
             if (!$poItem) return;
 
-            // When editing a pending GR, qty_received on the PO item
-            // does NOT include this GR's current qty (it's still pending).
-            // So qty_remaining is simply qty_ordered - qty_received.
-            $qtyRemaining = (float) $poItem->qty_ordered - (float) $poItem->qty_received;
+            $grId = $this->route('goods_receipt')?->id ?? $this->route('goods_receipt');
+
+            // Sum qty_to_receive from OTHER pending GRs for this PO item
+            $otherPendingQty = \App\Models\GoodsReceiptItem::query()
+                ->where('purchase_order_item_id', $poItemId)
+                ->whereHas('goodsReceipt', fn($q) => $q
+                    ->where('status', 'pending')
+                    ->when($grId, fn($q) => $q->where('id', '!=', $grId))
+                )
+                ->sum('qty_to_receive');
+
+            $qtyRemaining = (float) $poItem->qty_ordered
+                - (float) $poItem->qty_received
+                - (float) $otherPendingQty;
 
             if ((float) $value > $qtyRemaining) {
                 $fail("Qty to receive cannot exceed remaining quantity of {$qtyRemaining}.");

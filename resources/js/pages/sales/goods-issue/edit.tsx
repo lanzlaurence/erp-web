@@ -164,6 +164,7 @@ export default function Edit({ goodsIssue, locations }: Props) {
                                             <TableCell>
                                                 <InputAmount
                                                     value={item.qty_to_ship}
+                                                    max={item.qty_ordered - item.qty_shipped}
                                                     onValueChange={(val) => updateItem(index, 'qty_to_ship', String(val ?? 0))}
                                                 />
                                             </TableCell>

@@ -257,6 +257,7 @@ export default function Create({ purchaseOrder, locations }: Props) {
                                                         ) : (
                                                             <InputAmount
                                                                 value={item.qty_to_receive}
+                                                                max={item.qty_ordered - item.qty_received}
                                                                 onValueChange={(val) => {
                                                                     const max = item.qty_ordered - item.qty_received;
                                                                     const clamped = Math.min(Math.max(Number(val) || 0, 0), max);

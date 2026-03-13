@@ -57,16 +57,16 @@ export function AppSidebar() {
             href: '/dashboard',
             icon: LayoutGrid,
         },
-        {
-            title: 'Analytics',
-            href: '#',
-            icon: BarChart2,
-            items: [
-                { title: 'Purchase Order Report', href: '/analytics/purchase-order-reports',  icon: ShoppingCart,  permission: 'analytics-purchase-order-report' },
-                { title: 'Sales Order Report', href: '/analytics/sales-order-reports', icon: ShoppingBag, permission: 'analytics-sales-order-report' },
-                { title: 'Inventory Report', href: '/analytics/inventory-report', icon: Package, permission: 'analytics-inventory-report' },
-            ],
-        },
+        // {
+        //     title: 'Analytics',
+        //     href: '#',
+        //     icon: BarChart2,
+        //     items: [
+        //         { title: 'Purchase Order Report', href: '/analytics/purchase-order-reports',  icon: ShoppingCart,  permission: 'analytics-purchase-order-report' },
+        //         { title: 'Sales Order Report', href: '/analytics/sales-order-reports', icon: ShoppingBag, permission: 'analytics-sales-order-report' },
+        //         { title: 'Inventory Report', href: '/analytics/inventory-report', icon: Package, permission: 'analytics-inventory-report' },
+        //     ],
+        // },
         {
             title: 'Transaction',
             href: '#',

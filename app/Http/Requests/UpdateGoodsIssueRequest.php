@@ -38,10 +38,22 @@ class UpdateGoodsIssueRequest extends FormRequest
             $soItem = SalesOrderItem::find($soItemId);
             if (!$soItem) return;
 
-            $qtyRemaining = (float) $soItem->qty_ordered - (float) $soItem->qty_shipped;
+            $giId = $this->route('goods_issue')?->id ?? $this->route('goods_issue');
+
+            $otherPendingQty = \App\Models\GoodsIssueItem::query()
+                ->where('sales_order_item_id', $soItemId)
+                ->whereHas('goodsIssue', fn($q) => $q
+                    ->where('status', 'pending')
+                    ->when($giId, fn($q) => $q->where('id', '!=', $giId))
+                )
+                ->sum('qty_to_ship');
+
+            $qtyRemaining = (float) $soItem->qty_ordered
+                - (float) $soItem->qty_shipped
+                - (float) $otherPendingQty;
 
             if ((float) $value > $qtyRemaining) {
-                $fail("Qty to issue cannot exceed remaining quantity of {$qtyRemaining}.");
+                $fail("Qty to ship cannot exceed remaining quantity of {$qtyRemaining}.");
             }
         };
     }
