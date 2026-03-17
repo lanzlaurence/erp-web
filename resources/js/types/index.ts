@@ -3,6 +3,7 @@ export type * from './modules';
 export type * from './navigation';
 export type * from './ui';
 export type * from './transactions';
+export type * from './dashboard';
 
 import type { Auth, Permission, Role, User } from './auth';
 import type { Brand, Category, Charge, Currency, Customer, Location, Material, Uom, Vendor } from './modules';

@@ -68,6 +68,7 @@ class Material extends Model
     public function category(): BelongsTo { return $this->belongsTo(Category::class); }
     public function uom(): BelongsTo { return $this->belongsTo(Uom::class); }
     public function logs(): HasMany { return $this->hasMany(MaterialLog::class); }
+    public function inventories(): HasMany { return $this->hasMany(Inventory::class); }
 
     public function recalculateAvgUnitCost(): void
     {

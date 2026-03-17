@@ -18,9 +18,9 @@ Route::middleware(['auth', 'active'])->group(function () {
 });
 
 Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard/material/{material}/purchase-history', [App\Http\Controllers\DashboardController::class, 'purchaseHistory'])->name('dashboard.material.purchase-history');
+    Route::get('dashboard/material/{material}/sales-history', [App\Http\Controllers\DashboardController::class, 'salesHistory'])->name('dashboard.material.sales-history');
 
     Route::resource('users', App\Http\Controllers\UserController::class);
     Route::resource('roles', App\Http\Controllers\RoleController::class);
