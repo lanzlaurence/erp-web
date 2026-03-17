@@ -55,11 +55,11 @@ export type PaginatedData<T> = {
 };
 
 export type UserData = {
-    users: PaginatedData<User>;
+    users: User[];
 };
 
 export type RoleData = {
-    roles: PaginatedData<Role & { permissions: Permission[] }>;
+    roles: (Role & { permissions: Permission[] })[];
     permissions?: Permission[];
 };
 

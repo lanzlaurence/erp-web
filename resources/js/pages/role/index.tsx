@@ -1,194 +1,161 @@
-import { Button } from '@/components/ui/button';
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
-import { usePermissions } from '@/hooks/use-permissions';
 import AppLayout from '@/layouts/app-layout';
-import type { Permission, RoleData, Role } from '@/types';
-import { Link, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { useFormatters } from '@/hooks/use-formatters';
+import { usePermissions } from '@/hooks/use-permissions';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/data-table';
+import { ColumnDef } from '@tanstack/react-table';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { Head } from '@inertiajs/react';
-import React from 'react';
-import { useFormatters } from '@/hooks/use-formatters';
+import { usePage } from '@inertiajs/react';
+import type { RoleData, Role, Permission, SharedData } from '@/types';
+
+type RoleWithPermissions = Role & { permissions: Permission[] };
 
 export default function Index({ roles }: RoleData) {
     const { hasPermission } = usePermissions();
     const { formatDate } = useFormatters();
-    const [expandedRoles, setExpandedRoles] = useState<number[]>([]);
+    const { preferences } = usePage<SharedData>().props;
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; name: string }>({
-        open: false,
-        id: 0,
-        name: '',
+        open: false, id: 0, name: '',
     });
-
-    const handleDeleteClick = (id: number, name: string) => {
-        setDeleteDialog({ open: true, id, name });
-    };
 
     const handleDeleteConfirm = () => {
         router.delete(`/roles/${deleteDialog.id}`);
         setDeleteDialog({ open: false, id: 0, name: '' });
     };
 
-    const toggleExpand = (roleId: number) => {
-        setExpandedRoles((prev) =>
-            prev.includes(roleId) ? prev.filter((id) => id !== roleId) : [...prev, roleId],
-        );
-    };
-
-    const groupPermissions = (permissions: Permission[]) => {
-        return permissions.reduce(
-            (acc, permission) => {
-                const category = permission.name.split('-')[0];
-                if (!acc[category]) acc[category] = [];
-                acc[category].push(permission);
-                return acc;
-            },
-            {} as Record<string, Permission[]>,
-        );
-    };
-
     const isProtected = (role: Role) => role.id === 1;
+
+    const groupPermissions = (permissions: Permission[]) =>
+        permissions.reduce((acc, perm) => {
+            const category = perm.name.split('-')[0];
+            if (!acc[category]) acc[category] = [];
+            acc[category].push(perm);
+            return acc;
+        }, {} as Record<string, Permission[]>);
+
+    const columns: ColumnDef<RoleWithPermissions>[] = [
+        {
+            accessorKey: 'name',
+            header: 'Name',
+            size: 180,
+            cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+        },
+        {
+            accessorKey: 'permissions',
+            header: 'Permissions',
+            size: 300,
+            enableSorting: false,
+            accessorFn: (row) => row.permissions?.map((p) => p.name).join(' ') ?? '',
+            cell: ({ row }) => {
+                const grouped = groupPermissions(row.original.permissions ?? []);
+                return (
+                    <Collapsible>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="sm" className="flex items-center gap-2 p-0 hover:bg-transparent">
+                                <span className="text-sm text-muted-foreground">
+                                    {row.original.permissions?.length || 0} permissions
+                                </span>
+                                <ChevronDown className="h-4 w-4" />
+                            </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                            <div className="space-y-2 pt-2">
+                                {Object.entries(grouped).map(([category, perms]) => (
+                                    <div key={category} className="space-y-1">
+                                        <p className="text-xs font-semibold capitalize">{category}</p>
+                                        <div className="flex flex-wrap gap-1">
+                                            {perms.map((perm) => (
+                                                <span key={perm.id} className="inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                                                    {perm.name.split('-').slice(1).join(' ')}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
+                );
+            },
+        },
+        {
+            accessorKey: 'created_at',
+            header: 'Created At',
+            size: 130,
+            accessorFn: (row) => formatDate(row.created_at),
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{formatDate(row.original.created_at)}</span>,
+        },
+        {
+            accessorKey: 'updated_at',
+            header: 'Updated At',
+            size: 130,
+            accessorFn: (row) => formatDate(row.updated_at),
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{formatDate(row.original.updated_at)}</span>,
+        },
+        {
+            id: 'actions',
+            header: 'Actions',
+            enableSorting: false,
+            enableColumnFilter: false,
+            size: 100,
+            cell: ({ row }) => (
+                <div className="flex justify-end gap-1">
+                    {isProtected(row.original) ? (
+                        <Badge variant="outline" className="text-xs">Protected</Badge>
+                    ) : (
+                        <>
+                            {hasPermission('role-edit') && (
+                                <Button variant="ghost" size="sm" asChild>
+                                    <Link href={`/roles/${row.original.id}/edit`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
+                                        <Edit className="h-4 w-4" />
+                                        <span className="text-[10px] leading-none">Edit</span>
+                                    </Link>
+                                </Button>
+                            )}
+                            {hasPermission('role-delete') && (
+                                <Button variant="ghost" size="sm"
+                                    onClick={() => setDeleteDialog({ open: true, id: row.original.id, name: row.original.name })}
+                                    className="flex flex-col items-center gap-1 h-auto py-1 w-14">
+                                    <Trash2 className="h-4 w-4 text-red-600" />
+                                    <span className="text-[10px] leading-none text-red-600">Delete</span>
+                                </Button>
+                            )}
+                        </>
+                    )}
+                </div>
+            ),
+        },
+    ];
 
     return (
         <>
             <Head title="Roles" />
-
             <div className="space-y-4 p-4">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Roles</h1>
                     {hasPermission('role-create') && (
                         <Button asChild size="sm">
                             <Link href="/roles/create">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Role
+                                <Plus className="mr-2 h-4 w-4" />Add Role
                             </Link>
                         </Button>
                     )}
                 </div>
-
-                <div className="rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Permissions</TableHead>
-                                <TableHead>Created At</TableHead>
-                                <TableHead>Updated At</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {roles.data.map((role) => {
-                                const isExpanded = expandedRoles.includes(role.id);
-                                const groupedPermissions = groupPermissions(role.permissions || []);
-
-                                return (
-                                    <React.Fragment key={role.id}>
-                                        <TableRow>
-                                            <TableCell className="font-medium">{role.name}</TableCell>
-                                            <TableCell>
-                                                <Collapsible open={isExpanded} onOpenChange={() => toggleExpand(role.id)}>
-                                                    <CollapsibleTrigger asChild>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="flex items-center gap-2 p-0 hover:bg-transparent"
-                                                        >
-                                                            <span className="text-sm text-muted-foreground">
-                                                                {role.permissions?.length || 0} permissions
-                                                            </span>
-                                                            <ChevronDown
-                                                                className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                                                            />
-                                                        </Button>
-                                                    </CollapsibleTrigger>
-                                                </Collapsible>
-                                            </TableCell>
-                                            <TableCell className="text-sm text-muted-foreground">{formatDate(role.created_at)}</TableCell>
-                                            <TableCell className="text-sm text-muted-foreground">{formatDate(role.updated_at)}</TableCell>
-                                            <TableCell className="text-right">
-                                                <div className="flex justify-end gap-2">
-                                                    {isProtected(role) ? (
-                                                        <Badge variant="outline" className="text-xs">
-                                                            Protected
-                                                        </Badge>
-                                                    ) : (
-                                                        <>
-                                                            {hasPermission('role-edit') && (
-                                                                <Button variant="ghost" size="sm" asChild>
-                                                                    <Link href={`/roles/${role.id}/edit`}>
-                                                                        <Edit className="h-4 w-4" />
-                                                                    </Link>
-                                                                </Button>
-                                                            )}
-                                                            {hasPermission('role-delete') && (
-                                                                <Button variant="ghost" size="sm"
-                                                                    onClick={() => handleDeleteClick(role.id, role.name)}>
-                                                                    <Trash2 className="h-4 w-4 text-red-600" />
-                                                                </Button>
-                                                            )}
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                        {isExpanded && (
-                                            <TableRow key={`${role.id}-expanded`}>
-                                                <TableCell colSpan={3} className="bg-muted/50">
-                                                    <div className="space-y-3 py-3">
-                                                        {Object.entries(groupedPermissions).map(([category, perms]) => (
-                                                            <div key={category} className="space-y-1">
-                                                                <p className="text-sm font-semibold capitalize">
-                                                                    {category}
-                                                                </p>
-                                                                <div className="flex flex-wrap gap-2">
-                                                                    {perms.map((perm: Permission) => (
-                                                                        <span
-                                                                            key={perm.id}
-                                                                            className="inline-flex items-center rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary"
-                                                                        >
-                                                                            {perm.name.split('-').slice(1).join(' ')}
-                                                                        </span>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </React.Fragment>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                </div>
+                <DataTable
+                    columns={columns}
+                    data={roles}
+                    exportFileName="roles"
+                    timezone={preferences.timezone}
+                    storageKey="roles"
+                />
             </div>
 
-            <AlertDialog open={deleteDialog.open} onOpenChange={(open: boolean) => setDeleteDialog({ ...deleteDialog, open })}>
+            <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ ...deleteDialog, open })}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
@@ -198,9 +165,7 @@ export default function Index({ roles }: RoleData) {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                            Delete
-                        </AlertDialogAction>
+                        <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
@@ -209,7 +174,8 @@ export default function Index({ roles }: RoleData) {
 }
 
 Index.layout = (page: React.ReactNode) => (
-    <AppLayout breadcrumbs={[{ title: 'Dashboard', href: '/dashboard' }, { title: 'Roles', href: '/roles' }]}>
-        {page}
-    </AppLayout>
+    <AppLayout breadcrumbs={[
+        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Roles', href: '/roles' },
+    ]}>{page}</AppLayout>
 );

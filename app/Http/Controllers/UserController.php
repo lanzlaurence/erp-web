@@ -31,7 +31,7 @@ class UserController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $users = User::with('roles')->latest()->paginate(10);
+        $users = User::with('roles')->latest()->get();
         return Inertia::render('user/index', ['users' => $users]);
     }
 
