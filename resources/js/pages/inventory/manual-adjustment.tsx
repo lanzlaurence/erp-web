@@ -289,6 +289,7 @@ export default function ManualAdjustment({ materials, locations, inventories }: 
 ManualAdjustment.layout = (page: React.ReactNode) => (
     <AppLayout breadcrumbs={[
         { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Inventory', href: '/inventories' },
         { title: 'Manual Adjustment', href: '/inventories/manual-adjustment' },
     ]}>{page}</AppLayout>
 );

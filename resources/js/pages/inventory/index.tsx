@@ -6,7 +6,7 @@ import { useFormatters } from '@/hooks/use-formatters';
 import AppLayout from '@/layouts/app-layout';
 import type { InventoryData } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeftRight, Eye, Edit, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeftRight, Eye, Edit, Plus, Trash2, SlidersHorizontal } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Index({ inventories }: InventoryData) {
@@ -35,6 +35,14 @@ export default function Index({ inventories }: InventoryData) {
                             </Link>
                         </Button>
                     )} */}
+                    {hasPermission('inventory-adjust') && (
+                        <Button asChild size="sm">
+                            <Link href="/inventories/manual-adjustment">
+                                <SlidersHorizontal className="mr-2 h-4 w-4" />
+                                Manual Adjustment
+                            </Link>
+                        </Button>
+                    )}
                 </div>
 
                 <div className="rounded-md border">

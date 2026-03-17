@@ -74,7 +74,6 @@ export function AppSidebar() {
                 { title: 'Goods Receipts', href: '/goods-receipts', icon: PackageCheck, permission: 'goods-receipt-view' },
                 { title: 'Sales Orders', href: '/sales-orders', icon: ShoppingBag, permission: 'sales-order-view' },
                 { title: 'Goods Issues', href: '/goods-issues', icon: Truck, permission: 'goods-issue-view' },
-                { title: 'Manual Adjustment', href: '/inventories/manual-adjustment', icon: SlidersHorizontal, permission: 'inventory-adjust' },
                 { title: 'Inventory', href: '/inventories', icon: Warehouse, permission: 'inventory-view' },
             ],
         },
