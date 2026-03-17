@@ -51,12 +51,6 @@ export default function SalesHistory({ material, salesHistory, stockByLocation }
             cell: ({ row }) => formatDate(row.original.order_date),
         },
         {
-            accessorKey: 'uom',
-            header: 'UOM',
-            size: 100,
-            cell: ({ row }) => row.original.uom || '-',
-        },
-        {
             accessorKey: 'discount_amount',
             header: 'Discount',
             size: 120,
