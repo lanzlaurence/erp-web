@@ -25,7 +25,7 @@ class ChargeController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $charges = Charge::latest()->paginate(10);
+        $charges = Charge::latest()->get();
         return Inertia::render('charge/index', ['charges' => $charges]);
     }
 
@@ -39,11 +39,6 @@ class ChargeController extends Controller implements HasMiddleware
         $charge = Charge::create($request->validated());
         return redirect()->route('charges.index')
             ->with('success', "Charge created successfully");
-    }
-
-    public function show(Charge $charge)
-    {
-        return Inertia::render('charge/show', ['charge' => $charge]);
     }
 
     public function edit(Charge $charge)

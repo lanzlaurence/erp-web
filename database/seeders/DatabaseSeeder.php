@@ -14,11 +14,15 @@ class DatabaseSeeder extends Seeder
             BrandSeeder::class,
             CategorySeeder::class,
             UomSeeder::class,
-            DestinationSeeder::class,
+            LocationSeeder::class,
             MaterialSeeder::class,
             VendorSeeder::class,
             CustomerSeeder::class,
             ChargeSeeder::class,
+            CurrencySeeder::class,
+            InventorySeeder::class,
+            PurchaseOrderSeeder::class,
+            SalesOrderSeeder::class,
         ]);
     }
 }

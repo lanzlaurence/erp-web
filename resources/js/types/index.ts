@@ -1,10 +1,16 @@
+// types/index.ts
 export type * from './auth';
+export type * from './masters';
 export type * from './modules';
 export type * from './navigation';
 export type * from './ui';
+export type * from './transactions';
+export type * from './dashboard';
 
 import type { Auth, Permission, Role, User } from './auth';
-import type { Brand, Category, Charge, Customer, Destination, Material, Uom, Vendor } from './modules';
+import type { Customer, Material, Vendor } from './masters';
+import type { Brand, Category, Charge, Currency, Location, Uom } from './modules';
+import type { PurchaseOrder, GoodsReceipt, Inventory, InventoryLog, SalesOrder, GoodsIssue } from './transactions';
 
 export type FlashMessage = {
     success?: string;
@@ -15,12 +21,18 @@ export type Preference = {
     app_name: string;
     app_logo: string;
     decimal_places: number;
+    color_theme: string;
+    timezone: string;
+    currency: string;
+    date_format: string;
+    time_format: '12h' | '24h';
 };
 
 export type SharedData = {
     name: string;
     auth: Auth;
     preferences: Preference;
+    currencies: Currency[];
     sidebarOpen: boolean;
     flash: FlashMessage;
     [key: string]: unknown;
@@ -43,11 +55,11 @@ export type PaginatedData<T> = {
 };
 
 export type UserData = {
-    users: PaginatedData<User>;
+    users: User[];
 };
 
 export type RoleData = {
-    roles: PaginatedData<Role & { permissions: Permission[] }>;
+    roles: (Role & { permissions: Permission[] })[];
     permissions?: Permission[];
 };
 
@@ -56,40 +68,95 @@ export type PreferenceData = {
         app_name: string;
         app_logo_url: string;
         decimal_places: string;
+        color_theme: string;
+        timezone: string;
+        currency: string;
+        date_format: string;
+        time_format: string;
     };
+    currencies: Currency[];
 };
 
 export type BrandData = {
-    brands: PaginatedData<Brand>;
+    brands: Brand[];
 };
 
 export type CategoryData = {
-    categories: PaginatedData<Category>;
+    categories: Category[];
 };
 
 export type UomData = {
-    uoms: PaginatedData<Uom>;
+    uoms: Uom[];
 };
 
-export type DestinationData = {
-    destinations: PaginatedData<Destination>;
+export type LocationData = {
+    locations: Location[];
 };
 
 export type ChargeData = {
-    charges: PaginatedData<Charge>;
+    charges: Charge[];
+};
+
+export type CurrencyData = {
+    currencies: Currency[];
 };
 
 export type MaterialData = {
-    materials: PaginatedData<Material>;
+    materials: Material[];
     brands?: Brand[];
     categories?: Category[];
     uoms?: Uom[];
 };
 
 export type VendorData = {
-    vendors: PaginatedData<Vendor>;
+    vendors: Vendor[];
 };
 
 export type CustomerData = {
-    customers: PaginatedData<Customer>;
+    customers: Customer[];
+};
+
+export type PurchaseOrderData = {
+    purchaseOrders: PurchaseOrder[];
+};
+
+export type GoodsReceiptData = {
+    goodsReceipts: GoodsReceipt[];
+};
+
+export type SalesOrderData = {
+    salesOrders: SalesOrder[];
+};
+
+export type GoodsIssueData = {
+    goodsIssues: GoodsIssue[];
+};
+
+export type PurchaseOrderShowData = {
+    purchaseOrder: PurchaseOrder;
+    vendors?: Vendor[];
+    materials?: Material[];
+    charges?: Charge[];
+};
+
+export type GoodsReceiptShowData = {
+    goodsReceipt: GoodsReceipt;
+    locations?: Location[];
+};
+
+export type SalesOrderShowData = {
+    salesOrder: SalesOrder;
+};
+
+export type GoodsIssueShowData = {
+    goodsIssue: GoodsIssue;
+};
+
+export type InventoryData = {
+    inventories: Inventory[];
+};
+
+export type InventoryShowData = {
+    inventory: Inventory;
+    logs: InventoryLog[];
 };

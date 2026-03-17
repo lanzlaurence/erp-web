@@ -1,11 +1,14 @@
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { InputPassword } from '@/components/ui/input-password';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { update } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
+import PasswordRequirements from '@/components/password-requirements';
+import { useState } from 'react';
 
 type Props = {
     token: string;
@@ -13,6 +16,8 @@ type Props = {
 };
 
 export default function ResetPassword({ token, email }: Props) {
+    const [passwordValue, setPasswordValue] = useState('');
+
     return (
         <AuthLayout
             title="Reset password"
@@ -46,15 +51,16 @@ export default function ResetPassword({ token, email }: Props) {
 
                         <div className="grid gap-2">
                             <Label htmlFor="password">Password</Label>
-                            <Input
+                            <InputPassword
                                 id="password"
-                                type="password"
                                 name="password"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
                                 autoFocus
                                 placeholder="Password"
+                                onChange={(e) => setPasswordValue(e.target.value)}
                             />
+                            <PasswordRequirements password={passwordValue} />
                             <InputError message={errors.password} />
                         </div>
 
@@ -62,9 +68,8 @@ export default function ResetPassword({ token, email }: Props) {
                             <Label htmlFor="password_confirmation">
                                 Confirm password
                             </Label>
-                            <Input
+                            <InputPassword
                                 id="password_confirmation"
-                                type="password"
                                 name="password_confirmation"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdatePreferenceRequest;
 use App\Models\Preference;
+use App\Models\Currency;
 use App\Traits\HandlesFileUpload;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -26,23 +27,40 @@ class PreferenceController extends Controller implements HasMiddleware
     public function index()
     {
         $formData = [
-            'app_name' => Preference::get('app_name', 'Example App'),
+            'app_name' => Preference::get('app_name', 'ERP Web'),
             'app_logo_url' => $this->getLogoUrl(),
             'decimal_places' => Preference::get('decimal_places', '2'),
+            'color_theme' => Preference::get('color_theme', 'blue'),
+            'timezone' => Preference::get('timezone', 'Asia/Manila'),
+            'currency' => Preference::get('currency', 'PHP'),
+            'date_format' => Preference::get('date_format', 'MM/DD/YYYY'),
+            'time_format' => Preference::get('time_format', '12h'),
         ];
 
-        return Inertia::render('preference/index', ['formData' => $formData]);
+        $currencies = Currency::where('is_active', true)
+            ->orderBy('code')
+            ->get(['code', 'name', 'symbol']);
+
+        return Inertia::render('preference/index', [
+            'formData' => $formData,
+            'currencies' => $currencies,
+        ]);
     }
 
     public function update(UpdatePreferenceRequest $request)
     {
         Preference::set('app_name', $request->app_name);
         Preference::set('decimal_places', $request->decimal_places, 'number');
+        Preference::set('color_theme', $request->color_theme);
+        Preference::set('timezone', $request->timezone);
+        Preference::set('currency', $request->currency);
+        Preference::set('date_format', $request->date_format);
+        Preference::set('time_format', $request->time_format);
 
         if ($request->hasFile('app_logo')) {
             $oldLogo = Preference::get('app_logo');
 
-            if ($oldLogo && $oldLogo !== 'favicon.png') {
+            if ($oldLogo && $oldLogo !== 'default-logo.jpg') {
                 $this->deleteFile($oldLogo, 'public');
             }
 
@@ -61,10 +79,10 @@ class PreferenceController extends Controller implements HasMiddleware
 
     private function getLogoUrl(): string
     {
-        $logo = Preference::get('app_logo', 'favicon.png');
+        $logo = Preference::get('app_logo', 'default-logo.jpg');
 
-        if ($logo === 'favicon.png') {
-            return asset('favicon.png');
+        if ($logo === 'default-logo.jpg') {
+            return asset('default-logo.jpg');
         }
 
         return Storage::disk('public')->url($logo);

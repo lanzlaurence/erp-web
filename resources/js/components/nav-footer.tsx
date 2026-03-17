@@ -1,3 +1,4 @@
+// resources/js/components/nav-footer.tsx
 import {
     SidebarGroup,
     SidebarGroupContent,
@@ -25,25 +26,36 @@ export function NavFooter({
                 <SidebarMenu>
                     {items.map((item) => (
                         <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton
-                                asChild
-                                className="text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100"
-                            >
-                                <a
-                                    href={toUrl(item.href)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                            {item.onClick ? (
+                                <SidebarMenuButton
+                                    onClick={item.onClick}
+                                    className="text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100 animate-pulse"
                                 >
-                                    {item.icon && (
-                                        <item.icon className="h-5 w-5" />
-                                    )}
+                                    {item.icon && <item.icon className="h-5 w-5" />}
                                     <span>{item.title}</span>
-                                </a>
-                            </SidebarMenuButton>
+                                </SidebarMenuButton>
+                            ) : (
+                                <SidebarMenuButton
+                                    asChild
+                                    className="text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100"
+                                >
+                                    <a href={toUrl(item.href!)} target="_blank" rel="noopener noreferrer">
+                                        {item.icon && <item.icon className="h-5 w-5" />}
+                                        <span>{item.title}</span>
+                                    </a>
+                                </SidebarMenuButton>
+                            )}
                         </SidebarMenuItem>
                     ))}
                 </SidebarMenu>
             </SidebarGroupContent>
+            <style>{`
+                @keyframes breathing {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                }
+                .breathing { animation: breathing 2s ease-in-out infinite; }
+            `}</style>
         </SidebarGroup>
     );
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateMaterialRequest;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Material;
+use App\Models\GoodsReceiptItem;
 use App\Models\Uom;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -26,7 +27,7 @@ class MaterialController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $materials = Material::with(['brand', 'category', 'uom'])->latest()->paginate(10);
+        $materials = Material::with(['brand', 'category', 'uom'])->latest()->get();
         return Inertia::render('material/index', ['materials' => $materials]);
     }
 
@@ -46,13 +47,14 @@ class MaterialController extends Controller implements HasMiddleware
     public function store(StoreMaterialRequest $request)
     {
         $material = Material::create($request->validated());
+        $material->logCreated();
         return redirect()->route('materials.index')
             ->with('success', "Material created successfully with code: {$material->code}");
     }
 
     public function show(Material $material)
     {
-        $material->load(['brand', 'category', 'uom']);
+        $material->load(['brand', 'category', 'uom', 'logs.user']);
         return Inertia::render('material/show', ['material' => $material]);
     }
 
@@ -73,7 +75,10 @@ class MaterialController extends Controller implements HasMiddleware
 
     public function update(UpdateMaterialRequest $request, Material $material)
     {
+        $old = $material->only($material->getFillable());
         $material->update($request->validated());
+        $material->logUpdated($old, $request->validated());
+
         return redirect()->route('materials.index')
             ->with('success', "Material {$material->code} updated successfully");
     }
@@ -81,6 +86,7 @@ class MaterialController extends Controller implements HasMiddleware
     public function destroy(Material $material)
     {
         $code = $material->code;
+        $material->logDeleted();
         $material->delete();
         return redirect()->route('materials.index')
             ->with('success', "Material {$code} deleted successfully");

@@ -15,12 +15,6 @@ class UpdateVendorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('vendors')->ignore($this->vendor)->whereNull('deleted_at'),
-            ],
             'name' => ['required', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'max:255'],
             'state_province' => ['nullable', 'string', 'max:255'],

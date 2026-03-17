@@ -14,6 +14,11 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller implements HasMiddleware
 {
+    private function isProtected(User $user): bool
+    {
+        return $user->id === 1;
+    }
+
     public static function middleware(): array
     {
         return [
@@ -26,7 +31,7 @@ class UserController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $users = User::with('roles')->latest()->paginate(10);
+        $users = User::with('roles')->latest()->get();
         return Inertia::render('user/index', ['users' => $users]);
     }
 
@@ -41,7 +46,9 @@ class UserController extends Controller implements HasMiddleware
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'email_verified_at' => $request->email_verified ? now() : null,
             'password' => Hash::make($request->password),
+            'force_password_change' => $request->force_password_change ?? true,
             'is_active' => $request->is_active ?? true,
         ]);
 
@@ -68,14 +75,26 @@ class UserController extends Controller implements HasMiddleware
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        if ($this->isProtected($user)) {
+            return redirect()->route('users.index')
+                ->withErrors(['error' => 'This user cannot be modified.']);
+        }
+
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
+            'email_verified_at' => $request->email_verified ? ($user->email_verified_at ?? now()) : null,
+            'force_password_change' => $request->force_password_change ?? false,
             'is_active' => $request->is_active ?? true,
+            'is_locked' => $request->is_locked ?? false,
+            'login_attempts' => !$request->is_locked ? 0 : $user->login_attempts,
         ]);
 
         if ($request->password) {
-            $user->update(['password' => Hash::make($request->password)]);
+            $user->update([
+                'password'            => Hash::make($request->password),
+                'password_changed_at' => now(),
+            ]);
         }
 
         if ($request->roles) {
@@ -87,6 +106,11 @@ class UserController extends Controller implements HasMiddleware
 
     public function destroy(User $user)
     {
+        if ($this->isProtected($user)) {
+            return redirect()->route('users.index')
+                ->withErrors(['error' => 'This user cannot be deleted.']);
+        }
+
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User deleted successfully');
     }

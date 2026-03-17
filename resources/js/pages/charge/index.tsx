@@ -1,152 +1,148 @@
-import { Button } from '@/components/ui/button';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
-import { usePermissions } from '@/hooks/use-permissions';
-import { usePreferences } from '@/hooks/use-preferences';
 import AppLayout from '@/layouts/app-layout';
-import type { ChargeData } from '@/types';
-import { Link, router } from '@inertiajs/react';
-import { Edit, Eye, Plus, Trash2 } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { useFormatters } from '@/hooks/use-formatters';
+import { usePermissions } from '@/hooks/use-permissions';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/data-table';
+import { ColumnDef } from '@tanstack/react-table';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Edit, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { usePage } from '@inertiajs/react';
+import type { ChargeData, Charge, SharedData } from '@/types';
 
 export default function Index({ charges }: ChargeData) {
     const { hasPermission } = usePermissions();
-    const { formatDecimal } = usePreferences();
+    const { formatDate, formatAmount, formatDecimal } = useFormatters();
+    const { preferences } = usePage<SharedData>().props;
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; name: string }>({
-        open: false,
-        id: 0,
-        name: '',
+        open: false, id: 0, name: '',
     });
-
-    const handleDeleteClick = (id: number, name: string) => {
-        setDeleteDialog({ open: true, id, name });
-    };
 
     const handleDeleteConfirm = () => {
         router.delete(`/charges/${deleteDialog.id}`);
         setDeleteDialog({ open: false, id: 0, name: '' });
     };
 
-    const getTypeBadge = (type: string) => {
-        return type === 'tax' ? (
-            <Badge variant="destructive">Tax</Badge>
-        ) : (
-            <Badge variant="success">Discount</Badge>
-        );
-    };
-
-    const getValueDisplay = (valueType: string, value: string | number) => {
-        if (valueType === 'percentage') {
-            return `${formatDecimal(Number(value))}%`;
-        }
-        return `₱${formatDecimal(Number(value))}`;
-    };
+    const columns: ColumnDef<Charge>[] = [
+        {
+            accessorKey: 'name',
+            header: 'Name',
+            size: 160,
+            cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+        },
+        {
+            accessorKey: 'description',
+            header: 'Description',
+            size: 200,
+            cell: ({ row }) => <span className="text-muted-foreground">{row.original.description || '-'}</span>,
+        },
+        {
+            accessorKey: 'type',
+            header: 'Type',
+            size: 100,
+            cell: ({ row }) => (
+                row.original.type === 'tax'
+                    ? <Badge variant="destructive">Tax</Badge>
+                    : <Badge variant="success">Discount</Badge>
+            ),
+        },
+        {
+            accessorKey: 'value_type',
+            header: 'Value Type',
+            size: 120,
+            cell: ({ row }) => <span className="capitalize">{row.original.value_type}</span>,
+        },
+        {
+            accessorKey: 'value',
+            header: 'Value',
+            size: 100,
+            cell: ({ row }) => (
+                <span className="font-mono">
+                    {row.original.value_type === 'percentage'
+                        ? `${formatDecimal(Number(row.original.value))}%`
+                        : formatAmount(Number(row.original.value))}
+                </span>
+            ),
+        },
+        {
+            accessorKey: 'status',
+            header: 'Status',
+            size: 100,
+            cell: ({ row }) => (
+                <Badge variant={row.original.status === 'active' ? 'default' : 'secondary'}>
+                    {row.original.status}
+                </Badge>
+            ),
+        },
+        {
+            accessorKey: 'created_at',
+            header: 'Created At',
+            size: 130,
+            accessorFn: (row) => formatDate(row.created_at),
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{formatDate(row.original.created_at)}</span>,
+        },
+        {
+            accessorKey: 'updated_at',
+            header: 'Updated At',
+            size: 130,
+            accessorFn: (row) => formatDate(row.updated_at),
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{formatDate(row.original.updated_at)}</span>,
+        },
+        {
+            id: 'actions',
+            header: 'Actions',
+            enableSorting: false,
+            enableColumnFilter: false,
+            size: 100,
+            cell: ({ row }) => (
+                <div className="flex justify-end gap-1">
+                    {hasPermission('charge-edit') && (
+                        <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/charges/${row.original.id}/edit`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
+                                <Edit className="h-4 w-4" />
+                                <span className="text-[10px] leading-none">Edit</span>
+                            </Link>
+                        </Button>
+                    )}
+                    {hasPermission('charge-delete') && (
+                        <Button variant="ghost" size="sm"
+                            onClick={() => setDeleteDialog({ open: true, id: row.original.id, name: row.original.name })}
+                            className="flex flex-col items-center gap-1 h-auto py-1 w-14">
+                            <Trash2 className="h-4 w-4 text-red-600" />
+                            <span className="text-[10px] leading-none text-red-600">Delete</span>
+                        </Button>
+                    )}
+                </div>
+            ),
+        },
+    ];
 
     return (
         <>
+            <Head title="Charges" />
             <div className="space-y-4 p-4">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Charges</h1>
                     {hasPermission('charge-create') && (
                         <Button asChild size="sm">
-                            <Link href="/charges/create">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Charge
-                            </Link>
+                            <Link href="/charges/create"><Plus className="mr-2 h-4 w-4" />Add Charge</Link>
                         </Button>
                     )}
                 </div>
-
-                <div className="rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Type</TableHead>
-                                <TableHead>Value Type</TableHead>
-                                <TableHead>Value</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {charges.data.map((charge) => (
-                                <TableRow key={charge.id}>
-                                    <TableCell className="font-medium">{charge.name}</TableCell>
-                                    <TableCell>{getTypeBadge(charge.type)}</TableCell>
-                                    <TableCell className="capitalize">{charge.value_type}</TableCell>
-                                    <TableCell className="font-mono">{getValueDisplay(charge.value_type, charge.value)}</TableCell>
-                                    <TableCell>
-                                        <Badge
-                                            variant={charge.status === 'active' ? 'default' : 'secondary'}
-                                        >
-                                            {charge.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            {hasPermission('charge-view') && (
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/charges/${charge.id}`}>
-                                                        <Eye className="h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            )}
-                                            {hasPermission('charge-edit') && (
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/charges/${charge.id}/edit`}>
-                                                        <Edit className="h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            )}
-                                            {hasPermission('charge-delete') && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleDeleteClick(charge.id, charge.name)}
-                                                >
-                                                    <Trash2 className="h-4 w-4 text-red-600" />
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
+                <DataTable columns={columns} data={charges} exportFileName="charges" timezone={preferences.timezone} storageKey="charges" />
             </div>
 
-            <AlertDialog open={deleteDialog.open} onOpenChange={(open: boolean) => setDeleteDialog({ ...deleteDialog, open })}>
+            <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ ...deleteDialog, open })}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This will permanently delete charge <span className="font-semibold">{deleteDialog.name}</span>. This action cannot be undone.
-                        </AlertDialogDescription>
+                        <AlertDialogDescription>This will permanently delete charge <span className="font-semibold">{deleteDialog.name}</span>. This action cannot be undone.</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                            Delete
-                        </AlertDialogAction>
+                        <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
@@ -155,12 +151,5 @@ export default function Index({ charges }: ChargeData) {
 }
 
 Index.layout = (page: React.ReactNode) => (
-    <AppLayout
-        breadcrumbs={[
-            { title: 'Dashboard', href: '/dashboard' },
-            { title: 'Charges', href: '/charges' },
-        ]}
-    >
-        {page}
-    </AppLayout>
+    <AppLayout breadcrumbs={[{ title: 'Dashboard', href: '/dashboard' }, { title: 'Charges', href: '/charges' }]}>{page}</AppLayout>
 );

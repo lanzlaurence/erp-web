@@ -23,7 +23,7 @@ class BrandController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $brands = Brand::latest()->paginate(10);
+        $brands = Brand::latest()->get();
         return Inertia::render('brand/index', ['brands' => $brands]);
     }
 
