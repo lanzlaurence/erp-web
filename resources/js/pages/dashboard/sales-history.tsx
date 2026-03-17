@@ -119,6 +119,7 @@ export default function SalesHistory({ material, salesHistory, stockByLocation }
                         exportFileName={`sales-history-${material.code}`}
                         timezone={preferences.timezone}
                         initialColumnVisibility={{ customer_name: false }}
+                        storageKey="sales-history"
                     />
                 </div>
 
@@ -129,6 +130,7 @@ export default function SalesHistory({ material, salesHistory, stockByLocation }
                         data={stockByLocation}
                         exportFileName={`stock-by-location-${material.code}`}
                         timezone={preferences.timezone}
+                        storageKey="sales-history-stock"
                     />
                 </div>
             </div>

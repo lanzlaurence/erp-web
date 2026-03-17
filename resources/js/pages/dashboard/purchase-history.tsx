@@ -119,6 +119,7 @@ export default function PurchaseHistory({ material, purchaseHistory, stockByLoca
                         exportFileName={`purchase-history-${material.code}`}
                         timezone={preferences.timezone}
                         initialColumnVisibility={{ vendor_name: false }}
+                        storageKey="purchase-history"
                     />
                 </div>
 
@@ -129,6 +130,7 @@ export default function PurchaseHistory({ material, purchaseHistory, stockByLoca
                         data={stockByLocation}
                         exportFileName={`stock-by-location-${material.code}`}
                         timezone={preferences.timezone}
+                        storageKey="purchase-history-stock"
                     />
                 </div>
             </div>

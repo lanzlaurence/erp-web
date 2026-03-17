@@ -152,6 +152,7 @@ export default function Dashboard({ materials }: DashboardData) {
                     exportFileName="inventory-report"
                     timezone={preferences.timezone}
                     initialColumnVisibility={{ name: false }}
+                    storageKey="dashboard"
                 />
             </div>
         </AppLayout>

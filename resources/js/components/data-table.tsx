@@ -37,15 +37,33 @@ interface DataTableProps<TData> {
     exportFileName?: string;
     timezone?: string;
     initialColumnVisibility?: VisibilityState;
+    storageKey?: string;
 }
 
-export function DataTable<TData>({ columns, data, exportFileName = 'export', timezone = 'UTC', initialColumnVisibility = {} }: DataTableProps<TData>) {
-    const [sorting, setSorting] = useState<SortingState>([]);
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility);
-    const [globalFilter, setGlobalFilter] = useState('');
-    const [columnOrder, setColumnOrder] = useState<string[]>(() => columns.map((c) => (c as any).accessorKey ?? (c as any).id ?? ''));
-    const [pageSize, setPageSize] = useState(10);
+const loadState = <T,>(storageKey: string | undefined, key: string, fallback: T): T => {
+    if (!storageKey) return fallback;
+    try {
+        const stored = localStorage.getItem(`datatable_${storageKey}_${key}`);
+        return stored ? JSON.parse(stored) : fallback;
+    } catch {
+        return fallback;
+    }
+};
+
+const saveState = (storageKey: string | undefined, key: string, value: unknown) => {
+    if (!storageKey) return;
+    try {
+        localStorage.setItem(`datatable_${storageKey}_${key}`, JSON.stringify(value));
+    } catch {}
+};
+
+export function DataTable<TData>({ columns, data, exportFileName = 'export', timezone = 'UTC', initialColumnVisibility = {}, storageKey }: DataTableProps<TData>) {
+    const [sorting, setSorting] = useState<SortingState>(() => loadState(storageKey, 'sorting', []));
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(() => loadState(storageKey, 'columnFilters', []));
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => loadState(storageKey, 'columnVisibility', initialColumnVisibility));
+    const [globalFilter, setGlobalFilter] = useState<string>(() => loadState(storageKey, 'globalFilter', ''));
+    const [columnOrder, setColumnOrder] = useState<string[]>(() => loadState(storageKey, 'columnOrder', columns.map((c) => (c as any).accessorKey ?? (c as any).id ?? '')));
+    const [pageSize, setPageSize] = useState<number>(() => loadState(storageKey, 'pageSize', 10));
     const [pageIndex, setPageIndex] = useState(0);
     const [pageInputValue, setPageInputValue] = useState(String(pageIndex + 1));
     useEffect(() => {
@@ -63,6 +81,48 @@ export function DataTable<TData>({ columns, data, exportFileName = 'export', tim
         return colValue.includes(search) || nameValue.includes(search);
     };
 
+    const handleSetSorting: typeof setSorting = (updater) => {
+        setSorting((prev) => {
+            const next = typeof updater === 'function' ? updater(prev) : updater;
+            saveState(storageKey, 'sorting', next);
+            return next;
+        });
+    };
+
+    const handleSetColumnFilters: typeof setColumnFilters = (updater) => {
+        setColumnFilters((prev) => {
+            const next = typeof updater === 'function' ? updater(prev) : updater;
+            saveState(storageKey, 'columnFilters', next);
+            return next;
+        });
+    };
+
+    const handleSetColumnVisibility: typeof setColumnVisibility = (updater) => {
+        setColumnVisibility((prev) => {
+            const next = typeof updater === 'function' ? updater(prev) : updater;
+            saveState(storageKey, 'columnVisibility', next);
+            return next;
+        });
+    };
+
+    const handleSetGlobalFilter = (val: string) => {
+        setGlobalFilter(val);
+        saveState(storageKey, 'globalFilter', val);
+    };
+
+    const handleSetColumnOrder = (updater: any) => {
+        setColumnOrder((prev) => {
+            const next = typeof updater === 'function' ? updater(prev) : updater;
+            saveState(storageKey, 'columnOrder', next);
+            return next;
+        });
+    };
+
+    const handleSetPageSize = (val: number) => {
+        setPageSize(val);
+        saveState(storageKey, 'pageSize', val);
+    };
+
     const table = useReactTable({
         data,
         columns,
@@ -77,14 +137,15 @@ export function DataTable<TData>({ columns, data, exportFileName = 'export', tim
         filterFns: {
             multiField: multiFieldFilter,
         },
-        onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
-        onColumnVisibilityChange: setColumnVisibility,
-        onGlobalFilterChange: setGlobalFilter,
-        onColumnOrderChange: setColumnOrder,
+        onSortingChange: handleSetSorting,
+        onColumnFiltersChange: handleSetColumnFilters,
+        onColumnVisibilityChange: handleSetColumnVisibility,
+        onGlobalFilterChange: handleSetGlobalFilter,
+        onColumnOrderChange: handleSetColumnOrder,
         onPaginationChange: (updater) => {
             const next = typeof updater === 'function' ? updater({ pageIndex, pageSize }) : updater;
             setPageIndex(next.pageIndex);
+            saveState(storageKey, 'pageSize', next.pageSize);
             setPageSize(next.pageSize);
         },
         enableColumnPinning: true,
@@ -101,6 +162,11 @@ export function DataTable<TData>({ columns, data, exportFileName = 'export', tim
     });
 
     const handleReset = () => {
+        if (storageKey) {
+            ['sorting', 'columnFilters', 'columnVisibility', 'globalFilter', 'columnOrder', 'pageSize'].forEach((key) => {
+                localStorage.removeItem(`datatable_${storageKey}_${key}`);
+            });
+        }
         setSorting([]);
         setColumnFilters([]);
         setColumnVisibility(initialColumnVisibility);
@@ -140,7 +206,7 @@ export function DataTable<TData>({ columns, data, exportFileName = 'export', tim
     const handleDrop = (e: React.DragEvent, targetId: string) => {
         const sourceId = e.dataTransfer.getData('colId');
         if (sourceId === targetId) return;
-        setColumnOrder((prev) => {
+        handleSetColumnOrder((prev: string[]) => {
             const next = [...prev];
             const from = next.indexOf(sourceId);
             const to = next.indexOf(targetId);
@@ -162,7 +228,7 @@ export function DataTable<TData>({ columns, data, exportFileName = 'export', tim
                         onChange={(e) => setGlobalFilter(e.target.value)}
                         className="h-8 w-64"
                     />
-                    <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
+                    <Select value={String(pageSize)} onValueChange={(v) => handleSetPageSize(Number(v))}>
                         <SelectTrigger className="h-8 w-24">
                             <SelectValue />
                         </SelectTrigger>
