@@ -1,11 +1,13 @@
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link } from '@inertiajs/react';
 import { useFormatters } from '@/hooks/use-formatters';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import ClickableCode from '@/components/ui/clickable-code';
-import type { PurchaseHistoryItem, StockByLocation } from '@/types';
+import { DataTable } from '@/components/data-table';
+import { ColumnDef } from '@tanstack/react-table';
+import { usePage } from '@inertiajs/react';
+import type { PurchaseHistoryItem, StockByLocation, SharedData } from '@/types';
 
 type Props = {
     material: { id: number; code: string; name: string; uom: string | null };
@@ -15,6 +17,85 @@ type Props = {
 
 export default function PurchaseHistory({ material, purchaseHistory, stockByLocation }: Props) {
     const { formatAmount, formatDecimal, formatDate } = useFormatters();
+    const { preferences } = usePage<SharedData>().props;
+
+    const columns: ColumnDef<PurchaseHistoryItem>[] = [
+        {
+            accessorKey: 'po_code',
+            header: 'PO Code',
+            size: 150,
+            cell: ({ row }) => <ClickableCode href={`/purchase-orders/${row.original.po_id}`} value={row.original.po_code} />,
+        },
+        {
+            accessorKey: 'vendor_code',
+            header: 'Vendor',
+            size: 200,
+            filterFn: 'multiField' as any,
+            cell: ({ row }) => (
+                <div>
+                    <ClickableCode href={`/vendors/${row.original.vendor_id}`} value={row.original.vendor_code} />
+                    <p className="text-xs text-muted-foreground">{row.original.vendor_name}</p>
+                </div>
+            ),
+        },
+        {
+            accessorKey: 'vendor_name',
+            header: 'Vendor Name',
+            size: 0,
+            meta: { hidden: true },
+        },
+        {
+            accessorKey: 'order_date',
+            header: 'Order Date',
+            size: 130,
+            cell: ({ row }) => formatDate(row.original.order_date),
+        },
+        {
+            accessorKey: 'uom',
+            header: 'UOM',
+            size: 100,
+            cell: ({ row }) => row.original.uom || '-',
+        },
+        {
+            accessorKey: 'discount_amount',
+            header: 'Discount',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{formatAmount(row.original.discount_amount)}</span>,
+        },
+        {
+            accessorKey: 'unit_cost_after_discount',
+            header: 'Unit Cost After Disc.',
+            size: 170,
+            cell: ({ row }) => <span className="font-mono">{formatAmount(row.original.unit_cost_after_discount)}</span>,
+        },
+        {
+            accessorKey: 'qty_ordered',
+            header: 'Qty Ordered',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{formatDecimal(row.original.qty_ordered)}</span>,
+        },
+        {
+            accessorKey: 'net_cost',
+            header: 'Net Cost',
+            size: 130,
+            cell: ({ row }) => <span className="font-mono">{formatAmount(row.original.net_cost)}</span>,
+        },
+    ];
+
+    const stockColumns: ColumnDef<StockByLocation>[] = [
+        {
+            accessorKey: 'location_name',
+            header: 'Location',
+            size: 200,
+            cell: ({ row }) => row.original.location_name,
+        },
+        {
+            accessorKey: 'quantity',
+            header: 'Quantity',
+            size: 130,
+            cell: ({ row }) => <span className="font-mono">{formatDecimal(row.original.quantity)}</span>,
+        },
+    ];
 
     return (
         <>
@@ -32,70 +113,23 @@ export default function PurchaseHistory({ material, purchaseHistory, stockByLoca
 
                 <div className="space-y-2">
                     <h3 className="font-semibold">Purchase Orders</h3>
-                    <div className="rounded-md border">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>PO Code</TableHead>
-                                    <TableHead>Vendor</TableHead>
-                                    <TableHead>Order Date</TableHead>
-                                    <TableHead>UOM</TableHead>
-                                    <TableHead className="text-right">Discount</TableHead>
-                                    <TableHead className="text-right">Unit Cost After Disc.</TableHead>
-                                    <TableHead className="text-right">Qty Ordered</TableHead>
-                                    <TableHead className="text-right">Net Cost</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {purchaseHistory.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">
-                                            No purchase history found.
-                                        </TableCell>
-                                    </TableRow>
-                                ) : purchaseHistory.map((row, i) => (
-                                    <TableRow key={i}>
-                                        <TableCell><ClickableCode href={`/purchase-orders/${row.po_id}`} value={row.po_code} /></TableCell>
-                                        <TableCell><ClickableCode href={`/vendors/${row.vendor_id}`} value={row.vendor_code} /></TableCell>
-                                        <TableCell>{formatDate(row.order_date)}</TableCell>
-                                        <TableCell>{row.uom || '-'}</TableCell>
-                                        <TableCell className="text-right font-mono">{formatAmount(row.discount_amount)}</TableCell>
-                                        <TableCell className="text-right font-mono">{formatAmount(row.unit_cost_after_discount)}</TableCell>
-                                        <TableCell className="text-right font-mono">{formatDecimal(row.qty_ordered)}</TableCell>
-                                        <TableCell className="text-right font-mono">{formatAmount(row.net_cost)}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                    <DataTable
+                        columns={columns}
+                        data={purchaseHistory}
+                        exportFileName={`purchase-history-${material.code}`}
+                        timezone={preferences.timezone}
+                        initialColumnVisibility={{ vendor_name: false }}
+                    />
                 </div>
 
                 <div className="space-y-2">
                     <h3 className="font-semibold">Stock by Location</h3>
-                    <div className="rounded-md border">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Location</TableHead>
-                                    <TableHead className="text-right">Quantity</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {stockByLocation.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell colSpan={2} className="py-8 text-center text-sm text-muted-foreground">
-                                            No stock found.
-                                        </TableCell>
-                                    </TableRow>
-                                ) : stockByLocation.map((row, i) => (
-                                    <TableRow key={i}>
-                                        <TableCell>{row.location_name}</TableCell>
-                                        <TableCell className="text-right font-mono">{formatDecimal(row.quantity)}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                    <DataTable
+                        columns={stockColumns}
+                        data={stockByLocation}
+                        exportFileName={`stock-by-location-${material.code}`}
+                        timezone={preferences.timezone}
+                    />
                 </div>
             </div>
         </>
