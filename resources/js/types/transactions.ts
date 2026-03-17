@@ -1,5 +1,6 @@
 // types/transactions.ts
-import type { Material, Location, Charge, Vendor, Customer } from './modules';
+import type { Customer, Material, Vendor } from './masters';
+import type { Charge, Location } from './modules';
 import type { User } from './auth';
 
 // ── Purchase Order ────────────────────────────────────────────────────────────

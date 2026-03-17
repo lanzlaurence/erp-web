@@ -1,4 +1,6 @@
+// types/index.ts
 export type * from './auth';
+export type * from './masters';
 export type * from './modules';
 export type * from './navigation';
 export type * from './ui';
@@ -6,7 +8,8 @@ export type * from './transactions';
 export type * from './dashboard';
 
 import type { Auth, Permission, Role, User } from './auth';
-import type { Brand, Category, Charge, Currency, Customer, Location, Material, Uom, Vendor } from './modules';
+import type { Customer, Material, Vendor } from './masters';
+import type { Brand, Category, Charge, Currency, Location, Uom } from './modules';
 import type { PurchaseOrder, GoodsReceipt, Inventory, InventoryLog, SalesOrder, GoodsIssue } from './transactions';
 
 export type FlashMessage = {
@@ -99,18 +102,18 @@ export type CurrencyData = {
 };
 
 export type MaterialData = {
-    materials: PaginatedData<Material>;
+    materials: Material[];
     brands?: Brand[];
     categories?: Category[];
     uoms?: Uom[];
 };
 
 export type VendorData = {
-    vendors: PaginatedData<Vendor>;
+    vendors: Vendor[];
 };
 
 export type CustomerData = {
-    customers: PaginatedData<Customer>;
+    customers: Customer[];
 };
 
 export type PurchaseOrderData = {

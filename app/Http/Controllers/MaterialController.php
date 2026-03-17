@@ -27,7 +27,7 @@ class MaterialController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $materials = Material::with(['brand', 'category', 'uom'])->latest()->paginate(10);
+        $materials = Material::with(['brand', 'category', 'uom'])->latest()->get();
         return Inertia::render('material/index', ['materials' => $materials]);
     }
 

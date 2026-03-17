@@ -1,44 +1,110 @@
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
+import { Head } from '@inertiajs/react';
 import { useFormatters } from '@/hooks/use-formatters';
-import { Head, Link } from '@inertiajs/react';
-import type { PaginatedData } from '@/types';
-import type { TransactionLog } from '@/types/transactions';
+import { Badge } from '@/components/ui/badge';
+import { DataTable } from '@/components/data-table';
+import { ColumnDef } from '@tanstack/react-table';
+import { usePage } from '@inertiajs/react';
 import ClickableCode from '@/components/ui/clickable-code';
-
-type Props = {
-    logs: PaginatedData<TransactionLog>;
-};
+import type { SharedData, TransactionLogPageData, TransactionLogRow } from '@/types';
 
 const ACTION_BADGE: Record<string, 'default' | 'secondary' | 'destructive' | 'outline' | 'success'> = {
-    created:            'secondary',
-    posted:             'default',
-    updated:            'outline',
-    completed:          'success',
-    cancelled:          'destructive',
-    reverted:           'outline',
-    gr_created:         'secondary',
-    gr_completed:       'success',
-    status_recalculated: 'outline',
-    status_updated:     'outline',
+    created:              'secondary',
+    posted:               'default',
+    updated:              'outline',
+    completed:            'success',
+    cancelled:            'destructive',
+    reverted:             'outline',
+    gr_created:           'secondary',
+    gr_completed:         'success',
+    status_recalculated:  'outline',
+    status_updated:       'outline',
 };
 
-export default function TransactionLogPage({ logs }: Props) {
+const getHref = (log: TransactionLogRow): string | null => {
+    const type = log.loggable_type?.split('\\').pop();
+    if (type === 'PurchaseOrder') return `/purchase-orders/${log.loggable_id}`;
+    if (type === 'GoodsReceipt')  return `/goods-receipts/${log.loggable_id}`;
+    if (type === 'SalesOrder')    return `/sales-orders/${log.loggable_id}`;
+    if (type === 'GoodsIssue')    return `/goods-issues/${log.loggable_id}`;
+    return null;
+};
+
+const getDocType = (log: TransactionLogRow): string => {
+    const type = log.loggable_type?.split('\\').pop();
+    return type?.replace(/([A-Z])/g, ' $1').trim() ?? '-';
+};
+
+export default function TransactionLogPage({ logs }: TransactionLogPageData) {
     const { formatDateTime } = useFormatters();
+    const { preferences } = usePage<SharedData>().props;
 
-    const getReference = (log: TransactionLog) => {
-        if (!log.loggable_type) return '-';
-        const type = log.loggable_type.split('\\').pop(); // e.g. PurchaseOrder, GoodsReceipt
-        return type?.replace(/([A-Z])/g, ' $1').trim() ?? '-';
-    };
-
-    const getHref = (log: TransactionLog) => {
-        const type = log.loggable_type?.split('\\').pop();
-        if (type === 'PurchaseOrder') return `/purchase-orders/${log.loggable_id}`;
-        if (type === 'GoodsReceipt') return `/goods-receipts/${log.loggable_id}`;
-        return null;
-    };
+    const columns: ColumnDef<TransactionLogRow>[] = [
+        {
+            accessorKey: 'created_at',
+            header: 'Date & Time',
+            size: 160,
+            cell: ({ row }) => <span className="text-sm whitespace-nowrap">{formatDateTime(row.original.created_at)}</span>,
+        },
+        {
+            accessorKey: 'user_name',
+            header: 'User',
+            size: 140,
+            cell: ({ row }) => <span className="font-medium text-sm">{row.original.user_name ?? '-'}</span>,
+        },
+        {
+            accessorKey: 'loggable_type',
+            header: 'Document Type',
+            size: 160,
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{getDocType(row.original)}</span>,
+        },
+        {
+            accessorKey: 'loggable_code',
+            header: 'Document',
+            size: 150,
+            cell: ({ row }) => {
+                const href = getHref(row.original);
+                return href ? (
+                    <ClickableCode href={href} value={row.original.loggable_code ?? `#${row.original.loggable_id}`} />
+                ) : (
+                    <span className="font-mono text-sm text-muted-foreground">#{row.original.loggable_id}</span>
+                );
+            },
+        },
+        {
+            accessorKey: 'action',
+            header: 'Action',
+            size: 140,
+            cell: ({ row }) => (
+                <Badge variant={ACTION_BADGE[row.original.action] ?? 'secondary'}>
+                    {row.original.action.replace(/_/g, ' ')}
+                </Badge>
+            ),
+        },
+        {
+            accessorKey: 'from_status',
+            header: 'Status Change',
+            size: 180,
+            cell: ({ row }) => {
+                const { from_status, to_status } = row.original;
+                if (from_status && to_status) return (
+                    <span className="text-sm">
+                        <span className="text-muted-foreground">{from_status.replace(/_/g, ' ')}</span>
+                        <span className="mx-1">→</span>
+                        <span className="font-medium">{to_status.replace(/_/g, ' ')}</span>
+                    </span>
+                );
+                if (to_status) return <span className="text-sm font-medium">{to_status.replace(/_/g, ' ')}</span>;
+                return <span className="text-sm text-muted-foreground">-</span>;
+            },
+        },
+        {
+            accessorKey: 'remarks',
+            header: 'Remarks',
+            size: 200,
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.remarks ?? '-'}</span>,
+        },
+    ];
 
     return (
         <>
@@ -46,102 +112,15 @@ export default function TransactionLogPage({ logs }: Props) {
             <div className="space-y-4 p-4">
                 <div>
                     <h1 className="text-2xl font-semibold">Transaction Log</h1>
-                    <p className="text-sm text-muted-foreground">Audit trail for purchase orders and goods receipts</p>
+                    <p className="text-sm text-muted-foreground">Audit trail for all transactions</p>
                 </div>
-
-                <div className="rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Date & Time</TableHead>
-                                <TableHead>User</TableHead>
-                                <TableHead>Document Type</TableHead>
-                                <TableHead>Document</TableHead>
-                                <TableHead>Action</TableHead>
-                                <TableHead>Status Change</TableHead>
-                                <TableHead>Remarks</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {logs.data.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">
-                                        No transaction logs available.
-                                    </TableCell>
-                                </TableRow>
-                            ) : logs.data.map((log) => {
-                                const href      = getHref(log);
-                                const docType   = getReference(log);
-                                const badgeVariant = ACTION_BADGE[log.action] ?? 'secondary';
-
-                                return (
-                                    <TableRow key={log.id}>
-                                        <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                                            {formatDateTime(log.created_at)}
-                                        </TableCell>
-                                        <TableCell className="font-medium text-sm">
-                                            {log.user?.name ?? '-'}
-                                        </TableCell>
-                                        <TableCell className="text-sm text-muted-foreground">
-                                            {docType}
-                                        </TableCell>
-                                        <TableCell>
-                                            {href ? (
-                                                <ClickableCode
-                                                    href={href}
-                                                    value={(log.loggable as any)?.code ?? `#${log.loggable_id}`}
-                                                />
-                                            ) : (
-                                                <span className="font-mono text-sm text-muted-foreground">#{log.loggable_id}</span>
-                                            )}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge variant={badgeVariant}>
-                                                {log.action.replace(/_/g, ' ')}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-sm text-muted-foreground">
-                                            {log.from_status && log.to_status ? (
-                                                <span>
-                                                    <span className="text-muted-foreground">{log.from_status.replace(/_/g, ' ')}</span>
-                                                    <span className="mx-1">→</span>
-                                                    <span className="font-medium">{log.to_status.replace(/_/g, ' ')}</span>
-                                                </span>
-                                            ) : log.to_status ? (
-                                                <span className="font-medium">{log.to_status.replace(/_/g, ' ')}</span>
-                                            ) : '-'}
-                                        </TableCell>
-                                        <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
-                                            {log.remarks || '-'}
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                </div>
-
-                {/* Pagination */}
-                {logs.last_page > 1 && (
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <p>Showing {logs.from}–{logs.to} of {logs.total} logs</p>
-                        <div className="flex gap-1">
-                            {logs.links.map((link, i) => (
-                                link.url ? (
-                                    <Link key={i} href={link.url}
-                                        className={`px-3 py-1 rounded border text-sm ${link.active ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-accent'}`}
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                    />
-                                ) : (
-                                    <span key={i}
-                                        className="px-3 py-1 rounded border border-border text-muted-foreground opacity-50 text-sm"
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                    />
-                                )
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <DataTable
+                    columns={columns}
+                    data={logs}
+                    exportFileName="transaction-log"
+                    timezone={preferences.timezone}
+                    storageKey="transaction-log"
+                />
             </div>
         </>
     );

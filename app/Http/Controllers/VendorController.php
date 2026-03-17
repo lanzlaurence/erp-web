@@ -23,7 +23,7 @@ class VendorController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $vendors = Vendor::latest()->paginate(10);
+        $vendors = Vendor::latest()->get();
         return Inertia::render('vendor/index', ['vendors' => $vendors]);
     }
 

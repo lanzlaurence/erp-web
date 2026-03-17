@@ -22,7 +22,19 @@ class ActivityController extends Controller implements HasMiddleware
     {
         $logs = TransactionLog::with(['user', 'loggable'])
             ->latest()
-            ->paginate(20);
+            ->get()
+            ->map(fn($log) => [
+                'id'             => $log->id,
+                'created_at'     => $log->created_at,
+                'user_name'      => $log->user?->name,
+                'loggable_type'  => $log->loggable_type,
+                'loggable_id'    => $log->loggable_id,
+                'loggable_code'  => optional($log->loggable)->code,
+                'action'         => $log->action,
+                'from_status'    => $log->from_status,
+                'to_status'      => $log->to_status,
+                'remarks'        => $log->remarks,
+            ]);
 
         return Inertia::render('activity/transaction-log', ['logs' => $logs]);
     }
@@ -31,7 +43,25 @@ class ActivityController extends Controller implements HasMiddleware
     {
         $logs = InventoryLog::with(['material', 'location', 'transferToLocation', 'user', 'inventory'])
             ->latest()
-            ->paginate(20);
+            ->get()
+            ->map(fn($log) => [
+                'id'                     => $log->id,
+                'movement_code'          => $log->movement_code,
+                'created_at'             => $log->created_at,
+                'type'                   => $log->type,
+                'inventory_id'           => $log->inventory?->id,
+                'inventory_code'         => $log->inventory?->code,
+                'material_id'            => $log->material?->id,
+                'material_name'          => $log->material?->name,
+                'material_code'          => $log->material?->code,
+                'location_name'          => $log->location?->name,
+                'quantity_before'        => (float) $log->quantity_before,
+                'quantity_change'        => (float) $log->quantity_change,
+                'quantity_after'         => (float) $log->quantity_after,
+                'transfer_location_name' => $log->transferToLocation?->name,
+                'user_name'              => $log->user?->name,
+                'remarks'                => $log->remarks,
+            ]);
 
         return Inertia::render('activity/inventory-log', ['logs' => $logs]);
     }

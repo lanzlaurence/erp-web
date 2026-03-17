@@ -23,7 +23,7 @@ class CustomerController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $customers = Customer::latest()->paginate(10);
+        $customers = Customer::latest()->get();
         return Inertia::render('customer/index', ['customers' => $customers]);
     }
 

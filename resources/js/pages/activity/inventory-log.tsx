@@ -1,11 +1,12 @@
-// js/pages/activity/inventory-log.tsx
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import type { InventoryLogData } from '@/types';
+import { Head } from '@inertiajs/react';
 import { useFormatters } from '@/hooks/use-formatters';
-import { Head, Link } from '@inertiajs/react';
+import { Badge } from '@/components/ui/badge';
+import { DataTable } from '@/components/data-table';
+import { ColumnDef } from '@tanstack/react-table';
+import { usePage } from '@inertiajs/react';
 import ClickableCode from '@/components/ui/clickable-code';
+import type { SharedData, InventoryLogPageData, InventoryLogRow } from '@/types';
 
 const LOG_TYPE_BADGE: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
     initial:          { label: 'Initial',       variant: 'default' },
@@ -18,8 +19,103 @@ const LOG_TYPE_BADGE: Record<string, { label: string; variant: 'default' | 'seco
     sales_return:     { label: 'Sales Return',  variant: 'success' },
 };
 
-export default function Inventory({ logs }: InventoryLogData) {
+export default function InventoryLogPage({ logs }: InventoryLogPageData) {
     const { formatDecimal, formatDateTime } = useFormatters();
+    const { preferences } = usePage<SharedData>().props;
+
+    const columns: ColumnDef<InventoryLogRow>[] = [
+        {
+            accessorKey: 'movement_code',
+            header: 'Mov. Code',
+            size: 140,
+            cell: ({ row }) => <span className="font-mono text-sm">{row.original.movement_code}</span>,
+        },
+        {
+            accessorKey: 'created_at',
+            header: 'Date',
+            size: 160,
+            cell: ({ row }) => <span className="text-sm whitespace-nowrap">{formatDateTime(row.original.created_at)}</span>,
+        },
+        {
+            accessorKey: 'type',
+            header: 'Type',
+            size: 140,
+            cell: ({ row }) => {
+                const badge = LOG_TYPE_BADGE[row.original.type] ?? { label: row.original.type, variant: 'outline' as const };
+                return <Badge variant={badge.variant}>{badge.label}</Badge>;
+            },
+        },
+        {
+            accessorKey: 'inventory_code',
+            header: 'Inv. Code',
+            size: 130,
+            cell: ({ row }) => <ClickableCode href={`/inventories/${row.original.inventory_id}`} value={row.original.inventory_code} />,
+        },
+        {
+            accessorKey: 'material_code',
+            header: 'Material',
+            size: 200,
+            filterFn: 'multiField' as any,
+            cell: ({ row }) => (
+                <div>
+                    <ClickableCode href={`/materials/${row.original.material_id}`} value={row.original.material_code} />
+                    <p className="text-xs text-muted-foreground">{row.original.material_name}</p>
+                </div>
+            ),
+        },
+        {
+            accessorKey: 'material_name',
+            header: 'Material Name',
+            size: 0,
+            meta: { hidden: true },
+        },
+        {
+            accessorKey: 'location_name',
+            header: 'Location',
+            size: 150,
+            cell: ({ row }) => <span className="text-sm">{row.original.location_name ?? '-'}</span>,
+        },
+        {
+            accessorKey: 'quantity_before',
+            header: 'Before',
+            size: 100,
+            cell: ({ row }) => <span className="font-mono text-sm">{formatDecimal(row.original.quantity_before)}</span>,
+        },
+        {
+            accessorKey: 'quantity_change',
+            header: 'Change',
+            size: 100,
+            cell: ({ row }) => (
+                <span className={`font-mono text-sm font-medium ${row.original.quantity_change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {row.original.quantity_change >= 0 ? '+' : ''}{formatDecimal(row.original.quantity_change)}
+                </span>
+            ),
+        },
+        {
+            accessorKey: 'quantity_after',
+            header: 'After',
+            size: 100,
+            cell: ({ row }) => <span className="font-mono text-sm">{formatDecimal(row.original.quantity_after)}</span>,
+        },
+        {
+            accessorKey: 'transfer_location_name',
+            header: 'Transfer To/From',
+            size: 150,
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.transfer_location_name ?? '-'}</span>,
+        },
+        {
+            accessorKey: 'user_name',
+            header: 'By',
+            size: 130,
+            cell: ({ row }) => <span className="text-sm">{row.original.user_name ?? '-'}</span>,
+        },
+        {
+            accessorKey: 'remarks',
+            header: 'Remarks',
+            size: 200,
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.remarks ?? '-'}</span>,
+        },
+    ];
 
     return (
         <>
@@ -29,109 +125,23 @@ export default function Inventory({ logs }: InventoryLogData) {
                     <h1 className="text-2xl font-semibold">Inventory Log</h1>
                     <p className="text-sm text-muted-foreground">Audit trail for all inventory movements and adjustments</p>
                 </div>
-
-                <div className="rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Mov. Code</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Type</TableHead>
-                                <TableHead>Inv. Code</TableHead>
-                                <TableHead>Material</TableHead>
-                                <TableHead>Location</TableHead>
-                                <TableHead>Before</TableHead>
-                                <TableHead>Change</TableHead>
-                                <TableHead>After</TableHead>
-                                <TableHead>Transfer <br /> To/From</TableHead>
-                                <TableHead>By</TableHead>
-                                <TableHead>Remarks</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {logs.data.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={12} className="py-8 text-center text-sm text-muted-foreground">
-                                        No inventory log records available.
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                logs.data.map((log) => {
-                                    const badge = LOG_TYPE_BADGE[log.type] ?? { label: log.type, variant: 'outline' as const };
-                                    return (
-                                        <TableRow key={log.id}>
-                                            <TableCell className="font-mono text-sm">{log.movement_code}</TableCell>
-                                            <TableCell className="text-sm whitespace-nowrap">
-                                                {formatDateTime(log.created_at)}
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant={badge.variant}>{badge.label}</Badge>
-                                            </TableCell>
-                                            <ClickableCode
-                                                href={`/inventories/${log.inventory?.id}`}
-                                                value={log.inventory?.code}
-                                            />
-                                            <TableCell>
-                                                <div>
-                                                    <p className="text-sm font-medium">{log.material?.name}</p>
-                                                    <p className="text-xs text-muted-foreground">{log.material?.code}</p>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-sm">{log.location?.name}</TableCell>
-                                            <TableCell className="font-mono text-sm">
-                                                {formatDecimal(Number(log.quantity_before))}
-                                            </TableCell>
-                                            <TableCell className={`font-mono text-sm font-medium ${Number(log.quantity_change) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                                {Number(log.quantity_change) >= 0 ? '+' : ''}{formatDecimal(Number(log.quantity_change))}
-                                            </TableCell>
-                                            <TableCell className="font-mono text-sm">
-                                                {formatDecimal(Number(log.quantity_after))}
-                                            </TableCell>
-                                            <TableCell className="text-sm text-muted-foreground">
-                                                {log.transfer_location?.name ?? '-'}
-                                            </TableCell>
-                                            <TableCell className="text-sm">{log.user?.name ?? '-'}</TableCell>
-                                            <TableCell className="text-sm text-muted-foreground">
-                                                {log.remarks ?? '-'}
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-
-                {/* Pagination */}
-                {logs.last_page > 1 && (
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <p>Showing {logs.from}–{logs.to} of {logs.total} logs</p>
-                        <div className="flex gap-1">
-                            {logs.links.map((link, i) => (
-                                link.url ? (
-                                    <Link key={i} href={link.url}
-                                        className={`px-3 py-1 rounded border text-sm ${link.active ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-accent'}`}
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                    />
-                                ) : (
-                                    <span key={i}
-                                        className="px-3 py-1 rounded border border-border text-muted-foreground opacity-50 text-sm"
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                    />
-                                )
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <DataTable
+                    columns={columns}
+                    data={logs}
+                    exportFileName="inventory-log"
+                    timezone={preferences.timezone}
+                    initialColumnVisibility={{ material_name: false }}
+                    storageKey="inventory-log"
+                />
             </div>
         </>
     );
 }
 
-Inventory.layout = (page: React.ReactNode) => (
+InventoryLogPage.layout = (page: React.ReactNode) => (
     <AppLayout breadcrumbs={[
         { title: 'Dashboard', href: '/dashboard' },
-        { title: 'Activity' , href: '#' },
+        { title: 'Activity', href: '#' },
         { title: 'Inventory Log', href: '/activity/inventory-log' },
     ]}>{page}</AppLayout>
 );
