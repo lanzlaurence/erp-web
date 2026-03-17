@@ -58,16 +58,6 @@ export function AppSidebar() {
             icon: LayoutGrid,
         },
         {
-            title: 'Analytics',
-            href: '#',
-            icon: BarChart2,
-            items: [
-                { title: 'PO Report', href: '/analytics/purchase-order-reports',  icon: ShoppingCart,  permission: 'analytics-purchase-order-report' },
-                { title: 'SO Report', href: '/analytics/sales-order-reports', icon: ShoppingBag, permission: 'analytics-sales-order-report' },
-                { title: 'Inv. Report', href: '/analytics/inventory-report', icon: Package, permission: 'analytics-inventory-report' },
-            ],
-        },
-        {
             title: 'Transaction',
             href: '#',
             icon: TrendingUp,

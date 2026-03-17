@@ -23,7 +23,7 @@ class InventoryController extends Controller implements HasMiddleware
         return [
             new Middleware('permission:inventory-view',     only: ['index', 'show']),
             new Middleware('permission:inventory-create',   only: ['create', 'store']),
-            new Middleware('permission:inventory-adjust',   only: ['adjust', 'processAdjust']),
+            new Middleware('permission:inventory-adjust',   only: ['adjust', 'processAdjust', 'manualAdjustment', 'processManualAdjustment']),
             new Middleware('permission:inventory-transfer', only: ['transfer', 'processTransfer']),
             new Middleware('permission:inventory-delete',   only: ['destroy']),
         ];
@@ -148,13 +148,13 @@ class InventoryController extends Controller implements HasMiddleware
                 'movement_code'             => InventoryLog::generateMovementCode(),
                 'inventory_id'              => $inventory->id,
                 'material_id'               => $inventory->material_id,
-                'location_id'            => $inventory->location_id,
+                'location_id'               => $inventory->location_id,
                 'user_id'                   => Auth::id(),
                 'type'                      => 'transfer_out',
                 'quantity_before'           => $quantityBefore,
                 'quantity_change'           => -$transferQty,
                 'quantity_after'            => $quantityAfter,
-                'transfer_location_id' => $request->location_id,
+                'transfer_location_id'      => $request->location_id,
                 'remarks'                   => $request->remarks,
             ]);
 
@@ -184,13 +184,13 @@ class InventoryController extends Controller implements HasMiddleware
             'movement_code'                 => InventoryLog::generateMovementCode(),
                 'inventory_id'              => $targetInventory->id,
                 'material_id'               => $inventory->material_id,
-                'location_id'            => $request->location_id,
+                'location_id'               => $request->location_id,
                 'user_id'                   => Auth::id(),
                 'type'                      => 'transfer_in',
                 'quantity_before'           => $targetBefore,
                 'quantity_change'           => $transferQty,
                 'quantity_after'            => $targetBefore + $transferQty,
-                'transfer_location_id' => $inventory->location_id,
+                'transfer_location_id'      => $inventory->location_id,
                 'remarks'                   => $request->remarks,
             ]);
         });

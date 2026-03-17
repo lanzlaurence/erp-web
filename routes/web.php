@@ -79,12 +79,6 @@ Route::middleware(['auth', 'active', 'verified', 'password.changed'])->group(fun
     // GI from SO
     Route::get('sales-orders/{salesOrder}/goods-issues/create', [App\Http\Controllers\GoodsIssueController::class, 'create'])->name('sales-orders.goods-issues.create');
 
-    Route::prefix('analytics')->name('analytics.')->group(function () {
-        Route::get('purchase-order-reports', [App\Http\Controllers\AnalyticsController::class, 'purchaseOrderReports'])->name('purchase-orders');
-        Route::get('sales-order-reports',    [App\Http\Controllers\AnalyticsController::class, 'salesOrderReports'])->name('sales-orders');
-        Route::get('inventory-report',       [App\Http\Controllers\AnalyticsController::class, 'inventoryReport'])->name('inventory');
-    });
-
     Route::prefix('activity')->name('activity.')->group(function () {
         Route::get('transaction-log', [App\Http\Controllers\ActivityController::class, 'transactionLog'])->name('transaction-log');
         Route::get('inventory-log',   [App\Http\Controllers\ActivityController::class, 'inventoryLog'])->name('inventory-log');
