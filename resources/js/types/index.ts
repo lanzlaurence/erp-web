@@ -158,14 +158,10 @@ export type GoodsIssueShowData = {
 };
 
 export type InventoryData = {
-    inventories: PaginatedData<Inventory>;
+    inventories: Inventory[];
 };
 
 export type InventoryShowData = {
     inventory: Inventory;
-    logs: PaginatedData<InventoryLog>;
-};
-
-export type InventoryLogData = {
-    logs: PaginatedData<InventoryLog>;
+    logs: InventoryLog[];
 };

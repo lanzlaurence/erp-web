@@ -1,17 +1,20 @@
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { usePermissions } from '@/hooks/use-permissions';
-import { useFormatters } from '@/hooks/use-formatters';
 import AppLayout from '@/layouts/app-layout';
-import type { InventoryData } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
+import { useFormatters } from '@/hooks/use-formatters';
+import { usePermissions } from '@/hooks/use-permissions';
+import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/data-table';
+import { ColumnDef } from '@tanstack/react-table';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ArrowLeftRight, Eye, Edit, Plus, Trash2, SlidersHorizontal } from 'lucide-react';
 import { useState } from 'react';
+import { usePage } from '@inertiajs/react';
+import type { InventoryData, Inventory, SharedData } from '@/types';
 
 export default function Index({ inventories }: InventoryData) {
     const { hasPermission } = usePermissions();
-    const { formatDecimal, formatAmount } = useFormatters();
+    const { formatDecimal } = useFormatters();
+    const { preferences } = usePage<SharedData>().props;
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: number; name: string }>({
         open: false, id: 0, name: '',
     });
@@ -20,6 +23,83 @@ export default function Index({ inventories }: InventoryData) {
         router.delete(`/inventories/${deleteDialog.id}`);
         setDeleteDialog({ open: false, id: 0, name: '' });
     };
+
+    const columns: ColumnDef<Inventory>[] = [
+        {
+            accessorKey: 'code',
+            header: 'Inventory Code',
+            size: 150,
+            cell: ({ row }) => <span className="font-mono text-sm">{row.original.code}</span>,
+        },
+        {
+            accessorKey: 'material',
+            header: 'Material',
+            size: 200,
+            accessorFn: (row) => `${row.material?.name ?? ''} ${row.material?.code ?? ''}`,
+            cell: ({ row }) => (
+                <div>
+                    <p className="text-sm font-medium">{row.original.material?.name}</p>
+                    <p className="text-xs text-muted-foreground">{row.original.material?.code}</p>
+                </div>
+            ),
+        },
+        {
+            accessorKey: 'location',
+            header: 'Location',
+            size: 150,
+            accessorFn: (row) => row.location?.name ?? '',
+            cell: ({ row }) => row.original.location?.name,
+        },
+        {
+            accessorKey: 'quantity',
+            header: 'Quantity',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{formatDecimal(Number(row.original.quantity))}</span>,
+        },
+        {
+            id: 'actions',
+            header: 'Actions',
+            enableSorting: false,
+            enableColumnFilter: false,
+            size: 100,
+            cell: ({ row }) => (
+                <div className="flex justify-end gap-1">
+                    {hasPermission('inventory-view') && (
+                        <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/inventories/${row.original.id}`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
+                                <Eye className="h-4 w-4" />
+                                <span className="text-[10px] leading-none">View</span>
+                            </Link>
+                        </Button>
+                    )}
+                    {/* {hasPermission('inventory-adjust') && (
+                        <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/inventories/${row.original.id}/adjust`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
+                                <Edit className="h-4 w-4" />
+                                <span className="text-[10px] leading-none">Adjust</span>
+                            </Link>
+                        </Button>
+                    )} */}
+                    {/* {hasPermission('inventory-transfer') && (
+                        <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/inventories/${row.original.id}/transfer`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
+                                <ArrowLeftRight className="h-4 w-4" />
+                                <span className="text-[10px] leading-none">Transfer</span>
+                            </Link>
+                        </Button>
+                    )} */}
+                    {hasPermission('inventory-delete') && (
+                        <Button variant="ghost" size="sm"
+                            onClick={() => setDeleteDialog({ open: true, id: row.original.id, name: row.original.material?.name ?? '' })}
+                            className="flex flex-col items-center gap-1 h-auto py-1 w-14">
+                            <Trash2 className="h-4 w-4 text-red-600" />
+                            <span className="text-[10px] leading-none text-red-600">Delete</span>
+                        </Button>
+                    )}
+                </div>
+            ),
+        },
+    ];
 
     return (
         <>
@@ -30,118 +110,25 @@ export default function Index({ inventories }: InventoryData) {
                     {/* {hasPermission('inventory-create') && (
                         <Button asChild size="sm">
                             <Link href="/inventories/create">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Stock
+                                <Plus className="mr-2 h-4 w-4" />Add Stock
                             </Link>
                         </Button>
                     )} */}
                     {hasPermission('inventory-adjust') && (
                         <Button asChild size="sm">
                             <Link href="/inventories/manual-adjustment">
-                                <SlidersHorizontal className="mr-2 h-4 w-4" />
-                                Manual Adjustment
+                                <SlidersHorizontal className="mr-2 h-4 w-4" />Manual Adjustment
                             </Link>
                         </Button>
                     )}
                 </div>
-
-                <div className="rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Inventory Code</TableHead>
-                                <TableHead>Material</TableHead>
-                                <TableHead>Location</TableHead>
-                                <TableHead>Quantity</TableHead>
-                                {/* <TableHead>Avg Unit Cost</TableHead>
-                                <TableHead>Avg Unit Price</TableHead> */}
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {inventories.data.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">
-                                        No inventory records available.
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                inventories.data.map((inventory) => (
-                                    <TableRow key={inventory.id}>
-                                        <TableCell className="font-mono text-sm">{inventory.code}</TableCell>
-                                        <TableCell>
-                                            <div>
-                                                <p className="text-sm font-medium">{inventory.material?.name}</p>
-                                                <p className="text-xs text-muted-foreground">{inventory.material?.code}</p>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>{inventory.location?.name}</TableCell>
-                                        <TableCell className="font-mono">{formatDecimal(Number(inventory.quantity))}</TableCell>
-                                        {/* <TableCell>{formatAmount(Number(inventory.material?.avg_unit_cost))}</TableCell>
-                                        <TableCell>{formatAmount(Number(inventory.material?.avg_unit_price))}</TableCell> */}
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
-                                                {hasPermission('inventory-view') && (
-                                                    <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/inventories/${inventory.id}`} className="flex flex-col items-center gap-0.5 h-auto py-1">
-                                                            <Eye className="h-4 w-4" />
-                                                            <span className="text-[10px] leading-none">View</span>
-                                                        </Link>
-                                                    </Button>
-                                                )}
-                                                {/* {hasPermission('inventory-adjust') && (
-                                                    <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/inventories/${inventory.id}/adjust`} className="flex flex-col items-center gap-0.5 h-auto py-1">
-                                                            <Edit className="h-4 w-4" />
-                                                            <span className="text-[10px] leading-none">Adjust</span>
-                                                        </Link>
-                                                    </Button>
-                                                )} */}
-                                                {/* {hasPermission('inventory-transfer') && (
-                                                    <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/inventories/${inventory.id}/transfer`} className="flex flex-col items-center gap-0.5 h-auto py-1">
-                                                            <ArrowLeftRight className="h-4 w-4" />
-                                                            <span className="text-[10px] leading-none">Transfer</span>
-                                                        </Link>
-                                                    </Button>
-                                                )} */}
-                                                {hasPermission('inventory-delete') && (
-                                                    <Button variant="ghost" size="sm" className="flex flex-col items-center gap-0.5 h-auto py-1"
-                                                        onClick={() => setDeleteDialog({ open: true, id: inventory.id, name: inventory.material?.name ?? '' })}>
-                                                        <Trash2 className="h-4 w-4 text-red-600" />
-                                                        <span className="text-[10px] leading-none text-red-600">Delete</span>
-                                                    </Button>
-                                                )}
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-
-                {/* Pagination */}
-                {inventories.last_page > 1 && (
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <p>Showing {inventories.from}–{inventories.to} of {inventories.total} records</p>
-                        <div className="flex gap-1">
-                            {inventories.links.map((link, i) => (
-                                link.url ? (
-                                    <Link key={i} href={link.url}
-                                        className={`px-3 py-1 rounded border text-sm ${link.active ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-accent'}`}
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                    />
-                                ) : (
-                                    <span key={i}
-                                        className="px-3 py-1 rounded border border-border text-muted-foreground opacity-50 text-sm"
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                    />
-                                )
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <DataTable
+                    columns={columns}
+                    data={inventories}
+                    exportFileName="inventories"
+                    timezone={preferences.timezone}
+                    storageKey="inventories"
+                />
             </div>
 
             <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ ...deleteDialog, open })}>
@@ -154,9 +141,7 @@ export default function Index({ inventories }: InventoryData) {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                            Delete
-                        </AlertDialogAction>
+                        <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
