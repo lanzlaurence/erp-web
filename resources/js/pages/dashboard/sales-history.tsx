@@ -48,6 +48,7 @@ export default function SalesHistory({ material, salesHistory, stockByLocation }
             accessorKey: 'order_date',
             header: 'Order Date',
             size: 130,
+            accessorFn: (row) => formatDate(row.order_date),
             cell: ({ row }) => formatDate(row.original.order_date),
         },
         {

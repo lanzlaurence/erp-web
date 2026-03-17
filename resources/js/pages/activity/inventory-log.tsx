@@ -32,9 +32,12 @@ export default function InventoryLogPage({ logs }: InventoryLogPageData) {
         },
         {
             accessorKey: 'created_at',
-            header: 'Date',
+            header: 'Date & Time',
             size: 160,
-            cell: ({ row }) => <span className="text-sm whitespace-nowrap">{formatDateTime(row.original.created_at)}</span>,
+            accessorFn: (row) => formatDateTime(row.created_at),
+            cell: ({ row }) => (
+                <span className="text-sm whitespace-nowrap">{formatDateTime(row.original.created_at)}</span>
+            ),
         },
         {
             accessorKey: 'type',

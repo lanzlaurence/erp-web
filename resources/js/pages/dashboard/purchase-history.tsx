@@ -48,6 +48,7 @@ export default function PurchaseHistory({ material, purchaseHistory, stockByLoca
             accessorKey: 'order_date',
             header: 'Order Date',
             size: 130,
+            accessorFn: (row) => formatDate(row.order_date),
             cell: ({ row }) => formatDate(row.original.order_date),
         },
         {
