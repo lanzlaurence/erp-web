@@ -23,7 +23,7 @@ class CategoryController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $categories = Category::latest()->paginate(10);
+        $categories = Category::latest()->get();
         return Inertia::render('category/index', ['categories' => $categories]);
     }
 

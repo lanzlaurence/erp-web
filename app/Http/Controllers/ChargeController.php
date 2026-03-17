@@ -25,7 +25,7 @@ class ChargeController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $charges = Charge::latest()->paginate(10);
+        $charges = Charge::latest()->get();
         return Inertia::render('charge/index', ['charges' => $charges]);
     }
 

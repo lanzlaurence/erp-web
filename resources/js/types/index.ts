@@ -78,27 +78,27 @@ export type PreferenceData = {
 };
 
 export type BrandData = {
-    brands: PaginatedData<Brand>;
+    brands: Brand[];
 };
 
 export type CategoryData = {
-    categories: PaginatedData<Category>;
+    categories: Category[];
 };
 
 export type UomData = {
-    uoms: PaginatedData<Uom>;
+    uoms: Uom[];
 };
 
 export type LocationData = {
-    locations: PaginatedData<Location>;
+    locations: Location[];
 };
 
 export type ChargeData = {
-    charges: PaginatedData<Charge>;
+    charges: Charge[];
 };
 
 export type CurrencyData = {
-    currencies: PaginatedData<Currency>;
+    currencies: Currency[];
 };
 
 export type MaterialData = {

@@ -23,7 +23,7 @@ class CurrencyController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $currencies = Currency::latest()->paginate(10);
+        $currencies = Currency::latest()->get();
         return Inertia::render('currency/index', ['currencies' => $currencies]);
     }
 

@@ -23,7 +23,7 @@ class LocationController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $locations = Location::latest()->paginate(10);
+        $locations = Location::latest()->get();
         return Inertia::render('location/index', ['locations' => $locations]);
     }
 

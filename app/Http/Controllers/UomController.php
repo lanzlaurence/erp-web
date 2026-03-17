@@ -23,7 +23,7 @@ class UomController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $uoms = Uom::latest()->paginate(10);
+        $uoms = Uom::latest()->get();
         return Inertia::render('uom/index', ['uoms' => $uoms]);
     }
 
