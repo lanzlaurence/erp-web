@@ -37,7 +37,7 @@ class GoodsIssueController extends Controller implements HasMiddleware
     {
         $gis = GoodsIssue::with(['salesOrder.customer', 'location', 'user'])
             ->latest()
-            ->paginate(10);
+            ->get();
 
         return Inertia::render('sales/goods-issue/index', [
             'goodsIssues' => $gis,

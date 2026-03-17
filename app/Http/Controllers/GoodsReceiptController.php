@@ -20,7 +20,7 @@ use Inertia\Inertia;
 
 class GoodsReceiptController extends Controller implements HasMiddleware
 {
-        public static function middleware(): array
+    public static function middleware(): array
     {
         return [
             new Middleware('permission:goods-receipt-view',     only: ['index', 'show']),
@@ -37,7 +37,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
     {
         $grs = GoodsReceipt::with(['purchaseOrder.vendor', 'location', 'user'])
             ->latest()
-            ->paginate(10);
+            ->get();
 
         return Inertia::render('purchasing/goods-receipt/index', [
             'goodsReceipts' => $grs,

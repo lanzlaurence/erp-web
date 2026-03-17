@@ -117,7 +117,19 @@ export type CustomerData = {
 };
 
 export type PurchaseOrderData = {
-    purchaseOrders: PaginatedData<PurchaseOrder>;
+    purchaseOrders: PurchaseOrder[];
+};
+
+export type GoodsReceiptData = {
+    goodsReceipts: GoodsReceipt[];
+};
+
+export type SalesOrderData = {
+    salesOrders: SalesOrder[];
+};
+
+export type GoodsIssueData = {
+    goodsIssues: GoodsIssue[];
 };
 
 export type PurchaseOrderShowData = {
@@ -127,30 +139,13 @@ export type PurchaseOrderShowData = {
     charges?: Charge[];
 };
 
-export type GoodsReceiptData = {
-    goodsReceipts: PaginatedData<GoodsReceipt>;
-};
-
 export type GoodsReceiptShowData = {
     goodsReceipt: GoodsReceipt;
     locations?: Location[];
 };
 
-export type SalesOrderData = {
-    salesOrders: {
-        data: SalesOrder[];
-        // pagination fields
-    };
-};
-
 export type SalesOrderShowData = {
     salesOrder: SalesOrder;
-};
-
-export type GoodsIssueData = {
-    goodsIssues: {
-        data: GoodsIssue[];
-    };
 };
 
 export type GoodsIssueShowData = {

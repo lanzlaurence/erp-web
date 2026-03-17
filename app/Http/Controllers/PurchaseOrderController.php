@@ -37,7 +37,7 @@ class PurchaseOrderController extends Controller implements HasMiddleware
     {
         $pos = PurchaseOrder::with(['vendor', 'user'])
             ->latest()
-            ->paginate(10);
+            ->get();
 
         return Inertia::render('purchasing/purchase-order/index', [
             'purchaseOrders' => $pos,

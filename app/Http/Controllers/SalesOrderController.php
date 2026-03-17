@@ -37,7 +37,7 @@ class SalesOrderController extends Controller implements HasMiddleware
     {
         $sos = SalesOrder::with(['customer', 'user'])
             ->latest()
-            ->paginate(10);
+            ->get();
 
         return Inertia::render('sales/sales-order/index', [
             'salesOrders' => $sos,
