@@ -86,7 +86,7 @@ export default function Index({ goodsIssues }: GoodsIssueData) {
                                             <div className="flex justify-end gap-1">
                                                 {hasPermission('goods-issue-view') && (
                                                     <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/goods-issues/${gi.id}`} className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        <Link href={`/goods-issues/${gi.id}`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                             <Eye className="h-4 w-4" />
                                                             <span className="text-[10px] leading-none">View</span>
                                                         </Link>
@@ -94,7 +94,7 @@ export default function Index({ goodsIssues }: GoodsIssueData) {
                                                 )}
                                                 {hasPermission('goods-issue-edit') && gi.status === 'pending' && (
                                                     <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/goods-issues/${gi.id}/edit`} className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        <Link href={`/goods-issues/${gi.id}/edit`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                             <Edit className="h-4 w-4" />
                                                             <span className="text-[10px] leading-none">Edit</span>
                                                         </Link>
@@ -103,7 +103,7 @@ export default function Index({ goodsIssues }: GoodsIssueData) {
                                                 {hasPermission('goods-issue-complete') && gi.status === 'pending' && (
                                                     <Button variant="ghost" size="sm"
                                                         onClick={() => setActionDialog({ open: true, id: gi.id, code: gi.code, action: 'complete', fromCompleted: false })}
-                                                        className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                         <CheckCircle className="h-4 w-4 text-green-600" />
                                                         <span className="text-[10px] leading-none">Complete</span>
                                                     </Button>
@@ -111,7 +111,7 @@ export default function Index({ goodsIssues }: GoodsIssueData) {
                                                 {hasPermission('goods-issue-revert') && gi.status === 'cancelled' && !soIsCancelled && (
                                                     <Button variant="ghost" size="sm"
                                                         onClick={() => setActionDialog({ open: true, id: gi.id, code: gi.code, action: 'revert', fromCompleted: false })}
-                                                        className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                         <RotateCcw className="h-4 w-4 text-blue-600" />
                                                         <span className="text-[10px] leading-none">Revert</span>
                                                     </Button>
@@ -119,7 +119,7 @@ export default function Index({ goodsIssues }: GoodsIssueData) {
                                                 {hasPermission('goods-issue-cancel') && ['pending', 'completed'].includes(gi.status) && (
                                                     <Button variant="ghost" size="sm"
                                                         onClick={() => setActionDialog({ open: true, id: gi.id, code: gi.code, action: 'cancel', fromCompleted: gi.status === 'completed' })}
-                                                        className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                         <XCircle className="h-4 w-4 text-orange-600" />
                                                         <span className="text-[10px] leading-none">Cancel</span>
                                                     </Button>
@@ -127,7 +127,7 @@ export default function Index({ goodsIssues }: GoodsIssueData) {
                                                 {hasPermission('goods-issue-delete') && gi.status === 'pending' && (
                                                     <Button variant="ghost" size="sm"
                                                         onClick={() => setDeleteDialog({ open: true, id: gi.id, code: gi.code })}
-                                                        className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                         <Trash2 className="h-4 w-4 text-red-600" />
                                                         <span className="text-[10px] leading-none">Delete</span>
                                                     </Button>

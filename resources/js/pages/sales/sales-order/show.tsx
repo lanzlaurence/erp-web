@@ -8,7 +8,7 @@ import type { SalesOrderStatus } from '@/types/transactions';
 import { useFormatters } from '@/hooks/use-formatters';
 import { usePermissions } from '@/hooks/use-permissions';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Edit, CheckCircle, XCircle, RotateCcw, PackageCheck, Eye } from 'lucide-react';
+import { ArrowLeft, Edit, CheckCircle, XCircle, RotateCcw, PackageCheck, Eye, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import ClickableCode from '@/components/ui/clickable-code';
 
@@ -22,7 +22,7 @@ const STATUS_BADGE: Record<SalesOrderStatus, { label: string; variant: 'default'
 
 type ConfirmAction = {
     open: boolean;
-    action: 'post' | 'cancel' | 'revert' | null;
+    action: 'post' | 'cancel' | 'revert' | 'delete' | null;
     label: string;
     description: string;
 };
@@ -40,7 +40,11 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
 
     const handleConfirm = () => {
         if (!confirm.action) return;
-        router.post(`/sales-orders/${salesOrder.id}/${confirm.action}`);
+        if (confirm.action === 'delete') {
+            router.delete(`/sales-orders/${salesOrder.id}`);
+        } else {
+            router.post(`/sales-orders/${salesOrder.id}/${confirm.action}`);
+        }
         setConfirm({ open: false, action: null, label: '', description: '' });
     };
 
@@ -91,6 +95,12 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                                 onClick={() => triggerAction('cancel', 'Cancel Sales Order',
                                     'This will cancel the sales order and ALL related goods issues. Completed GIs will have their inventory restored.')}>
                                 <XCircle className="mr-2 h-4 w-4" />Cancel
+                            </Button>
+                        )}
+                        {hasPermission('sales-order-delete') && salesOrder.status === 'draft' && (
+                            <Button size="sm" variant="outline" className="border-red-600 text-red-600 hover:bg-red-50 hover:text-red-600"
+                                onClick={() => triggerAction('delete', 'Delete Sales Order', 'This will permanently delete this sales order and all related goods issues. This action cannot be undone.')}>
+                                <Trash2 className="mr-2 h-4 w-4" />Delete
                             </Button>
                         )}
                     </div>
@@ -263,9 +273,14 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                                         </TableCell>
                                         <TableCell className="text-sm text-muted-foreground">{gi.user?.name}</TableCell>
                                         <TableCell className="text-right">
-                                            <Button variant="ghost" size="sm" asChild>
-                                                <Link href={`/goods-issues/${gi.id}`}><Eye className="h-4 w-4" /></Link>
-                                            </Button>
+                                            {hasPermission('goods-issue-view') && (
+                                                <Button variant="ghost" size="sm" asChild>
+                                                    <Link href={`/goods-issues/${gi.id}`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
+                                                        <Eye className="h-4 w-4" />
+                                                        <span className="text-[10px] leading-none">View</span>
+                                                    </Link>
+                                                </Button>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))}

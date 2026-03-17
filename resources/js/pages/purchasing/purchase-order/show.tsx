@@ -8,7 +8,7 @@ import type { PurchaseOrderStatus } from '@/types/transactions';
 import { useFormatters } from '@/hooks/use-formatters';
 import { usePermissions } from '@/hooks/use-permissions';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Edit, CheckCircle, XCircle, RotateCcw, PackageCheck, Eye } from 'lucide-react';
+import { ArrowLeft, Edit, CheckCircle, XCircle, RotateCcw, PackageCheck, Eye, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import ClickableCode from '@/components/ui/clickable-code';
 
@@ -22,7 +22,7 @@ const STATUS_BADGE: Record<PurchaseOrderStatus, { label: string; variant: 'defau
 
 type ConfirmAction = {
     open: boolean;
-    action: 'post' | 'cancel' | 'revert' | null;
+    action: 'post' | 'cancel' | 'revert' | 'delete' | null;
     label: string;
     description: string;
 };
@@ -40,7 +40,11 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
 
     const handleConfirm = () => {
         if (!confirm.action) return;
-        router.post(`/purchase-orders/${purchaseOrder.id}/${confirm.action}`);
+        if (confirm.action === 'delete') {
+            router.delete(`/purchase-orders/${purchaseOrder.id}`);
+        } else {
+            router.post(`/purchase-orders/${purchaseOrder.id}/${confirm.action}`);
+        }
         setConfirm({ open: false, action: null, label: '', description: '' });
     };
 
@@ -91,6 +95,12 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                                 onClick={() => triggerAction('cancel', 'Cancel Purchase Order',
                                     'This will cancel the purchase order and ALL related goods receipts. Completed GRs will have their inventory reversed.')}>
                                 <XCircle className="mr-2 h-4 w-4" />Cancel
+                            </Button>
+                        )}
+                        {hasPermission('purchase-order-delete') && purchaseOrder.status === 'draft' && (
+                            <Button size="sm" variant="outline" className="border-red-600 text-red-600 hover:bg-red-50 hover:text-red-600"
+                                onClick={() => triggerAction('delete', 'Delete Purchase Order', 'This will permanently delete this purchase order and all related goods receipts. This action cannot be undone.')}>
+                                <Trash2 className="mr-2 h-4 w-4" />Delete
                             </Button>
                         )}
                     </div>
@@ -263,9 +273,14 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                                         </TableCell>
                                         <TableCell className="text-sm text-muted-foreground">{gr.user?.name}</TableCell>
                                         <TableCell className="text-right">
-                                            <Button variant="ghost" size="sm" asChild>
-                                                <Link href={`/goods-receipts/${gr.id}`}><Eye className="h-4 w-4" /></Link>
-                                            </Button>
+                                            {hasPermission('goods-receipt-view') && (
+                                                <Button variant="ghost" size="sm" asChild>
+                                                    <Link href={`/goods-receipts/${gr.id}`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
+                                                        <Eye className="h-4 w-4" />
+                                                        <span className="text-[10px] leading-none">View</span>
+                                                    </Link>
+                                                </Button>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))}

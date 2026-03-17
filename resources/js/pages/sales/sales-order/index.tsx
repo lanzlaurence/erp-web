@@ -96,7 +96,7 @@ export default function Index({ salesOrders }: SalesOrderData) {
                                             <div className="flex justify-end gap-1">
                                                 {hasPermission('sales-order-view') && (
                                                     <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/sales-orders/${so.id}`} className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        <Link href={`/sales-orders/${so.id}`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                             <Eye className="h-4 w-4" />
                                                             <span className="text-[10px] leading-none">View</span>
                                                         </Link>
@@ -104,7 +104,7 @@ export default function Index({ salesOrders }: SalesOrderData) {
                                                 )}
                                                 {hasPermission('sales-order-edit') && so.status === 'draft' && (
                                                     <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/sales-orders/${so.id}/edit`} className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        <Link href={`/sales-orders/${so.id}/edit`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                             <Edit className="h-4 w-4" />
                                                             <span className="text-[10px] leading-none">Edit</span>
                                                         </Link>
@@ -113,7 +113,7 @@ export default function Index({ salesOrders }: SalesOrderData) {
                                                 {hasPermission('sales-order-post') && so.status === 'draft' && (
                                                     <Button variant="ghost" size="sm"
                                                         onClick={() => setActionDialog({ open: true, id: so.id, code: so.code, action: 'post' })}
-                                                        className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                         <CheckCircle className="h-4 w-4 text-blue-600" />
                                                         <span className="text-[10px] leading-none">Post</span>
                                                     </Button>
@@ -121,14 +121,14 @@ export default function Index({ salesOrders }: SalesOrderData) {
                                                 {hasPermission('sales-order-revert') && ['posted', 'cancelled'].includes(so.status) && (
                                                     <Button variant="ghost" size="sm"
                                                         onClick={() => setActionDialog({ open: true, id: so.id, code: so.code, action: 'revert' })}
-                                                        className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                         <RotateCcw className="h-4 w-4 text-blue-600" />
                                                         <span className="text-[10px] leading-none">Revert</span>
                                                     </Button>
                                                 )}
                                                 {hasPermission('goods-issue-create') && ['posted', 'partially_shipped'].includes(so.status) && (
                                                     <Button variant="ghost" size="sm" asChild>
-                                                        <Link href={`/sales-orders/${so.id}/goods-issues/create`} className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        <Link href={`/sales-orders/${so.id}/goods-issues/create`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                             <PackageCheck className="h-4 w-4 text-green-600" />
                                                             <span className="text-[10px] leading-none">Create GI</span>
                                                         </Link>
@@ -137,7 +137,7 @@ export default function Index({ salesOrders }: SalesOrderData) {
                                                 {hasPermission('sales-order-cancel') && so.status !== 'cancelled' && (
                                                     <Button variant="ghost" size="sm"
                                                         onClick={() => setActionDialog({ open: true, id: so.id, code: so.code, action: 'cancel' })}
-                                                        className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                         <XCircle className="h-4 w-4 text-orange-600" />
                                                         <span className="text-[10px] leading-none">Cancel</span>
                                                     </Button>
@@ -145,7 +145,7 @@ export default function Index({ salesOrders }: SalesOrderData) {
                                                 {hasPermission('sales-order-delete') && so.status === 'draft' && (
                                                     <Button variant="ghost" size="sm"
                                                         onClick={() => setDeleteDialog({ open: true, id: so.id, code: so.code })}
-                                                        className="flex flex-col items-center gap-0.5 h-auto py-1 w-14">
+                                                        className="flex flex-col items-center gap-1 h-auto py-1 w-14">
                                                         <Trash2 className="h-4 w-4 text-red-600" />
                                                         <span className="text-[10px] leading-none">Delete</span>
                                                     </Button>

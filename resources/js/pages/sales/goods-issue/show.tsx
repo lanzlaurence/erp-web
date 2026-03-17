@@ -8,7 +8,7 @@ import type { GoodsIssueStatus } from '@/types/transactions';
 import { useFormatters } from '@/hooks/use-formatters';
 import { usePermissions } from '@/hooks/use-permissions';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Edit, CheckCircle, XCircle, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Edit, CheckCircle, XCircle, RotateCcw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import ClickableCode from '@/components/ui/clickable-code';
 
@@ -20,7 +20,7 @@ const STATUS_BADGE: Record<GoodsIssueStatus, { label: string; variant: 'default'
 
 type ConfirmAction = {
     open: boolean;
-    action: 'complete' | 'cancel' | 'revert' | null;
+    action: 'complete' | 'cancel' | 'revert' | 'delete' | null;
     label: string;
     description: string;
 };
@@ -39,7 +39,11 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
 
     const handleConfirm = () => {
         if (!confirm.action) return;
-        router.post(`/goods-issues/${goodsIssue.id}/${confirm.action}`);
+        if (confirm.action === 'delete') {
+            router.delete(`/goods-issues/${goodsIssue.id}`);
+        } else {
+            router.post(`/goods-issues/${goodsIssue.id}/${confirm.action}`);
+        }
         setConfirm({ open: false, action: null, label: '', description: '' });
     };
 
@@ -85,6 +89,12 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
                                         ? 'This will cancel the GI and restore inventory stock.'
                                         : 'This will cancel the goods issue.')}>
                                 <XCircle className="mr-2 h-4 w-4" />Cancel
+                            </Button>
+                        )}
+                        {hasPermission('goods-issue-delete') && goodsIssue.status === 'pending' && (
+                            <Button size="sm" variant="outline" className="border-red-600 text-red-600 hover:bg-red-50 hover:text-red-600"
+                                onClick={() => triggerAction('delete', 'Delete Goods Issue', 'This will permanently delete this goods issue. This action cannot be undone.')}>
+                                <Trash2 className="mr-2 h-4 w-4" />Delete
                             </Button>
                         )}
                     </div>
