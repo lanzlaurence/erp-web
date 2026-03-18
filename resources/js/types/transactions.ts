@@ -198,7 +198,6 @@ export type SalesOrder = {
     user?: User;
     items?: SalesOrderItem[];
     charges?: SalesOrderCharge[];
-    goodsIssues?: GoodsIssue[];
     goods_issues?: GoodsIssue[];
     logs?: TransactionLog[];
     created_at: string;

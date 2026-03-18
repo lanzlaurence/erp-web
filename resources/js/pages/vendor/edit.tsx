@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
     Select,
     SelectContent,
@@ -18,6 +19,7 @@ import { useAddressData, type SelectOption } from '@/hooks/use-address-data';
 import InputAmount from '@/components/ui/input-amount';
 import { useFormatters } from '@/hooks/use-formatters';
 import InputPhone from '@/components/ui/input-phone';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 type ContactPerson = {
     name: string;
@@ -81,13 +83,19 @@ export default function Edit({ vendor }: Props) {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
+        setConfirmOpen(true);
+    };
+
+    const handleConfirmSubmit = () => {
         const validContacts = contactPersons.filter(
             (c) => c.name && c.email && c.phone
         );
         router.put(`/vendors/${vendor.id}`, {
             ...data,
             contact_persons: validContacts,
+            update_remarks: updateRemarks,
         });
+        setConfirmOpen(false);
     };
 
     const handleCountryChange = (option: SelectOption | null) => {
@@ -137,6 +145,9 @@ export default function Edit({ vendor }: Props) {
     };
 
     const { currency } = useFormatters();
+
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [updateRemarks, setUpdateRemarks] = useState('');
 
     return (
         <>
@@ -362,6 +373,27 @@ export default function Edit({ vendor }: Props) {
                     </div>
                 </form>
             </div>
+
+            <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Confirm Update</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-2 py-2">
+                        <Label>Remarks <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                        <Textarea
+                            value={updateRemarks}
+                            onChange={(e) => setUpdateRemarks(e.target.value)}
+                            placeholder="Reason for update..."
+                            rows={3}
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setConfirmOpen(false)}>Cancel</Button>
+                        <Button onClick={handleConfirmSubmit}>Confirm Update</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

@@ -20,7 +20,7 @@ export default function Show({ vendor }: Props) {
     return (
         <>
             <Head title={`View Vendor`} />
-            <div className="mx-auto max-w-4xl space-y-6 p-4">
+            <div className="mx-auto max-w-7xl space-y-6 p-4">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold">{vendor.name}</h1>
@@ -137,7 +137,7 @@ export default function Show({ vendor }: Props) {
                     )}
                 </div>
 
-                <EntityLogSection logs={vendor.logs ?? []} />
+                <EntityLogSection logs={vendor.logs ?? []} storageKey="vendor-logs" />
             </div>
         </>
     );
