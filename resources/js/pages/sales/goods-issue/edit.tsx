@@ -67,13 +67,13 @@ export default function Edit({ goodsIssue, locations }: Props) {
 
     const updateItem = (index: number, field: string, value: string) => {
         const updated = [...data.items];
-        const item    = { ...updated[index], [field]: value };
+        const item = { ...updated[index], [field]: value };
 
         if (field === 'qty_to_ship') {
-            const max        = item.qty_ordered - item.qty_shipped;
-            const qtyToIssue = Math.min(Math.max(parseFloat(value) || 0, 0), max);
-            item.qty_to_ship  = String(qtyToIssue);
-            item.qty_remaining = max - qtyToIssue;
+            const originalRemaining = updated[index].qty_remaining + parseFloat(updated[index].qty_to_ship || '0');
+            const qtyToShip = Math.min(Math.max(parseFloat(value) || 0, 0), originalRemaining);
+            item.qty_to_ship = String(qtyToShip);
+            item.qty_remaining = originalRemaining - qtyToShip;
         }
 
         updated[index] = item;
@@ -92,7 +92,7 @@ export default function Edit({ goodsIssue, locations }: Props) {
                 <div>
                     <h1 className="text-2xl font-semibold">Edit {goodsIssue.code}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Editing goods issue for <span className="font-medium">{goodsIssue.salesOrder?.code}</span>
+                        Editing goods issue for <span className="font-medium">{goodsIssue.sales_order?.code}</span>
                     </p>
                 </div>
 
@@ -164,7 +164,7 @@ export default function Edit({ goodsIssue, locations }: Props) {
                                             <TableCell>
                                                 <InputAmount
                                                     value={item.qty_to_ship}
-                                                    max={item.qty_ordered - item.qty_shipped}
+                                                    max={item.qty_remaining + parseFloat(item.qty_to_ship || '0')}
                                                     onValueChange={(val) => updateItem(index, 'qty_to_ship', String(val ?? 0))}
                                                 />
                                             </TableCell>

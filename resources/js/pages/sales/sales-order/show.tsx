@@ -241,11 +241,11 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                     </div>
                 )}
 
-                {salesOrder.goodsIssues && salesOrder.goodsIssues.length > 0 && (
+                {salesOrder.goods_issues && salesOrder.goods_issues.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">
                             Goods Issues
-                            <span className="ml-2 text-sm font-normal text-muted-foreground">({salesOrder.goodsIssues.length})</span>
+                            <span className="ml-2 text-sm font-normal text-muted-foreground">({salesOrder.goods_issues.length})</span>
                         </h3>
                         <Table>
                             <TableHeader>
@@ -260,7 +260,7 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {salesOrder.goodsIssues.map((gi) => (
+                                {salesOrder.goods_issues.map((gi) => (
                                     <TableRow key={gi.id}>
                                         <TableCell><ClickableCode href={`/goods-issues/${gi.id}`} value={gi.code} /></TableCell>
                                         <TableCell>{gi.location?.name}</TableCell>

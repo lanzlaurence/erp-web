@@ -6,6 +6,7 @@ import type { AppLayoutProps, SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
 import { Toaster } from 'sonner';
+import { router } from '@inertiajs/react';
 
 export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => {
     const { flash, preferences } = usePage<SharedData>().props;
@@ -27,6 +28,16 @@ export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => {
         }
         styleEl.textContent = buildThemeStyle(theme);
     }, [preferences.color_theme]);
+
+    useEffect(() => {
+        const handlePageShow = (e: PageTransitionEvent) => {
+            if (e.persisted) {
+                router.reload();
+            }
+        };
+        window.addEventListener('pageshow', handlePageShow);
+        return () => window.removeEventListener('pageshow', handlePageShow);
+    }, []);
 
     return (
         <>

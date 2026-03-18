@@ -75,7 +75,7 @@ export type PurchaseOrder = {
     user?: User;
     items?: PurchaseOrderItem[];
     charges?: PurchaseOrderCharge[];
-    goodsReceipts?: GoodsReceipt[];
+
     goods_receipts?: GoodsReceipt[];
     logs?: TransactionLog[];
     created_at: string;
@@ -104,7 +104,7 @@ export type GoodsReceiptItem = {
     batch_number: string | null;
     remarks: string | null;
     material?: Material;
-    purchaseOrderItem?: PurchaseOrderItem;
+    purchase_order_item?: PurchaseOrderItem;
     created_at: string;
     updated_at: string;
 };
@@ -120,7 +120,6 @@ export type GoodsReceipt = {
     transaction_date: string;
     remarks: string | null;
     purchase_order?: PurchaseOrder;
-    purchaseOrder?: PurchaseOrder;
     location?: Location;
     user?: User;
     items?: GoodsReceiptItem[];
@@ -228,7 +227,7 @@ export type GoodsIssueItem = {
     batch_number: string | null;
     remarks: string | null;
     material?: Material;
-    salesOrderItem?: SalesOrderItem;
+    sales_order_item?: SalesOrderItem;
     created_at: string;
     updated_at: string;
 };
@@ -244,7 +243,6 @@ export type GoodsIssue = {
     transaction_date: string;
     remarks: string | null;
     sales_order?: SalesOrder;
-    salesOrder?: SalesOrder;
     location?: Location;
     user?: User;
     items?: GoodsIssueItem[];

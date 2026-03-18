@@ -241,11 +241,11 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                     </div>
                 )}
 
-                {purchaseOrder.goodsReceipts && purchaseOrder.goodsReceipts.length > 0 && (
+                {purchaseOrder.goods_receipts && purchaseOrder.goods_receipts.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">
                             Goods Receipts
-                            <span className="ml-2 text-sm font-normal text-muted-foreground">({purchaseOrder.goodsReceipts.length})</span>
+                            <span className="ml-2 text-sm font-normal text-muted-foreground">({purchaseOrder.goods_receipts.length})</span>
                         </h3>
                         <Table>
                             <TableHeader>
@@ -260,7 +260,7 @@ export default function Show({ purchaseOrder }: PurchaseOrderShowData) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {purchaseOrder.goodsReceipts.map((gr) => (
+                                {purchaseOrder.goods_receipts.map((gr) => (
                                     <TableRow key={gr.id}>
                                         <TableCell><ClickableCode href={`/goods-receipts/${gr.id}`} value={gr.code} /></TableCell>
                                         <TableCell>{gr.location?.name}</TableCell>

@@ -8,7 +8,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { Location } from '@/types';
 import type { SalesOrder, SalesOrderItem } from '@/types/transactions';
 import { Head, useForm } from '@inertiajs/react';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import ReactSelect from 'react-select';
 import { useFormatters } from '@/hooks/use-formatters';
 import InputAmount from '@/components/ui/input-amount';
@@ -18,7 +18,7 @@ import DatePicker from '@/components/ui/date-picker';
 type Props = {
     salesOrder: SalesOrder;
     locations: Location[];
-    inventoryMap: Record<string, Record<string, number>>; // material_id -> location_id -> qty
+    inventoryMap: Record<string, Record<string, number>>;
 };
 
 type ItemRow = {
@@ -41,18 +41,18 @@ export default function Create({ salesOrder, locations, inventoryMap }: Props) {
     });
 
     const initialItems: ItemRow[] = (salesOrder.items ?? [])
-        .filter((i) => Number(i.qty_ordered) > Number(i.qty_shipped))
+        .filter((i) => Number(i.qty_remaining) > 0)
         .map((i) => ({
             sales_order_item_id: String(i.id),
-            material_id:         String(i.material_id),
-            qty_ordered:         Number(i.qty_ordered),
-            qty_shipped:          Number(i.qty_shipped),
-            qty_to_ship:        String(Number(i.qty_ordered) - Number(i.qty_shipped)),
-            qty_remaining:       Number(i.qty_ordered) - Number(i.qty_shipped),
-            unit_price:          Number(i.unit_price_after_discount),
-            serial_number:       '',
-            batch_number:        '',
-            remarks:             '',
+            material_id: String(i.material_id),
+            qty_ordered: Number(i.qty_ordered),
+            qty_shipped: Number(i.qty_shipped),
+            qty_to_ship: String(Number(i.qty_remaining)),
+            qty_remaining: Number(i.qty_remaining),
+            unit_price: Number(i.unit_price_after_discount),
+            serial_number: '',
+            batch_number: '',
+            remarks: '',
         }));
 
     const { data, setData, post, processing, errors } = useForm({
@@ -76,6 +76,28 @@ export default function Create({ salesOrder, locations, inventoryMap }: Props) {
 
     const locationOptions = locations.map((l) => ({ value: String(l.id), label: `${l.code} — ${l.name}` }));
 
+    const originalRemaining = useRef<Record<string, number>>(
+        Object.fromEntries(initialItems.map((i) => [i.sales_order_item_id, i.qty_remaining]))
+    );
+
+    const handleLocationChange = (locationId: string) => {
+        setData((prev) => ({
+            ...prev,
+            location_id: locationId,
+            items: prev.items.map((item) => {
+                const available = inventoryMap[item.material_id]?.[locationId] ?? 0;
+                const soMax = originalRemaining.current[item.sales_order_item_id] ?? (item.qty_ordered - item.qty_shipped);
+                const effectiveMax = Math.min(soMax, available);
+                const cappedQty = Math.min(parseFloat(item.qty_to_ship || '0'), effectiveMax);
+                return {
+                    ...item,
+                    qty_to_ship: String(cappedQty),
+                    qty_remaining: soMax - cappedQty,
+                };
+            }),
+        }));
+    };
+
     // Helper to get available inventory for an item at selected location
     const getAvailable = (materialId: string) => {
         if (!data.location_id) return null;
@@ -84,13 +106,13 @@ export default function Create({ salesOrder, locations, inventoryMap }: Props) {
 
     const updateItem = (index: number, field: string, value: string) => {
         const updated = [...data.items];
-        const item    = { ...updated[index], [field]: value };
+        const item = { ...updated[index], [field]: value };
 
         if (field === 'qty_to_ship') {
-            const max        = item.qty_ordered - item.qty_shipped;
-            const qtyToIssue = Math.min(Math.max(parseFloat(value) || 0, 0), max);
-            item.qty_to_ship  = String(qtyToIssue);
-            item.qty_remaining = max - qtyToIssue;
+            const soMax = originalRemaining.current[item.sales_order_item_id] ?? (item.qty_ordered - item.qty_shipped);
+            const qtyToShip = Math.min(Math.max(parseFloat(value) || 0, 0), soMax);
+            item.qty_to_ship = String(qtyToShip);
+            item.qty_remaining = soMax - qtyToShip;
         }
 
         updated[index] = item;
@@ -174,7 +196,7 @@ export default function Create({ salesOrder, locations, inventoryMap }: Props) {
                                 <Label>Location</Label>
                                 <ReactSelect
                                     options={locationOptions}
-                                    onChange={(opt) => setData('location_id', opt?.value ?? '')}
+                                    onChange={(opt) => handleLocationChange(opt?.value ?? '')}
                                     placeholder="Select location..."
                                     classNames={selectClass}
                                     menuPortalTarget={document.body}
@@ -208,7 +230,7 @@ export default function Create({ salesOrder, locations, inventoryMap }: Props) {
                                     {data.items.length === 0 ? (
                                         <TableRow>
                                             <TableCell colSpan={10} className="py-6 text-center text-sm text-muted-foreground">
-                                                All items have been fully issued.
+                                                No items available to issue. All quantities have been shipped or are reserved by other pending goods issues.
                                             </TableCell>
                                         </TableRow>
                                     ) : data.items.map((item, index) => {
@@ -239,20 +261,24 @@ export default function Create({ salesOrder, locations, inventoryMap }: Props) {
                                                 <TableCell>
                                                     {(() => {
                                                         const available = getAvailable(item.material_id);
-                                                        const remaining = item.qty_ordered - item.qty_shipped;
-                                                        const effectiveMax = available !== null ? Math.min(remaining, available) : remaining;
-                                                        const isInsufficient = available !== null && available < parseFloat(item.qty_to_ship || '0');
+                                                        const soMax = originalRemaining.current[item.sales_order_item_id] ?? (item.qty_ordered - item.qty_shipped);
+                                                        const effectiveMax = available !== null ? Math.min(soMax, available) : soMax;
+                                                        const isInsufficient = available !== null && available === 0;
+                                                        const isLow = available !== null && available > 0 && available < parseFloat(item.qty_to_ship || '0');
 
                                                         return (
                                                             <div className="flex flex-col gap-1">
-                                                                <InputAmount
-                                                                    value={item.qty_to_ship}
-                                                                    max={effectiveMax}
-                                                                    onValueChange={(val) => updateItem(index, 'qty_to_ship', String(val ?? 0))}
-                                                                />
+                                                                <div className={isInsufficient ? 'opacity-50 pointer-events-none' : ''}>
+                                                                    <InputAmount
+                                                                        value={item.qty_to_ship}
+                                                                        max={effectiveMax}
+                                                                        onValueChange={(val) => updateItem(index, 'qty_to_ship', String(val ?? 0))}
+                                                                    />
+                                                                </div>
                                                                 {data.location_id && available !== null && (
-                                                                    <span className={`text-xs ${isInsufficient ? 'text-red-500' : 'text-muted-foreground'}`}>
+                                                                    <span className={`text-xs ${isInsufficient ? 'text-red-500 font-medium' : isLow ? 'text-orange-500' : 'text-muted-foreground'}`}>
                                                                         Available: {formatDecimal(available)}
+                                                                        {isInsufficient && ' — No stock'}
                                                                     </span>
                                                                 )}
                                                             </div>

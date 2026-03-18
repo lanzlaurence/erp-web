@@ -54,13 +54,13 @@ export default function Edit({ goodsReceipt, locations }: Props) {
     // When material tracks serial number, auto-split into qty=1 rows
     const updateItem = (index: number, field: string, value: string) => {
         const updated = [...data.items];
-        const item    = { ...updated[index], [field]: value };
+        const item = { ...updated[index], [field]: value };
 
         if (field === 'qty_to_receive') {
-            const max          = item.qty_ordered - item.qty_received;
-            const qtyToReceive = Math.min(Math.max(parseFloat(value) || 0, 0), max);
+            const originalRemaining = updated[index].qty_remaining + parseFloat(updated[index].qty_to_receive || '0');
+            const qtyToReceive = Math.min(Math.max(parseFloat(value) || 0, 0), originalRemaining);
             item.qty_to_receive = String(qtyToReceive);
-            item.qty_remaining  = max - qtyToReceive;
+            item.qty_remaining = originalRemaining - qtyToReceive;
         }
 
         updated[index] = item;
@@ -125,7 +125,7 @@ export default function Edit({ goodsReceipt, locations }: Props) {
                 <div>
                     <h1 className="text-2xl font-semibold">Edit {goodsReceipt.code}</h1>
                     <p className="text-sm text-muted-foreground">
-                        For PO <span className="font-medium">{goodsReceipt.purchaseOrder?.code}</span>
+                        For PO <span className="font-medium">{goodsReceipt.purchase_order?.code}</span>
                     </p>
                 </div>
 
@@ -208,9 +208,9 @@ export default function Edit({ goodsReceipt, locations }: Props) {
                                                         ) : (
                                                             <InputAmount
                                                                 value={item.qty_to_receive}
-                                                                max={item.qty_ordered - item.qty_received}
+                                                                max={item.qty_remaining + parseFloat(item.qty_to_receive || '0')}
                                                                 onValueChange={(val) => {
-                                                                    const max = item.qty_ordered - item.qty_received;
+                                                                    const max = item.qty_remaining + parseFloat(item.qty_to_receive || '0');
                                                                     const clamped = Math.min(Math.max(Number(val) || 0, 0), max);
                                                                     updateItem(index, 'qty_to_receive', String(clamped));
                                                                 }}
