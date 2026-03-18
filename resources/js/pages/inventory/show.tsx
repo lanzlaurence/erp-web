@@ -100,20 +100,6 @@ export default function Show({ inventory, logs }: InventoryShowData) {
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/inventories"><ArrowLeft className="mr-2 h-4 w-4" />Back</Link>
                         </Button>
-                        {hasPermission('inventory-adjust') && (
-                            <Button variant="outline" size="sm" asChild>
-                                <Link href={`/inventories/${inventory.id}/edit`}>
-                                    <Edit className="mr-2 h-4 w-4" />Adjust
-                                </Link>
-                            </Button>
-                        )}
-                        {hasPermission('inventory-transfer') && (
-                            <Button size="sm" asChild>
-                                <Link href={`/inventories/${inventory.id}/transfer`}>
-                                    <ArrowLeftRight className="mr-2 h-4 w-4" />Transfer
-                                </Link>
-                            </Button>
-                        )}
                     </div>
                 </div>
 

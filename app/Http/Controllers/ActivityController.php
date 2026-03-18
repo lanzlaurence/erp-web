@@ -41,7 +41,7 @@ class ActivityController extends Controller implements HasMiddleware
 
     public function inventoryLog()
     {
-        $logs = InventoryLog::with(['material', 'location', 'transferToLocation', 'user', 'inventory'])
+        $logs = InventoryLog::with(['material', 'location', 'transferLocation', 'user', 'inventory'])
             ->latest()
             ->get()
             ->map(fn($log) => [
@@ -58,7 +58,7 @@ class ActivityController extends Controller implements HasMiddleware
                 'quantity_before'        => (float) $log->quantity_before,
                 'quantity_change'        => (float) $log->quantity_change,
                 'quantity_after'         => (float) $log->quantity_after,
-                'transfer_location_name' => $log->transferToLocation?->name,
+                'transfer_location_name' => $log->transferLocation?->name,
                 'user_name'              => $log->user?->name,
                 'remarks'                => $log->remarks,
             ]);

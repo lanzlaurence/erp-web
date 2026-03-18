@@ -66,7 +66,7 @@ class InventoryLog extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function transferToLocation()
+    public function transferLocation()
     {
         return $this->belongsTo(Location::class, 'transfer_location_id');
     }
