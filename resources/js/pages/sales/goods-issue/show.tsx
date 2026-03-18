@@ -11,6 +11,11 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Edit, CheckCircle, XCircle, RotateCcw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import ClickableCode from '@/components/ui/clickable-code';
+import { DataTable } from '@/components/data-table';
+import { ColumnDef } from '@tanstack/react-table';
+import { usePage } from '@inertiajs/react';
+import type { SharedData } from '@/types';
+import type { GoodsIssueItem, TransactionLog } from '@/types/transactions';
 
 const STATUS_BADGE: Record<GoodsIssueStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
     pending:   { label: 'Pending',   variant: 'secondary' },
@@ -46,6 +51,116 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
         }
         setConfirm({ open: false, action: null, label: '', description: '' });
     };
+
+    const { preferences } = usePage<SharedData>().props;
+
+    const itemColumns: ColumnDef<GoodsIssueItem>[] = [
+        {
+            accessorKey: 'material',
+            header: 'Material',
+            size: 200,
+            accessorFn: (row) => row.material?.name ?? '',
+            cell: ({ row }) => (
+                <div>
+                    <p className="font-medium">{row.original.material?.name}</p>
+                    <p className="text-xs text-muted-foreground">{row.original.material?.code}</p>
+                </div>
+            ),
+        },
+        {
+            accessorKey: 'qty_ordered',
+            header: 'Qty Ordered',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{formatDecimal(Number(row.original.qty_ordered))}</span>,
+        },
+        {
+            accessorKey: 'qty_shipped',
+            header: 'Qty Shipped (SO)',
+            size: 140,
+            cell: ({ row }) => <span className="font-mono">{formatDecimal(Number(row.original.qty_shipped))}</span>,
+        },
+        {
+            accessorKey: 'qty_to_ship',
+            header: 'Qty to Ship',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono font-medium">{formatDecimal(Number(row.original.qty_to_ship))}</span>,
+        },
+        {
+            accessorKey: 'qty_remaining',
+            header: 'Qty Remaining',
+            size: 130,
+            cell: ({ row }) => <span className="font-mono text-muted-foreground">{formatDecimal(Number(row.original.qty_remaining))}</span>,
+        },
+        {
+            accessorKey: 'unit_price',
+            header: 'Unit Price',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{formatAmount(Number(row.original.unit_price))}</span>,
+        },
+        {
+            accessorKey: 'serial_number',
+            header: 'Serial No.',
+            size: 130,
+            cell: ({ row }) => <span className="text-sm">{row.original.serial_number || '-'}</span>,
+        },
+        {
+            accessorKey: 'batch_number',
+            header: 'Batch No.',
+            size: 130,
+            cell: ({ row }) => <span className="text-sm">{row.original.batch_number || '-'}</span>,
+        },
+        {
+            accessorKey: 'remarks',
+            header: 'Remarks',
+            size: 180,
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.remarks || '-'}</span>,
+        },
+    ];
+
+    const logColumns: ColumnDef<TransactionLog>[] = [
+        {
+            accessorKey: 'created_at',
+            header: 'Date & Time',
+            size: 160,
+            accessorFn: (row) => formatDateTime(row.created_at),
+            cell: ({ row }) => <span className="text-sm whitespace-nowrap">{formatDateTime(row.original.created_at)}</span>,
+        },
+        {
+            accessorKey: 'user',
+            header: 'By',
+            size: 140,
+            accessorFn: (row) => row.user?.name ?? '',
+            cell: ({ row }) => <span className="font-medium text-sm">{row.original.user?.name ?? '-'}</span>,
+        },
+        {
+            accessorKey: 'action',
+            header: 'Action',
+            size: 120,
+            cell: ({ row }) => <span className="text-sm">{row.original.action}</span>,
+        },
+        {
+            accessorKey: 'from_status',
+            header: 'Status Change',
+            size: 180,
+            cell: ({ row }) => {
+                const { from_status, to_status } = row.original;
+                if (from_status && to_status) return (
+                    <span className="text-sm">
+                        <span className="text-muted-foreground">{from_status}</span>
+                        <span className="mx-1">→</span>
+                        <span className="font-medium">{to_status}</span>
+                    </span>
+                );
+                return <span className="text-sm text-muted-foreground">-</span>;
+            },
+        },
+        {
+            accessorKey: 'remarks',
+            header: 'Remarks',
+            size: 200,
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.remarks || '-'}</span>,
+        },
+    ];
 
     return (
         <>
@@ -138,64 +253,23 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
 
                 <div className="space-y-4 rounded-lg border p-6">
                     <h3 className="font-semibold">Items</h3>
-                    <div className="overflow-x-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Material</TableHead>
-                                    <TableHead>Qty Ordered</TableHead>
-                                    <TableHead>Qty Shipped (SO)</TableHead>
-                                    <TableHead>Qty to Ship</TableHead>
-                                    <TableHead>Qty Remaining</TableHead>
-                                    <TableHead>Unit Price</TableHead>
-                                    <TableHead>Serial No.</TableHead>
-                                    <TableHead>Batch No.</TableHead>
-                                    <TableHead>Remarks</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {goodsIssue.items?.map((item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell>
-                                            <p className="font-medium">{item.material?.name}</p>
-                                            <p className="text-xs text-muted-foreground">{item.material?.code}</p>
-                                        </TableCell>
-                                        <TableCell className="font-mono">{formatDecimal(Number(item.qty_ordered))}</TableCell>
-                                        <TableCell className="font-mono">{formatDecimal(Number(item.qty_shipped))}</TableCell>
-                                        <TableCell className="font-mono font-medium">{formatDecimal(Number(item.qty_to_ship))}</TableCell>
-                                        <TableCell className="font-mono text-muted-foreground">{formatDecimal(Number(item.qty_remaining))}</TableCell>
-                                        <TableCell className="font-mono">{formatAmount(Number(item.unit_price))}</TableCell>
-                                        <TableCell>{item.serial_number || '-'}</TableCell>
-                                        <TableCell>{item.batch_number || '-'}</TableCell>
-                                        <TableCell className="text-sm text-muted-foreground">{item.remarks || '-'}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                    <DataTable
+                        columns={itemColumns}
+                        data={goodsIssue.items ?? []}
+                        timezone={preferences.timezone}
+                        storageKey="gi-show-items"
+                    />
                 </div>
 
                 {goodsIssue.logs && goodsIssue.logs.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Transaction Log</h3>
-                        <div className="space-y-3">
-                            {goodsIssue.logs.map((log) => (
-                                <div key={log.id} className="flex items-start gap-3 text-sm">
-                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-primary shrink-0" />
-                                    <div className="flex-1">
-                                        <p>
-                                            <span className="font-medium">{log.user?.name}</span>
-                                            {' '}<span className="text-muted-foreground">{log.action}</span>
-                                            {log.from_status && log.to_status && (
-                                                <span className="text-muted-foreground"> · {log.from_status} → {log.to_status}</span>
-                                            )}
-                                        </p>
-                                        {log.remarks && <p className="text-muted-foreground">{log.remarks}</p>}
-                                        <p className="text-xs text-muted-foreground">{formatDateTime(log.created_at)}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <DataTable
+                            columns={logColumns}
+                            data={goodsIssue.logs}
+                            timezone={preferences.timezone}
+                            storageKey="gi-show-logs"
+                        />
                     </div>
                 )}
             </div>
