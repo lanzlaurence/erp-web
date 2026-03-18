@@ -20,7 +20,7 @@ export default function Show({ material }: Props) {
     return (
         <>
             <Head title="View Material" />
-            <div className="mx-auto max-w-4xl space-y-6 p-4">
+            <div className="mx-auto max-w-7xl space-y-6 p-4">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold">{material.name}</h1>
@@ -173,7 +173,7 @@ export default function Show({ material }: Props) {
                     </div>
                 </div>
 
-                <EntityLogSection logs={material.logs ?? []} />
+                <EntityLogSection logs={material.logs ?? []} storageKey="material-logs" />
             </div>
         </>
     );

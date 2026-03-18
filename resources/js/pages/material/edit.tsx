@@ -17,6 +17,8 @@ import { FormEvent } from 'react';
 import { Head } from '@inertiajs/react';
 import InputAmount from '@/components/ui/input-amount';
 import { useFormatters } from '@/hooks/use-formatters';
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 type Props = {
     material: Material;
@@ -49,11 +51,19 @@ export default function Edit({ material, brands, categories, uoms }: Props) {
         brand_id: material.brand_id?.toString() || '',
         category_id: material.category_id?.toString() || '',
         uom_id: material.uom_id?.toString() || '',
+        update_remarks: '',
     });
+
+    const [confirmOpen, setConfirmOpen] = useState(false);
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
+        setConfirmOpen(true);
+    };
+
+    const handleConfirmSubmit = () => {
         put(`/materials/${material.id}`);
+        setConfirmOpen(false);
     };
 
     const { currency } = useFormatters();
@@ -321,6 +331,27 @@ export default function Edit({ material, brands, categories, uoms }: Props) {
                     </div>
                 </form>
             </div>
+
+            <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Confirm Update</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-2 py-2">
+                        <Label>Remarks <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                        <Textarea
+                            value={data.update_remarks}
+                            onChange={(e) => setData('update_remarks', e.target.value)}
+                            placeholder="Reason for update..."
+                            rows={3}
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setConfirmOpen(false)}>Cancel</Button>
+                        <Button onClick={handleConfirmSubmit} disabled={processing}>Confirm Update</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

@@ -77,7 +77,7 @@ class MaterialController extends Controller implements HasMiddleware
     {
         $old = $material->only($material->getFillable());
         $material->update($request->validated());
-        $material->logUpdated($old, $request->validated());
+        $material->logUpdated($old, $request->validated(), $request->input('update_remarks'));
 
         return redirect()->route('materials.index')
             ->with('success', "Material {$material->code} updated successfully");

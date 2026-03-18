@@ -1,47 +1,96 @@
+import { DataTable } from '@/components/data-table';
+import { Badge } from '@/components/ui/badge';
 import type { EntityLog } from '@/types';
+import { ColumnDef } from '@tanstack/react-table';
 import { useFormatters } from '@/hooks/use-formatters';
+import { usePage } from '@inertiajs/react';
+import type { SharedData } from '@/types';
 
 type Props = {
     logs: EntityLog[];
+    storageKey?: string;
 };
 
-export default function EntityLogSection({ logs }: Props) {
+export default function EntityLogSection({ logs, storageKey }: Props) {
     const { formatDateTime } = useFormatters();
+    const { preferences } = usePage<SharedData>().props;
 
-    if (!logs || logs.length === 0) return null;
+    const columns: ColumnDef<EntityLog>[] = [
+        {
+            accessorKey: 'created_at',
+            header: 'Date & Time',
+            size: 160,
+            accessorFn: (row) => formatDateTime(row.created_at),
+            cell: ({ row }) => (
+                <span className="text-sm whitespace-nowrap">{formatDateTime(row.original.created_at)}</span>
+            ),
+        },
+        {
+            accessorKey: 'user',
+            header: 'By',
+            size: 140,
+            accessorFn: (row) => row.user?.name ?? '',
+            cell: ({ row }) => (
+                <span className="text-sm font-medium">{row.original.user?.name ?? '-'}</span>
+            ),
+        },
+        {
+            accessorKey: 'action',
+            header: 'Action',
+            size: 100,
+            cell: ({ row }) => (
+                <Badge variant={
+                    row.original.action === 'created' ? 'success' :
+                    row.original.action === 'deleted' ? 'destructive' : 'secondary'
+                }>
+                    {row.original.action}
+                </Badge>
+            ),
+        },
+        {
+            accessorKey: 'changes',
+            header: 'Changes',
+            size: 400,
+            enableSorting: false,
+            cell: ({ row }) => {
+                const changes = row.original.changes;
+                if (!changes || changes.length === 0) return <span className="text-sm text-muted-foreground">-</span>;
+                return (
+                    <div className="space-y-1">
+                        {changes.map((c, i) => (
+                            <div key={i} className="text-xs">
+                                <span className="font-medium">{c.field}</span>
+                                <span className="text-muted-foreground mx-1">·</span>
+                                <span className="text-red-500 line-through">{c.old || '—'}</span>
+                                <span className="mx-1">→</span>
+                                <span className="text-green-600">{c.new || '—'}</span>
+                            </div>
+                        ))}
+                    </div>
+                );
+            },
+        },
+        {
+            accessorKey: 'remarks',
+            header: 'Remarks',
+            size: 200,
+            cell: ({ row }) => (
+                <span className="text-sm text-muted-foreground">{row.original.remarks ?? '-'}</span>
+            ),
+        },
+    ];
+
+    if (logs.length === 0) return null;
 
     return (
-        <div className="space-y-4 rounded-lg border p-4">
+        <div className="space-y-4 rounded-lg border p-6">
             <h3 className="font-semibold">Activity Log</h3>
-            <div className="space-y-3">
-                {logs.map((log) => (
-                    <div key={log.id} className="flex items-start gap-3 text-sm">
-                        <div className="mt-1.5 h-2 w-2 rounded-full bg-primary shrink-0" />
-                        <div className="flex-1">
-                            <p>
-                                <span className="font-medium">{log.user?.name ?? 'System'}</span>
-                                {' '}
-                                <span className="text-muted-foreground capitalize">{log.action}</span>
-                            </p>
-                            {log.changes && log.changes.length > 0 && (
-                                <div className="mt-1 space-y-1">
-                                    {log.changes.map((change, i) => (
-                                        <p key={i} className="text-xs text-muted-foreground">
-                                            <span className="font-medium capitalize">{change.field.replace(/_/g, ' ')}</span>
-                                            {': '}
-                                            <span className="text-red-500 line-through">{change.old || '—'}</span>
-                                            {' → '}
-                                            <span className="text-green-600">{change.new || '—'}</span>
-                                        </p>
-                                    ))}
-                                </div>
-                            )}
-                            {log.remarks && <p className="text-xs text-muted-foreground mt-1">{log.remarks}</p>}
-                            <p className="text-xs text-muted-foreground">{formatDateTime(log.created_at)}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
+            <DataTable
+                columns={columns}
+                data={logs}
+                timezone={preferences.timezone}
+                storageKey={storageKey}
+            />
         </div>
     );
 }

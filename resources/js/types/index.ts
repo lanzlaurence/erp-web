@@ -6,6 +6,7 @@ export type * from './navigation';
 export type * from './ui';
 export type * from './transactions';
 export type * from './dashboard';
+export type * from './activity';
 
 import type { Auth, Permission, Role, User } from './auth';
 import type { Customer, Material, Vendor } from './masters';

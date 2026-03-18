@@ -55,7 +55,7 @@ class CustomerController extends Controller implements HasMiddleware
     {
         $old = $customer->only($customer->getFillable());
         $customer->update($request->validated());
-        $customer->logUpdated($old, $request->validated());
+        $customer->logUpdated($old, $request->validated(), $request->input('update_remarks'));
         return redirect()->route('customers.index')
             ->with('success', "Customer {$customer->code} updated successfully");
     }
