@@ -36,6 +36,7 @@ const getDocType = (log: TransactionLogRow): string => {
 };
 
 export default function TransactionLogPage({ logs }: TransactionLogPageData) {
+    console.log('transaction logs:', logs);
     const { formatDateTime } = useFormatters();
     const { preferences } = usePage<SharedData>().props;
 
