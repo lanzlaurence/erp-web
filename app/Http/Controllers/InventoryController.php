@@ -42,7 +42,7 @@ class InventoryController extends Controller implements HasMiddleware
     {
         $inventory->load(['material', 'location']);
 
-        $logs = InventoryLog::with(['user', 'location', 'transferToLocation'])
+        $logs = InventoryLog::with(['user', 'location', 'transferLocation'])
             ->where('inventory_id', $inventory->id)
             ->latest()
             ->get();
