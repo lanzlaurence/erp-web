@@ -29,7 +29,7 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
     const { formatAmount, formatDate, formatDateTime, formatDecimal } = useFormatters();
     const { hasPermission } = usePermissions();
     const badge = STATUS_BADGE[goodsReceipt.status];
-    const poIsCancelled = goodsReceipt.purchaseOrder?.status === 'cancelled';
+    const poIsCancelled = goodsReceipt.purchase_order?.status === 'cancelled';
 
     const [confirm, setConfirm] = useState<ConfirmAction>({ open: false, action: null, label: '', description: '' });
 
@@ -105,11 +105,11 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
                     <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
                             <p className="text-muted-foreground">Purchase Order</p>
-                            <ClickableCode href={`/purchase-orders/${goodsReceipt.purchaseOrder?.id}`} value={goodsReceipt.purchaseOrder?.code} />
+                            <ClickableCode href={`/purchase-orders/${goodsReceipt.purchase_order?.id}`} value={goodsReceipt.purchase_order?.code} />
                         </div>
                         <div>
                             <p className="text-muted-foreground">Vendor</p>
-                            <ClickableCode href={`/vendors/${goodsReceipt.purchaseOrder?.vendor?.id}`} value={goodsReceipt.purchaseOrder?.vendor?.name} />
+                            <ClickableCode href={`/vendors/${goodsReceipt.purchase_order?.vendor?.id}`} value={goodsReceipt.purchase_order?.vendor?.name} />
                         </div>
                         <div>
                             <p className="text-muted-foreground">Location</p>

@@ -29,7 +29,7 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
     const { formatAmount, formatDate, formatDecimal, formatDateTime } = useFormatters();
     const { hasPermission } = usePermissions();
     const badge = STATUS_BADGE[goodsIssue.status];
-    const soIsCancelled = goodsIssue.salesOrder?.status === 'cancelled';
+    const soIsCancelled = goodsIssue.sales_order?.status === 'cancelled';
 
     const [confirm, setConfirm] = useState<ConfirmAction>({ open: false, action: null, label: '', description: '' });
 
@@ -105,11 +105,11 @@ export default function Show({ goodsIssue }: GoodsIssueShowData) {
                     <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
                             <p className="text-muted-foreground">Sales Order</p>
-                            <ClickableCode href={`/sales-orders/${goodsIssue.salesOrder?.id}`} value={goodsIssue.salesOrder?.code} />
+                            <ClickableCode href={`/sales-orders/${goodsIssue.sales_order?.id}`} value={goodsIssue.sales_order?.code} />
                         </div>
                         <div>
                             <p className="text-muted-foreground">Customer</p>
-                            <ClickableCode href={`/customers/${goodsIssue.salesOrder?.customer?.id}`} value={goodsIssue.salesOrder?.customer?.name} />
+                            <ClickableCode href={`/customers/${goodsIssue.sales_order?.customer?.id}`} value={goodsIssue.sales_order?.customer?.name} />
                         </div>
                         <div>
                             <p className="text-muted-foreground">Location</p>

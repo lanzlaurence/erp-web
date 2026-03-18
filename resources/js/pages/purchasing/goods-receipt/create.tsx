@@ -40,14 +40,14 @@ export default function Create({ purchaseOrder, locations }: Props) {
     });
 
     const initialItems: ItemRow[] = (purchaseOrder.items ?? [])
-        .filter((i) => Number(i.qty_ordered) > Number(i.qty_received))
+        .filter((i) => Number(i.qty_remaining) > 0)
         .map((i) => ({
             purchase_order_item_id: String(i.id),
             material_id:  String(i.material_id),
             qty_ordered: Number(i.qty_ordered),
             qty_received: Number(i.qty_received),
-            qty_to_receive: String(Number(i.qty_ordered) - Number(i.qty_received)),
-            qty_remaining: Number(i.qty_ordered) - Number(i.qty_received),
+            qty_to_receive: String(Number(i.qty_remaining)),
+            qty_remaining: Number(i.qty_remaining),
             unit_cost: Number(i.unit_cost_after_discount),
             serial_number: '',
             batch_number: '',
@@ -149,6 +149,7 @@ export default function Create({ purchaseOrder, locations }: Props) {
     return (
         <>
             <Head title="Create Goods Receipt" />
+
             <div className="space-y-6 p-4">
                 <div>
                     <h1 className="text-2xl font-semibold">Create Goods Receipt</h1>
@@ -181,7 +182,7 @@ export default function Create({ purchaseOrder, locations }: Props) {
                                 {errors.transaction_date && <p className="text-sm text-red-600">{errors.transaction_date}</p>}
                             </div>
                             <div className="space-y-2">
-                                <Label>location</Label>
+                                <Label>Location</Label>
                                 <ReactSelect
                                     options={locationOptions}
                                     onChange={(opt) => setData('location_id', opt?.value ?? '')}
@@ -219,7 +220,7 @@ export default function Create({ purchaseOrder, locations }: Props) {
                                     {data.items.length === 0 ? (
                                         <TableRow>
                                             <TableCell colSpan={10} className="py-6 text-center text-sm text-muted-foreground">
-                                                All items have been fully received.
+                                                No items available to receive. All quantities have been received or are reserved by other pending goods receipts.
                                             </TableCell>
                                         </TableRow>
                                     ) : data.items.map((item, index) => {
@@ -266,6 +267,11 @@ export default function Create({ purchaseOrder, locations }: Props) {
                                                             />
                                                         );
                                                     })()}
+                                                    {errors[`items.${index}.qty_to_receive` as keyof typeof errors] && (
+                                                        <p className="text-xs text-red-600 mt-1">
+                                                            {errors[`items.${index}.qty_to_receive` as keyof typeof errors]}
+                                                        </p>
+                                                    )}
                                                 </TableCell>
                                                 <TableCell className={`font-mono text-sm ${item.qty_remaining < 0 ? 'text-red-600' : ''}`}>
                                                     {formatDecimal(item.qty_remaining)}

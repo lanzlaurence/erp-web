@@ -48,7 +48,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
     {
         if (!$purchaseOrder->canCreateGr()) {
             return redirect()->route('purchase-orders.show', $purchaseOrder->id)
-                ->withErrors(['error' => 'Goods receipt cannot be created for this purchase order.']);
+                ->with('error', 'Goods receipt cannot be created for this purchase order.');
         }
 
         $purchaseOrder->load([
@@ -59,8 +59,21 @@ class GoodsReceiptController extends Controller implements HasMiddleware
         ]);
 
         return Inertia::render('purchasing/goods-receipt/create', [
-            'purchaseOrder' => $purchaseOrder,
-            'locations'  => Location::all(['id', 'code', 'name']),
+            'purchaseOrder' => array_merge($purchaseOrder->toArray(), [
+                'items' => $purchaseOrder->items->map(function ($item) {
+                    $otherPendingQty = \App\Models\GoodsReceiptItem::query()
+                        ->where('purchase_order_item_id', $item->id)
+                        ->whereHas('goodsReceipt', fn($q) => $q->where('status', 'pending'))
+                        ->sum('qty_to_receive');
+
+                    return array_merge($item->toArray(), [
+                        'qty_remaining' => max(0, (float) $item->qty_ordered
+                            - (float) $item->qty_received
+                            - (float) $otherPendingQty),
+                    ]);
+                }),
+            ]),
+            'locations' => Location::all(['id', 'code', 'name']),
         ]);
     }
 
@@ -136,7 +149,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
     {
         if ($goodsReceipt->status !== 'pending') {
             return redirect()->route('goods-receipts.show', $goodsReceipt->id)
-                ->withErrors(['error' => 'Only pending goods receipts can be edited.']);
+                ->with('error', 'Only pending goods receipts can be edited.');
         }
 
         $goodsReceipt->load([
@@ -157,7 +170,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
     {
         if ($goodsReceipt->status !== 'pending') {
             return redirect()->route('goods-receipts.show', $goodsReceipt->id)
-                ->withErrors(['error' => 'Only pending goods receipts can be edited.']);
+                ->with('error', 'Only pending goods receipts can be edited.');
         }
 
         DB::transaction(function () use ($request, $goodsReceipt) {
@@ -196,7 +209,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
     {
         if ($goodsReceipt->status !== 'pending') {
             return redirect()->route('goods-receipts.show', $goodsReceipt->id)
-                ->withErrors(['error' => 'Only pending goods receipts can be deleted.']);
+                ->with('error', 'Only pending goods receipts can be deleted.');
         }
 
         DB::transaction(function () use ($goodsReceipt) {
@@ -216,7 +229,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
     public function complete(GoodsReceipt $goodsReceipt)
     {
         if (!$goodsReceipt->canBeCompleted()) {
-            return back()->withErrors(['error' => 'Only pending goods receipts can be completed.']);
+            return back()->with('error', 'Only pending goods receipts can be completed.');
         }
 
         DB::transaction(function () use ($goodsReceipt) {
@@ -296,7 +309,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
     public function cancel(GoodsReceipt $goodsReceipt)
     {
         if (!$goodsReceipt->canBeCancelled()) {
-            return back()->withErrors(['error' => 'This goods receipt cannot be cancelled.']);
+            return back()->with('error', 'This goods receipt cannot be cancelled.');
         }
 
         DB::transaction(function () use ($goodsReceipt) {
@@ -372,7 +385,7 @@ class GoodsReceiptController extends Controller implements HasMiddleware
     public function revert(GoodsReceipt $goodsReceipt)
     {
         if (!$goodsReceipt->canBeReverted()) {
-            return back()->withErrors(['error' => 'Only cancelled goods receipts can be reverted to pending.']);
+            return back()->with('error', 'Only cancelled goods receipts can be reverted to pending.');
         }
 
         DB::transaction(function () use ($goodsReceipt) {

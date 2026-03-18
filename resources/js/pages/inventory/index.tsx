@@ -61,7 +61,7 @@ export default function Index({ inventories }: InventoryData) {
             header: 'Actions',
             enableSorting: false,
             enableColumnFilter: false,
-            size: 100,
+            size: 50,
             cell: ({ row }) => (
                 <div className="flex justify-end gap-1">
                     {hasPermission('inventory-view') && (

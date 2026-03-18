@@ -48,7 +48,7 @@ class GoodsIssueController extends Controller implements HasMiddleware
     {
         if (!$salesOrder->canCreateGi()) {
             return redirect()->route('sales-orders.show', $salesOrder->id)
-                ->withErrors(['error' => 'Goods issue cannot be created for this sales order.']);
+                ->with('error', 'Goods issue cannot be created for this sales order.');
         }
 
         $salesOrder->load([
@@ -80,7 +80,20 @@ class GoodsIssueController extends Controller implements HasMiddleware
             });
 
         return Inertia::render('sales/goods-issue/create', [
-            'salesOrder'   => $salesOrder,
+            'salesOrder'   => array_merge($salesOrder->toArray(), [
+                'items' => $salesOrder->items->map(function ($item) {
+                    $otherPendingQty = \App\Models\GoodsIssueItem::query()
+                        ->where('sales_order_item_id', $item->id)
+                        ->whereHas('goodsIssue', fn($q) => $q->where('status', 'pending'))
+                        ->sum('qty_to_ship');
+
+                    return array_merge($item->toArray(), [
+                        'qty_remaining' => max(0, (float) $item->qty_ordered
+                            - (float) $item->qty_shipped
+                            - (float) $otherPendingQty),
+                    ]);
+                }),
+            ]),
             'locations'    => $locations,
             'inventoryMap' => $inventoryMap,
         ]);
@@ -158,7 +171,7 @@ class GoodsIssueController extends Controller implements HasMiddleware
     {
         if ($goodsIssue->status !== 'pending') {
             return redirect()->route('goods-issues.show', $goodsIssue->id)
-                ->withErrors(['error' => 'Only pending goods issues can be edited.']);
+                ->with('error', 'Only pending goods issues can be edited.');
         }
 
         $goodsIssue->load([
@@ -179,7 +192,7 @@ class GoodsIssueController extends Controller implements HasMiddleware
     {
         if ($goodsIssue->status !== 'pending') {
             return redirect()->route('goods-issues.show', $goodsIssue->id)
-                ->withErrors(['error' => 'Only pending goods issues can be edited.']);
+                ->with('error', 'Only pending goods issues can be edited.');
         }
 
         DB::transaction(function () use ($request, $goodsIssue) {
@@ -218,7 +231,7 @@ class GoodsIssueController extends Controller implements HasMiddleware
     {
         if ($goodsIssue->status !== 'pending') {
             return redirect()->route('goods-issues.show', $goodsIssue->id)
-                ->withErrors(['error' => 'Only pending goods issues can be deleted.']);
+                ->with('error', 'Only pending goods issues can be deleted.');
         }
 
         DB::transaction(function () use ($goodsIssue) {
@@ -236,12 +249,12 @@ class GoodsIssueController extends Controller implements HasMiddleware
     public function complete(GoodsIssue $goodsIssue)
     {
         if (!$goodsIssue->canBeCompleted()) {
-            return back()->withErrors(['error' => 'Only pending goods issues can be completed.']);
+            return back()->with('error', 'Only pending goods issues can be completed.');
         }
 
         // Validate inventory availability before doing anything
         foreach ($goodsIssue->items as $giItem) {
-            $qtyToIssue = (float) $giItem->qty_to_issue;
+            $qtyToIssue = (float) $giItem->qty_to_ship;
             if ($qtyToIssue <= 0) continue;
 
             $inventory = Inventory::where('material_id', $giItem->material_id)
@@ -251,11 +264,10 @@ class GoodsIssueController extends Controller implements HasMiddleware
             $availableQty = $inventory ? (float) $inventory->quantity : 0;
 
             if ($availableQty < $qtyToIssue) {
-                return back()->withErrors([
-                    'error' => "Insufficient stock for [{$giItem->material->code}] {$giItem->material->name} "
+                return back()->with('error', "Insufficient stock for [{$giItem->material->code}] {$giItem->material->name} "
                         . "at {$goodsIssue->location->name}. "
                         . "Available: {$availableQty}, Required: {$qtyToIssue}.",
-                ]);
+                );
             }
         }
 
@@ -335,7 +347,7 @@ class GoodsIssueController extends Controller implements HasMiddleware
     public function cancel(GoodsIssue $goodsIssue)
     {
         if (!$goodsIssue->canBeCancelled()) {
-            return back()->withErrors(['error' => 'This goods issue cannot be cancelled.']);
+            return back()->with('error', 'This goods issue cannot be cancelled.');
         }
 
         DB::transaction(function () use ($goodsIssue) {
@@ -407,7 +419,7 @@ class GoodsIssueController extends Controller implements HasMiddleware
     public function revert(GoodsIssue $goodsIssue)
     {
         if (!$goodsIssue->canBeReverted()) {
-            return back()->withErrors(['error' => 'Only cancelled goods issues can be reverted to pending.']);
+            return back()->with('error', 'Only cancelled goods issues can be reverted to pending.');
         }
 
         DB::transaction(function () use ($goodsIssue) {
