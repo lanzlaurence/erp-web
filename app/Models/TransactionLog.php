@@ -16,5 +16,9 @@ class TransactionLog extends Model
     ];
 
     public function user(): BelongsTo { return $this->belongsTo(User::class); }
-    public function loggable(): MorphTo { return $this->morphTo(); }
+
+    public function loggable(): MorphTo
+    {
+        return $this->morphTo()->withTrashed();
+    }
 }
