@@ -11,6 +11,11 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Edit, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import ClickableCode from '@/components/ui/clickable-code';
+import { DataTable } from '@/components/data-table';
+import { ColumnDef } from '@tanstack/react-table';
+import { usePage } from '@inertiajs/react';
+import type { SharedData } from '@/types';
+import type { GoodsReceiptItem, TransactionLog } from '@/types/transactions';
 
 const STATUS_BADGE: Record<GoodsReceiptStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
     pending:   { label: 'Pending',   variant: 'secondary' },
@@ -46,6 +51,116 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
         }
         setConfirm({ open: false, action: null, label: '', description: '' });
     };
+
+    const { preferences } = usePage<SharedData>().props;
+
+    const itemColumns: ColumnDef<GoodsReceiptItem>[] = [
+        {
+            accessorKey: 'material',
+            header: 'Material',
+            size: 200,
+            accessorFn: (row) => row.material?.name ?? '',
+            cell: ({ row }) => (
+                <div>
+                    <p className="font-medium text-sm">{row.original.material?.name}</p>
+                    <p className="text-xs text-muted-foreground">{row.original.material?.code}</p>
+                </div>
+            ),
+        },
+        {
+            accessorKey: 'qty_ordered',
+            header: 'Qty Ordered',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{formatDecimal(Number(row.original.qty_ordered))}</span>,
+        },
+        {
+            accessorKey: 'qty_received',
+            header: 'Qty Received',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{formatDecimal(Number(row.original.qty_received))}</span>,
+        },
+        {
+            accessorKey: 'qty_to_receive',
+            header: 'Qty to Receive',
+            size: 130,
+            cell: ({ row }) => <span className="font-mono font-medium">{formatDecimal(Number(row.original.qty_to_receive))}</span>,
+        },
+        {
+            accessorKey: 'qty_remaining',
+            header: 'Qty Remaining',
+            size: 130,
+            cell: ({ row }) => <span className="font-mono">{formatDecimal(Number(row.original.qty_remaining))}</span>,
+        },
+        {
+            accessorKey: 'unit_cost',
+            header: 'Unit Cost',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{formatAmount(Number(row.original.unit_cost))}</span>,
+        },
+        {
+            accessorKey: 'serial_number',
+            header: 'Serial No.',
+            size: 130,
+            cell: ({ row }) => <span className="text-sm">{row.original.serial_number || '-'}</span>,
+        },
+        {
+            accessorKey: 'batch_number',
+            header: 'Batch No.',
+            size: 130,
+            cell: ({ row }) => <span className="text-sm">{row.original.batch_number || '-'}</span>,
+        },
+        {
+            accessorKey: 'remarks',
+            header: 'Remarks',
+            size: 180,
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.remarks || '-'}</span>,
+        },
+    ];
+
+    const logColumns: ColumnDef<TransactionLog>[] = [
+        {
+            accessorKey: 'created_at',
+            header: 'Date & Time',
+            size: 160,
+            accessorFn: (row) => formatDateTime(row.created_at),
+            cell: ({ row }) => <span className="text-sm whitespace-nowrap">{formatDateTime(row.original.created_at)}</span>,
+        },
+        {
+            accessorKey: 'user',
+            header: 'By',
+            size: 140,
+            accessorFn: (row) => row.user?.name ?? '',
+            cell: ({ row }) => <span className="font-medium text-sm">{row.original.user?.name ?? '-'}</span>,
+        },
+        {
+            accessorKey: 'action',
+            header: 'Action',
+            size: 120,
+            cell: ({ row }) => <span className="text-sm">{row.original.action}</span>,
+        },
+        {
+            accessorKey: 'from_status',
+            header: 'Status Change',
+            size: 180,
+            cell: ({ row }) => {
+                const { from_status, to_status } = row.original;
+                if (from_status && to_status) return (
+                    <span className="text-sm">
+                        <span className="text-muted-foreground">{from_status}</span>
+                        <span className="mx-1">→</span>
+                        <span className="font-medium">{to_status}</span>
+                    </span>
+                );
+                return <span className="text-sm text-muted-foreground">-</span>;
+            },
+        },
+        {
+            accessorKey: 'remarks',
+            header: 'Remarks',
+            size: 200,
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.remarks || '-'}</span>,
+        },
+    ];
 
     return (
         <>
@@ -138,64 +253,23 @@ export default function Show({ goodsReceipt }: GoodsReceiptShowData) {
 
                 <div className="space-y-4 rounded-lg border p-6">
                     <h3 className="font-semibold">Items</h3>
-                    <div className="overflow-x-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Material</TableHead>
-                                    <TableHead>Qty Ordered</TableHead>
-                                    <TableHead>Qty Received</TableHead>
-                                    <TableHead>Qty to Receive</TableHead>
-                                    <TableHead>Qty Remaining</TableHead>
-                                    <TableHead>Unit Cost</TableHead>
-                                    <TableHead>Serial No.</TableHead>
-                                    <TableHead>Batch No.</TableHead>
-                                    <TableHead>Remarks</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {goodsReceipt.items?.map((item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell>
-                                            <p className="font-medium text-sm">{item.material?.name}</p>
-                                            <p className="text-xs text-muted-foreground">{item.material?.code}</p>
-                                        </TableCell>
-                                        <TableCell className="font-mono">{formatDecimal(Number(item.qty_ordered))}</TableCell>
-                                        <TableCell className="font-mono">{formatDecimal(Number(item.qty_received))}</TableCell>
-                                        <TableCell className="font-mono font-medium">{formatDecimal(Number(item.qty_to_receive))}</TableCell>
-                                        <TableCell className="font-mono">{formatDecimal(Number(item.qty_remaining))}</TableCell>
-                                        <TableCell className="font-mono">{formatAmount(Number(item.unit_cost))}</TableCell>
-                                        <TableCell className="text-sm">{item.serial_number || '-'}</TableCell>
-                                        <TableCell className="text-sm">{item.batch_number || '-'}</TableCell>
-                                        <TableCell className="text-sm text-muted-foreground">{item.remarks || '-'}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                    <DataTable
+                        columns={itemColumns}
+                        data={goodsReceipt.items ?? []}
+                        timezone={preferences.timezone}
+                        storageKey="gr-show-items"
+                    />
                 </div>
 
                 {goodsReceipt.logs && goodsReceipt.logs.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Transaction Log</h3>
-                        <div className="space-y-3">
-                            {goodsReceipt.logs.map((log) => (
-                                <div key={log.id} className="flex items-start gap-3 text-sm">
-                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-primary shrink-0" />
-                                    <div className="flex-1">
-                                        <p>
-                                            <span className="font-medium">{log.user?.name}</span>
-                                            {' '}<span className="text-muted-foreground">{log.action}</span>
-                                            {log.from_status && log.to_status && (
-                                                <span className="text-muted-foreground"> · {log.from_status} → {log.to_status}</span>
-                                            )}
-                                        </p>
-                                        {log.remarks && <p className="text-muted-foreground">{log.remarks}</p>}
-                                        <p className="text-xs text-muted-foreground">{formatDateTime(log.created_at)}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <DataTable
+                            columns={logColumns}
+                            data={goodsReceipt.logs}
+                            timezone={preferences.timezone}
+                            storageKey="gr-show-logs"
+                        />
                     </div>
                 )}
             </div>

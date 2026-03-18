@@ -11,6 +11,11 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Edit, CheckCircle, XCircle, RotateCcw, PackageCheck, Eye, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import ClickableCode from '@/components/ui/clickable-code';
+import { DataTable } from '@/components/data-table';
+import { ColumnDef } from '@tanstack/react-table';
+import { usePage } from '@inertiajs/react';
+import type { SharedData } from '@/types';
+import type { SalesOrderItem, SalesOrderCharge, GoodsIssue, TransactionLog } from '@/types/transactions';
 
 const STATUS_BADGE: Record<SalesOrderStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
     draft:             { label: 'Draft',           variant: 'secondary' },
@@ -47,6 +52,231 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
         }
         setConfirm({ open: false, action: null, label: '', description: '' });
     };
+
+    const { preferences } = usePage<SharedData>().props;
+
+    const soItemColumns: ColumnDef<SalesOrderItem>[] = [
+        {
+            accessorKey: 'line_number',
+            header: '#',
+            size: 50,
+            cell: ({ row }) => row.original.line_number,
+        },
+        {
+            accessorKey: 'material',
+            header: 'Material',
+            size: 200,
+            accessorFn: (row) => row.material?.name ?? '',
+            cell: ({ row }) => (
+                <div>
+                    <p className="font-medium">{row.original.material?.name}</p>
+                    <p className="text-xs text-muted-foreground">{row.original.material?.code}</p>
+                </div>
+            ),
+        },
+        {
+            accessorKey: 'qty_ordered',
+            header: 'Qty Ordered',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{Number(row.original.qty_ordered).toFixed(2)}</span>,
+        },
+        {
+            accessorKey: 'qty_shipped',
+            header: 'Qty Shipped',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{Number(row.original.qty_shipped).toFixed(2)}</span>,
+        },
+        {
+            accessorKey: 'unit_price',
+            header: 'Unit Price',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{formatAmount(Number(row.original.unit_price))}</span>,
+        },
+        {
+            accessorKey: 'discount_type',
+            header: 'Discount',
+            size: 110,
+            cell: ({ row }) => (
+                <span className="text-sm text-muted-foreground">
+                    {row.original.discount_type
+                        ? row.original.discount_type === 'percentage'
+                            ? `${row.original.discount_amount}%`
+                            : formatAmount(Number(row.original.discount_amount))
+                        : '-'}
+                </span>
+            ),
+        },
+        {
+            accessorKey: 'unit_price_after_discount',
+            header: 'After Disc.',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{formatAmount(Number(row.original.unit_price_after_discount))}</span>,
+        },
+        {
+            accessorKey: 'net_price',
+            header: 'Net Price',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono">{formatAmount(Number(row.original.net_price))}</span>,
+        },
+        {
+            accessorKey: 'vat_price',
+            header: 'VAT',
+            size: 110,
+            cell: ({ row }) => (
+                <span className="font-mono text-sm">
+                    {row.original.is_vatable ? formatAmount(Number(row.original.vat_price)) : '-'}
+                </span>
+            ),
+        },
+        {
+            accessorKey: 'gross_price',
+            header: 'Gross Price',
+            size: 120,
+            cell: ({ row }) => <span className="font-mono font-medium">{formatAmount(Number(row.original.gross_price))}</span>,
+        },
+        {
+            accessorKey: 'remarks',
+            header: 'Remarks',
+            size: 180,
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.remarks || '-'}</span>,
+        },
+    ];
+
+    const soChargeColumns: ColumnDef<SalesOrderCharge>[] = [
+        {
+            accessorKey: 'name',
+            header: 'Name',
+            size: 160,
+            cell: ({ row }) => row.original.name,
+        },
+        {
+            accessorKey: 'type',
+            header: 'Type',
+            size: 100,
+            cell: ({ row }) => (
+                <Badge variant={row.original.type === 'tax' ? 'default' : 'destructive'}>{row.original.type}</Badge>
+            ),
+        },
+        {
+            accessorKey: 'value',
+            header: 'Value',
+            size: 120,
+            cell: ({ row }) => row.original.value_type === 'percentage'
+                ? `${row.original.value}%`
+                : formatAmount(Number(row.original.value)),
+        },
+        {
+            accessorKey: 'computed_amount',
+            header: 'Computed Amount',
+            size: 150,
+            cell: ({ row }) => <span className="font-mono">{formatAmount(Number(row.original.computed_amount))}</span>,
+        },
+    ];
+
+    const giColumns: ColumnDef<GoodsIssue>[] = [
+        {
+            accessorKey: 'code',
+            header: 'GI Code',
+            size: 140,
+            cell: ({ row }) => <ClickableCode href={`/goods-issues/${row.original.id}`} value={row.original.code} />,
+        },
+        {
+            accessorKey: 'location',
+            header: 'Location',
+            size: 150,
+            accessorFn: (row) => row.location?.name ?? '',
+            cell: ({ row }) => row.original.location?.name,
+        },
+        {
+            accessorKey: 'gi_date',
+            header: 'GI Date',
+            size: 120,
+            cell: ({ row }) => formatDate(row.original.gi_date),
+        },
+        {
+            accessorKey: 'transaction_date',
+            header: 'Transaction Date',
+            size: 140,
+            cell: ({ row }) => formatDate(row.original.transaction_date),
+        },
+        {
+            accessorKey: 'status',
+            header: 'Status',
+            size: 110,
+            cell: ({ row }) => (
+                <Badge variant={row.original.status === 'completed' ? 'success' : row.original.status === 'cancelled' ? 'destructive' : 'secondary'}>
+                    {row.original.status.charAt(0).toUpperCase() + row.original.status.slice(1)}
+                </Badge>
+            ),
+        },
+        {
+            accessorKey: 'user',
+            header: 'Created By',
+            size: 140,
+            accessorFn: (row) => row.user?.name ?? '',
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.user?.name}</span>,
+        },
+        {
+            id: 'actions',
+            header: 'Actions',
+            enableSorting: false,
+            enableColumnFilter: false,
+            size: 80,
+            cell: ({ row }) => hasPermission('goods-issue-view') ? (
+                <Button variant="ghost" size="sm" asChild>
+                    <Link href={`/goods-issues/${row.original.id}`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
+                        <Eye className="h-4 w-4" />
+                        <span className="text-[10px] leading-none">View</span>
+                    </Link>
+                </Button>
+            ) : null,
+        },
+    ];
+
+    const soLogColumns: ColumnDef<TransactionLog>[] = [
+        {
+            accessorKey: 'created_at',
+            header: 'Date & Time',
+            size: 160,
+            accessorFn: (row) => formatDateTime(row.created_at),
+            cell: ({ row }) => <span className="text-sm whitespace-nowrap">{formatDateTime(row.original.created_at)}</span>,
+        },
+        {
+            accessorKey: 'user',
+            header: 'By',
+            size: 140,
+            accessorFn: (row) => row.user?.name ?? '',
+            cell: ({ row }) => <span className="font-medium text-sm">{row.original.user?.name ?? '-'}</span>,
+        },
+        {
+            accessorKey: 'action',
+            header: 'Action',
+            size: 120,
+            cell: ({ row }) => <span className="text-sm">{row.original.action}</span>,
+        },
+        {
+            accessorKey: 'from_status',
+            header: 'Status Change',
+            size: 180,
+            cell: ({ row }) => {
+                const { from_status, to_status } = row.original;
+                if (from_status && to_status) return (
+                    <span className="text-sm">
+                        <span className="text-muted-foreground">{from_status}</span>
+                        <span className="mx-1">→</span>
+                        <span className="font-medium">{to_status}</span>
+                    </span>
+                );
+                return <span className="text-sm text-muted-foreground">-</span>;
+            },
+        },
+        {
+            accessorKey: 'remarks',
+            header: 'Remarks',
+            size: 200,
+            cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.remarks || '-'}</span>,
+        },
+    ];
 
     return (
         <>
@@ -172,72 +402,23 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
 
                 <div className="space-y-4 rounded-lg border p-6">
                     <h3 className="font-semibold">Items</h3>
-                    <div className="overflow-x-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>#</TableHead>
-                                    <TableHead>Material</TableHead>
-                                    <TableHead>Qty Ordered</TableHead>
-                                    <TableHead>Qty Shipped</TableHead>
-                                    <TableHead>Unit Price</TableHead>
-                                    <TableHead>Discount</TableHead>
-                                    <TableHead>After Disc.</TableHead>
-                                    <TableHead>Net Price</TableHead>
-                                    <TableHead>VAT</TableHead>
-                                    <TableHead>Gross Price</TableHead>
-                                    <TableHead>Remarks</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {salesOrder.items?.map((item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell>{item.line_number}</TableCell>
-                                        <TableCell>
-                                            <p className="font-medium">{item.material?.name}</p>
-                                            <p className="text-xs text-muted-foreground">{item.material?.code}</p>
-                                        </TableCell>
-                                        <TableCell className="font-mono">{Number(item.qty_ordered).toFixed(2)}</TableCell>
-                                        <TableCell className="font-mono">{Number(item.qty_shipped).toFixed(2)}</TableCell>
-                                        <TableCell className="font-mono">{formatAmount(Number(item.unit_price))}</TableCell>
-                                        <TableCell className="text-sm text-muted-foreground">
-                                            {item.discount_type ? (item.discount_type === 'percentage' ? `${item.discount_amount}%` : formatAmount(Number(item.discount_amount))) : '-'}
-                                        </TableCell>
-                                        <TableCell className="font-mono">{formatAmount(Number(item.unit_price_after_discount))}</TableCell>
-                                        <TableCell className="font-mono">{formatAmount(Number(item.net_price))}</TableCell>
-                                        <TableCell className="font-mono text-sm">{item.is_vatable ? formatAmount(Number(item.vat_price)) : '-'}</TableCell>
-                                        <TableCell className="font-mono font-medium">{formatAmount(Number(item.gross_price))}</TableCell>
-                                        <TableCell className="text-sm text-muted-foreground">{item.remarks || '-'}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                    <DataTable
+                        columns={soItemColumns}
+                        data={salesOrder.items ?? []}
+                        timezone={preferences.timezone}
+                        storageKey="so-show-items"
+                    />
                 </div>
 
                 {salesOrder.charges && salesOrder.charges.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Charges</h3>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Type</TableHead>
-                                    <TableHead>Value</TableHead>
-                                    <TableHead>Computed Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {salesOrder.charges.map((charge) => (
-                                    <TableRow key={charge.id}>
-                                        <TableCell>{charge.name}</TableCell>
-                                        <TableCell><Badge variant={charge.type === 'tax' ? 'default' : 'destructive'}>{charge.type}</Badge></TableCell>
-                                        <TableCell>{charge.value_type === 'percentage' ? `${charge.value}%` : formatAmount(Number(charge.value))}</TableCell>
-                                        <TableCell className="font-mono">{formatAmount(Number(charge.computed_amount))}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                        <DataTable
+                            columns={soChargeColumns}
+                            data={salesOrder.charges}
+                            timezone={preferences.timezone}
+                            storageKey="so-show-charges"
+                        />
                     </div>
                 )}
 
@@ -247,69 +428,24 @@ export default function Show({ salesOrder }: SalesOrderShowData) {
                             Goods Issues
                             <span className="ml-2 text-sm font-normal text-muted-foreground">({salesOrder.goods_issues.length})</span>
                         </h3>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>GI Code</TableHead>
-                                    <TableHead>Location</TableHead>
-                                    <TableHead>GI Date</TableHead>
-                                    <TableHead>Transaction Date</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Created By</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {salesOrder.goods_issues.map((gi) => (
-                                    <TableRow key={gi.id}>
-                                        <TableCell><ClickableCode href={`/goods-issues/${gi.id}`} value={gi.code} /></TableCell>
-                                        <TableCell>{gi.location?.name}</TableCell>
-                                        <TableCell>{formatDate(gi.gi_date)}</TableCell>
-                                        <TableCell>{formatDate(gi.transaction_date)}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={gi.status === 'completed' ? 'success' : gi.status === 'cancelled' ? 'destructive' : 'secondary'}>
-                                                {gi.status.charAt(0).toUpperCase() + gi.status.slice(1)}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-sm text-muted-foreground">{gi.user?.name}</TableCell>
-                                        <TableCell className="text-right">
-                                            {hasPermission('goods-issue-view') && (
-                                                <Button variant="ghost" size="sm" asChild>
-                                                    <Link href={`/goods-issues/${gi.id}`} className="flex flex-col items-center gap-1 h-auto py-1 w-14">
-                                                        <Eye className="h-4 w-4" />
-                                                        <span className="text-[10px] leading-none">View</span>
-                                                    </Link>
-                                                </Button>
-                                            )}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                        <DataTable
+                            columns={giColumns}
+                            data={salesOrder.goods_issues}
+                            timezone={preferences.timezone}
+                            storageKey="so-show-gis"
+                        />
                     </div>
                 )}
 
                 {salesOrder.logs && salesOrder.logs.length > 0 && (
                     <div className="space-y-4 rounded-lg border p-6">
                         <h3 className="font-semibold">Transaction Log</h3>
-                        <div className="space-y-3">
-                            {salesOrder.logs.map((log) => (
-                                <div key={log.id} className="flex items-start gap-3 text-sm">
-                                    <div className="mt-0.5 h-2 w-2 rounded-full bg-primary shrink-0" />
-                                    <div className="flex-1">
-                                        <p>
-                                            <span className="font-medium">{log.user?.name}</span>
-                                            {' '}<span className="text-muted-foreground">{log.action}</span>
-                                            {log.from_status && log.to_status && (
-                                                <span className="text-muted-foreground"> · {log.from_status} → {log.to_status}</span>
-                                            )}
-                                        </p>
-                                        {log.remarks && <p className="text-muted-foreground">{log.remarks}</p>}
-                                        <p className="text-xs text-muted-foreground">{formatDateTime(log.created_at)}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <DataTable
+                            columns={soLogColumns}
+                            data={salesOrder.logs}
+                            timezone={preferences.timezone}
+                            storageKey="so-show-logs"
+                        />
                     </div>
                 )}
             </div>
