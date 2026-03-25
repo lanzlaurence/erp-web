@@ -23,13 +23,13 @@ class PurchaseOrderController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:purchase-order-view',     only: ['index', 'show']),
-            new Middleware('permission:purchase-order-create',   only: ['create', 'store']),
-            new Middleware('permission:purchase-order-edit',     only: ['edit', 'update']),
-            new Middleware('permission:purchase-order-delete',   only: ['destroy']),
-            new Middleware('permission:purchase-order-post',     only: ['post']),
-            new Middleware('permission:purchase-order-cancel',   only: ['cancel']),
-            new Middleware('permission:purchase-order-revert',   only: ['revert']),
+            new Middleware('permission:purchase-order-view', only: ['index', 'show']),
+            new Middleware('permission:purchase-order-create', only: ['create', 'store']),
+            new Middleware('permission:purchase-order-edit', only: ['edit', 'update']),
+            new Middleware('permission:purchase-order-delete', only: ['destroy']),
+            new Middleware('permission:purchase-order-post', only: ['post']),
+            new Middleware('permission:purchase-order-cancel', only: ['cancel']),
+            new Middleware('permission:purchase-order-revert', only: ['revert']),
         ];
     }
 
