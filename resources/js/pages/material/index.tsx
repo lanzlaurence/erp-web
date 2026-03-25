@@ -45,10 +45,12 @@ export default function Index({ materials }: MaterialData) {
             ),
         },
         {
-            accessorKey: 'name',
-            header: 'Material Name',
-            size: 0,
-            meta: { hidden: true },
+            accessorKey: 'description',
+            header: 'Description',
+            size: 200,
+            cell: ({ row }) => (
+                <span className="text-muted-foreground">{row.original.description || '-'}</span>
+            ),
         },
         {
             accessorKey: 'category',
@@ -161,7 +163,7 @@ export default function Index({ materials }: MaterialData) {
                     data={materials}
                     exportFileName="materials"
                     timezone={preferences.timezone}
-                    initialColumnVisibility={{ name: false }}
+                    initialColumnVisibility={{ description: false }}
                     storageKey="materials"
                 />
             </div>

@@ -185,9 +185,6 @@ export default function Index({ purchaseOrders }: PurchaseOrderData) {
                     exportFileName="purchase-orders"
                     timezone={preferences.timezone}
                     storageKey="purchase-orders"
-                    initialColumnVisibility={{
-                        user: false
-                    }}
                 />
             </div>
 
