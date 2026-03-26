@@ -179,7 +179,13 @@ export default function Index({ purchaseOrders }: PurchaseOrderData) {
                         </Button>
                     )}
                 </div>
-                <DataTable columns={columns} data={purchaseOrders} exportFileName="purchase-orders" timezone={preferences.timezone} storageKey="purchase-orders" />
+                <DataTable
+                    columns={columns}
+                    data={purchaseOrders}
+                    exportFileName="purchase-orders"
+                    timezone={preferences.timezone}
+                    storageKey="purchase-orders"
+                />
             </div>
 
             <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ ...deleteDialog, open })}>
