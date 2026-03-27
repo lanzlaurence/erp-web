@@ -1,12 +1,26 @@
 @echo off
 
+:: Auto-elevate to Administrator
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit /b
+)
+
+:: Go back to script directory after elevation
+cd /d "%~dp0"
+
 echo Current directory: %CD%
+
+:: Open XAMPP Control Panel only (don't start services - let autostart handle it)
+start "" "C:\xampp\xampp-control.exe"
+timeout /t 5 /nobreak >nul
 
 php artisan wayfinder:generate
 php artisan optimize:clear
 php artisan optimize
 
-:: Check if port 8000 is already in use and kill it
+:: Kill anything on port 8000
 netstat -ano | findstr ":8000" >nul
 if %ERRORLEVEL%==0 (
     echo Port 8000 is in use. Stopping existing instance...
@@ -27,8 +41,6 @@ netstat -ano | findstr ":8000" >nul
 if %ERRORLEVEL% neq 0 goto waitloop
 
 echo Server is ready!
-
-:: Open in default browser
 start "" "http://127.0.0.1:8000"
 
 pause
