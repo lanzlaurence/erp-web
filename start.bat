@@ -12,36 +12,15 @@ cd /d "%~dp0"
 
 echo Current directory: %CD%
 
-:: Stop existing XAMPP services if running
-echo Checking for existing XAMPP services...
+:: Start XAMPP only if not already running
 tasklist | findstr /i "xampp-control.exe" >nul
 if %ERRORLEVEL%==0 (
-    echo Closing XAMPP Control Panel...
-    taskkill /IM xampp-control.exe /F >nul 2>&1
-    timeout /t 2 /nobreak >nul
+    echo XAMPP is already running. Skipping...
+) else (
+    echo Starting XAMPP Control Panel...
+    start "" "C:\xampp\xampp-control.exe"
+    timeout /t 5 /nobreak >nul
 )
-
-:: Stop Apache if running
-tasklist | findstr /i "httpd.exe" >nul
-if %ERRORLEVEL%==0 (
-    echo Stopping Apache...
-    "C:\xampp\apache\bin\httpd.exe" -k stop >nul 2>&1
-    taskkill /IM httpd.exe /F >nul 2>&1
-    timeout /t 2 /nobreak >nul
-)
-
-:: Stop MySQL if running
-tasklist | findstr /i "mysqld.exe" >nul
-if %ERRORLEVEL%==0 (
-    echo Stopping MySQL...
-    "C:\xampp\mysql\bin\mysqladmin.exe" -u root shutdown >nul 2>&1
-    taskkill /IM mysqld.exe /F >nul 2>&1
-    timeout /t 2 /nobreak >nul
-)
-
-echo Starting XAMPP Control Panel...
-start "" "C:\xampp\xampp-control.exe"
-timeout /t 5 /nobreak >nul
 
 php artisan wayfinder:generate
 php artisan optimize:clear
