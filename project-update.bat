@@ -1,6 +1,13 @@
 @echo off
 setlocal enabledelayedexpansion
 
+REM Auto-elevate to Administrator
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit /b
+)
+
 REM =============================================================================
 REM  update.bat — Project Update Script
 REM  Always runs in the directory where this .bat file is placed.
@@ -68,6 +75,22 @@ echo ---------------------------------------------
 call npm cache clean --force
 if %errorlevel% neq 0 ( echo [ERROR] npm cache clean failed. & pause & exit /b %errorlevel% )
 echo [OK] npm cache clean completed.
+echo.
+
+REM =============================================================================
+REM  XAMPP
+REM =============================================================================
+echo ---------------------------------------------
+echo   ^>^> Starting XAMPP
+echo ---------------------------------------------
+tasklist | findstr /i "xampp-control.exe" >nul
+if %ERRORLEVEL%==0 (
+    echo [OK] XAMPP is already running. Skipping.
+) else (
+    start "" "C:\xampp\xampp-control.exe"
+    timeout /t 5 /nobreak >nul
+    echo [OK] XAMPP started.
+)
 echo.
 
 REM =============================================================================
